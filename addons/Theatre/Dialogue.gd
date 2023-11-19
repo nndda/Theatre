@@ -1,5 +1,7 @@
 class_name Dialogue extends Resource
 
+## A Dialogue resource, saved as sets of instruction on how the dialogue flow.
+
 @export var step : int = -1
 static var step_global : int = 0
 
@@ -12,6 +14,7 @@ static var characters_global : Dictionary = {}
 @export var sets : Array[Dictionary] = []
 @export var set_current : Dictionary = {}
 
+## Maximum characters of strings to fit in the dialogue box. Parsing Dialogue with characters more than the specified max_chr will fail and throw out an error.
 const max_chr : int = 305
 
 @export var tr_sets : Array[Dictionary] = []
@@ -26,8 +29,18 @@ const data_template : Dictionary = {
 const HANDLER : PackedStringArray = [
     "SPR","BG","TRANS","AUD","VFX","FREE","END", "PLOT"]
 
+## Parsed and compiled Dialogue files.
+##
+## Once a raw Dialogue file is parsed either with [method crawl] or when it was initialized:
+## [br]
+## [code] var dlg = Dialogue.new("res://chapter_one.en.dlg.txt") [/code]
+## [br]
+## It can be accessed through the [Dialogue] singleton with the file path used when parsing said raw Dialogue text file.
+## [br]
+## [code] Dialogue.compiled["res://chapter_one.en.dlg.txt"] [/code]
 static var compiled : Dictionary = {}
 
+## Emitted when the Dialogue started ( [member step] == 0 )
 signal started
 signal finished
 signal set_updated(
@@ -47,9 +60,7 @@ func _init( dlg_file : String ):
 
     raw = ""
 
-func parse(
-    dialogue_file : String
-    ) -> void:
+func parse( dialogue_file : String ) -> void:
 
     sets = []
 
@@ -67,6 +78,8 @@ func parse(
 
     output = parse_set(dlg_raw)
     sets = output
+    
+    Dialogue.compiled[dialogue_file] = self
 
 
 #       function(arg1,arg2)
@@ -258,4 +271,9 @@ static func humanified( input : Dialogue ) -> String:
                 dlg["dlg"],"","",""])
 
     return "\n".join(output)
+
+static func save_to_json( path : String ) -> void:
+    pass
+
+
 
