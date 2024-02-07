@@ -1,6 +1,0 @@
-
-Character_one
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec urna ex, consequat eu velit id, commodo gravida mauris. Aliquam et tincidunt nisi. Curabitur aliquet scelerisque lobortis. Donec eget metus in sem egestas ultrices vitae a enim. Donec pellentesque diam sed neque consequat, quis sodales tortor fringilla."
-    
-Character_two
-    "Nam non ultrices orci, et finibus nunc. Mauris mattis purus in diam porta bibendum. Donec ut quam est. Duis posuere odio hendrerit enim aliquam ornare. Donec at tincidunt sapien. Cras gravida orci id efficitur finibus. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus."
