@@ -1,14 +1,9 @@
 class_name Dialogue extends Resource
 
-## A Dialogue resource, saved as sets of instruction on how the dialogue flow.
-
-@export var step : int = -1
-static var step_global : int = 0
+## A Dialogue resource, saved as sets of instruction on how the Dialogue flow.
 
 static var default_lang : String = "en"
-
 @export var characters : Dictionary = {}
-static var characters_global : Dictionary = {}
 
 @export var raw : String = ""
 @export var sets : Array[Dictionary] = []
@@ -17,60 +12,58 @@ static var characters_global : Dictionary = {}
 #   { "EN" : sets,
 #     "ID" : sets }
 
-const data_template : Dictionary = {
+const DATA_TEMPLATE : Dictionary = {
     "name"   : "",
     "body"    : "",
     "func"   : [], # Array[Dictionary]
-    }
+}
 
-const HANDLER : PackedStringArray = [
-    "SPR","BG","TRANS","AUD","VFX","FREE","END", "PLOT"]
+const FUNC_IDENTIFIER := "=>"
+const DLGSET_IDENTIFIER := "-"
+
+var indent = "    "
 
 ## Parsed and compiled Dialogue files.
 ##
-## Once a raw Dialogue file is parsed either with [method crawl] or when it was initialized:
-## [br]
-## [code] var dlg = Dialogue.new("res://chapter_one.en.dlg.txt") [/code]
-## [br]
-## It can be accessed through the [Dialogue] singleton with the file path used when parsing said raw Dialogue text file.
+## Once a raw Dialogue file is parsed with [method crawl] It can be accessed through the [Dialogue] singleton with the file path used when parsing said raw Dialogue text file.
 ## [br]
 ## [code] Dialogue.compiled["res://chapter_one.en.dlg.txt"] [/code]
 static var compiled : Dictionary = {}
 
 
-func _init(dlg_file : String):
-    step = -1
+func _init(dlg_src : String):
     characters = {}
-
     sets = []
 
-    characters.merge(characters_global, true)
-    parse(dlg_file)
-    step_global += sets.size()
+    if (dlg_src.begins_with("res://") or
+        dlg_src.begins_with("user://")) and\
+        dlg_src.get_file().is_valid_filename():
+        print("Parsing Dialogue from file: ", dlg_src)
+        parse(FileAccess.get_file_as_string(dlg_src))
+    elif dlg_src.get_slice_count("\n") >= 1:
+        print("Parsing Dialogue from raw string: ", get_stack())
+        parse(dlg_src)
+    else:
+        push_error("Unable to create Dialogue resource: unkbown source")
 
     raw = ""
 
-func parse(dialogue_file : String) -> void:
+func parse(dialogue_raw : String) -> void:
+    #print("parse.dialogue_raw:\n", dialogue_raw)
 
     sets = []
 
     var output : Array[Dictionary] = []
-    var dlg_raw : PackedStringArray = []
-
-    raw =  FileAccess.get_file_as_string(dialogue_file)
-
-    print("Parsing dialogue: ", dialogue_file)
+    var dialogue_raw_arr : PackedStringArray = []
 
     # Filter out comments
-    for n in raw.split("\n", false):
+    for n in dialogue_raw.split("\n", false):
         if !n.begins_with("#") and !n.is_empty():
-            dlg_raw.append(n)
+            dialogue_raw_arr.append(n)
 
-    output = parse_set(dlg_raw)
+    #print("parse.dialogue_raw_arr:\n", dialogue_raw_arr)
+    output = parse_set(dialogue_raw_arr)
     sets = output
-
-    Dialogue.compiled[dialogue_file] = self
-
 
 #       function(arg1,arg2)
 #       function
@@ -80,31 +73,33 @@ func parse(dialogue_file : String) -> void:
 
 func parse_set(input : PackedStringArray) -> Array[Dictionary]:
     var output : Array[Dictionary] = []
+    #print("parse_set.input:\n", input)
 
     for i in input.size():
-        var n : String = input[i]
+        # Current line
+        var n := input[i]
 
-        if n.begins_with("-") or !n.begins_with("    "):
-            var setsl : Dictionary = data_template.duplicate()
+        if n.begins_with(FUNC_IDENTIFIER) or !n.begins_with("    "):
+            var setsl := DATA_TEMPLATE.duplicate()
 
-            if n.begins_with("-"):
+            if n.begins_with(FUNC_IDENTIFIER):
 #                print("  ", output.size(), "  standalone functions...")
+                var prev := clampi(i - 1, 0, output.size() - 1)
                 if !(
                     i != 0 and
-                    output[ clampi(i - 1, 0, output.size() - 1) ]["body"].is_empty() and
-                    output[ clampi(i - 1, 0, output.size() - 1) ]["name"].is_empty()
+                    output[prev]["body"].is_empty() and
+                    output[prev]["name"].is_empty()
                    ):
-                    setsl["func"]    = parse_set_func(i, input)
-
+                    setsl["func"] = parse_set_func(i, input)
                     output.append(setsl)
 
             elif !n.begins_with("    "):
 #                print("  ", output.size(), "  line...")
 
-                setsl["body"]     = input[ i + 1 ].dedent()
-                setsl["name"]    = n.split(" ", false)[0]
+                setsl["body"] = input[ i + 1 ].dedent()
+                setsl["name"] = n.split(" ", false)[0]
 
-                setsl["func"]    = parse_set_func(i + 2, input)
+                setsl["func"] = parse_set_func(i + 2, input)
 
                 if setsl["name"] == "_":
                     setsl["name"] = ""
@@ -113,43 +108,41 @@ func parse_set(input : PackedStringArray) -> Array[Dictionary]:
 
 #            setsl.clear()
 
-#    for n in output:
-#        print("\n\n--------------------------------")
-#        for t in n:
-#            print(n[t])
+    for n in output:
+        print("\n\n--------------------------------")
+        for t in n:
+            print(n[t])
 
     return output
 
-
-
 func parse_set_func(start : int, target_sets : PackedStringArray) -> Dictionary:
-    var i : int = start
-    var input : PackedStringArray = target_sets
+    var i := start
+    var input := target_sets
 
-    var funs : Dictionary = {}
-    var break_flag : bool = false
+    var funs := {}
+    var break_flag := false
 
     for f in range(i, input.size()):
         if !break_flag:
 
-            if !input[f].dedent().begins_with("-"):
+            if !input[f].dedent().begins_with(FUNC_IDENTIFIER):
                 break_flag = true
 
             else:
-                var fun_out     : Array = []
-                var input_f     : String = input[f].dedent()
-                var type        : String = input_f.left(input_f.find(" ")).trim_prefix("-")
+                var fun_out : Array = []
+                var input_f := input[f].dedent()
+                var type := input_f.left(input_f.find(" ")).trim_prefix("-")
 
                 for fun in (input_f.right((type.length() + 1) * -1)).split(")", false):
-                    var fun_arg     : Array = []
-                    var fun_raw     : PackedStringArray = (fun.replace(" ", "")).split("(", true)
-                    var fun_name    : String = fun_raw[0].replace(" ", "")
+                    var fun_arg : Array = []
+                    var fun_raw := (fun.replace(" ", "")).split("(", true)
+                    var fun_name := fun_raw[0].replace(" ", "")
 
                     if fun_raw.size() > 1:
                         for arg in fun_raw[1].split(",", false):
                             fun_arg.append(varified(arg))
 
-                    fun_out.append([ fun_name, fun_arg ])
+                    fun_out.append([fun_name, fun_arg])
                     funs[type] = fun_out
 
     return funs
