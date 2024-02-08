@@ -5,12 +5,7 @@ class_name Dialogue extends Resource
 static var default_lang : String = "en"
 @export var characters : Dictionary = {}
 
-@export var raw : String = ""
 @export var sets : Array[Dictionary] = []
-
-@export var tr_sets : Array[Dictionary] = []
-#   { "EN" : sets,
-#     "ID" : sets }
 
 const DATA_TEMPLATE : Dictionary = {
     "name"   : "",
@@ -18,7 +13,7 @@ const DATA_TEMPLATE : Dictionary = {
     "func"   : [], # Array[Dictionary]
 }
 
-const FUNC_IDENTIFIER := "=>"
+const FUNC_IDENTIFIER := "FUNC"
 const DLGSET_IDENTIFIER := "-"
 
 var indent = "    "
@@ -30,7 +25,6 @@ var indent = "    "
 ## [code] Dialogue.compiled["res://chapter_one.en.dlg.txt"] [/code]
 static var compiled : Dictionary = {}
 
-
 func _init(dlg_src : String):
     characters = {}
     sets = []
@@ -39,47 +33,56 @@ func _init(dlg_src : String):
         dlg_src.begins_with("user://")) and\
         dlg_src.get_file().is_valid_filename():
         print("Parsing Dialogue from file: ", dlg_src)
-        parse(FileAccess.get_file_as_string(dlg_src))
+        if FileAccess.file_exists(dlg_src):
+            parse(FileAccess.get_file_as_string(dlg_src))
+        else:
+            push_error("Unable to create Dialogue resource: file does not exists")
     elif dlg_src.get_slice_count("\n") >= 1:
         print("Parsing Dialogue from raw string: ", get_stack())
         parse(dlg_src)
     else:
         push_error("Unable to create Dialogue resource: unkbown source")
 
-    raw = ""
+static func load(dlg_src : String) -> Dialogue:
+    if (dlg_src.begins_with("res://") or
+        dlg_src.begins_with("user://")) and\
+        dlg_src.get_file().is_valid_filename():
 
-func parse(dialogue_raw : String) -> void:
+        print("Getting Dialogue from file: ", dlg_src)
+        if Dialogue.compiled[dlg_src] != null:
+            return Dialogue.compiled[dlg_src]
+        else:
+            return null
+
+    else:
+        print("Parsing Dialogue from raw string: ", get_stack())
+        return Dialogue.new(dlg_src)
+
+# TODO: handle errors and non-Dialogue text files
+func parse(dlg_src : String) -> void:
     #print("parse.dialogue_raw:\n", dialogue_raw)
 
     sets = []
 
     var output : Array[Dictionary] = []
-    var dialogue_raw_arr : PackedStringArray = []
+    var dlg_raw : PackedStringArray = []
 
-    # Filter out comments
-    for n in dialogue_raw.split("\n", false):
+    # Filter out comments, and create PackedStringArray
+    # of every non-empty line in the source
+    for n in dlg_src.split("\n", false):
         if !n.begins_with("#") and !n.is_empty():
-            dialogue_raw_arr.append(n)
-
-    #print("parse.dialogue_raw_arr:\n", dialogue_raw_arr)
-    output = parse_set(dialogue_raw_arr)
-    sets = output
+            dlg_raw.append(n)
 
 #       function(arg1,arg2)
 #       function
 #           arg1 arg2
 #       callv(name,arg_arr)
 
-
-func parse_set(input : PackedStringArray) -> Array[Dictionary]:
-    var output : Array[Dictionary] = []
-    #print("parse_set.input:\n", input)
-
-    for i in input.size():
+    for i in dlg_raw.size():
         # Current line
-        var n := input[i]
+        var n := dlg_raw[i]
 
-        if n.begins_with(FUNC_IDENTIFIER) or !n.begins_with("    "):
+        if n.begins_with(FUNC_IDENTIFIER) or !(n.begins_with(" ") or n.begins_with("\t")):
             var setsl := DATA_TEMPLATE.duplicate()
 
             if n.begins_with(FUNC_IDENTIFIER):
@@ -90,16 +93,16 @@ func parse_set(input : PackedStringArray) -> Array[Dictionary]:
                     output[prev]["body"].is_empty() and
                     output[prev]["name"].is_empty()
                    ):
-                    setsl["func"] = parse_set_func(i, input)
+                    setsl["func"] = parse_set_func(i, dlg_raw)
                     output.append(setsl)
 
-            elif !n.begins_with("    "):
+            elif !(n.begins_with(" ") or n.begins_with("\t")):
 #                print("  ", output.size(), "  line...")
 
-                setsl["body"] = input[ i + 1 ].dedent()
+                setsl["body"] = dlg_raw[ i + 1 ].dedent()
                 setsl["name"] = n.split(" ", false)[0]
 
-                setsl["func"] = parse_set_func(i + 2, input)
+                setsl["func"] = parse_set_func(i + 2, dlg_raw)
 
                 if setsl["name"] == "_":
                     setsl["name"] = ""
@@ -113,7 +116,8 @@ func parse_set(input : PackedStringArray) -> Array[Dictionary]:
         for t in n:
             print(n[t])
 
-    return output
+    sets = output
+    #return output
 
 func parse_set_func(start : int, target_sets : PackedStringArray) -> Dictionary:
     var i := start
@@ -228,8 +232,13 @@ static func crawl(path := "res://", after := false):
 
             file_name = dir.get_next()
 
+# TODO: these...
 func to_json() -> void:
     pass
 
-
+func word_count() -> int:
+    var output : int = 0
+    for n in sets:
+        output += n["body"].split(" ", false).size()
+    return output
 
