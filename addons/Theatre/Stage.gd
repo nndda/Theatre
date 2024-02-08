@@ -1,12 +1,12 @@
 class_name Stage extends Object
 
-## Define and reference UIs and Nodes that will be used by the [Dialogue]. It takes a dictionary of elements of nodes as the constructor parameter.
+## Run/play [Dialogue], and define and reference UIs and Nodes that will be used by the [Dialogue]. It takes a dictionary of elements of nodes as the constructor parameter.
 ## [codeblock]@onready var stage = Stage.new({
 ##    container_name = $Label,
 ##    container_body = $RichTextLabel
 ##})
 ##
-##var epic_dialogue = Dialogue.new("res://epic_dialogue.en.dlg.txt")
+##var epic_dialogue = Dialogue.new("res://epic_dialogue.txt")
 ##
 ##func _ready():
 ##    stage.start(epic_dialogue) [/codeblock]
@@ -19,6 +19,8 @@ var body_text_length : int
 
 ## Maximum characters count to fit in the dialogue body. Running Dialogue with characters more than the specified number will throws out an error.
 var body_text_limit : int = 500
+
+var characters : Dictionary = {}
 
 ## The current [Dialogue] resource that is being used
 var current_dialogue : Dialogue
@@ -68,25 +70,31 @@ func _init(parameters : Dictionary):
 signal started
 ## Emitted when [Dialogue] finished ([member step] == [member step.size()])
 signal finished
-## Emitted when [Dialogue] stopped
-signal stopped
 ## Emitted when [Dialogue] progressed
 signal progressed(step_n : int, set_n : Dictionary)
+signal resetted(step_n : int, set_n : Dictionary)
 
-## Start the [Dialogue] at step 0 or at defined preprogress parameter
-func start(dialogue : Dialogue) -> void:
-    current_dialogue = dialogue
+## Start the [Dialogue] at step 0 or at defined preprogress parameter.
+## If no parameter (or null) is passed, it will run the [member current_dialogue] if present
+func start(dialogue : Dialogue = null) -> void:
+    if dialogue != null:
+        current_dialogue = dialogue
     current_dialogue_length = current_dialogue.sets.size()
     progress_tween = container_body.create_tween()
     progress()
     started.emit()
+    resetted.emit(step, current_dialogue.sets[step])
 
-func stop() -> void:
-    current_dialogue = null
+## Stop Dialogue and resets everything
+func reset(keep_dialogue : bool = false) -> void:
+    if !keep_dialogue:
+        current_dialogue = null
     step = -1
-    container_name.text = ""
+
+    if container_name != null:
+        container_name.text = ""
+
     container_body.text = ""
-    stopped.emit()
 
 ## Progress the [Dialogue] by 1 step. If [member progress_tween] is still running, [member progress_tween.stop()] and [member progress_tween_reset] will be called, and the [Dialogue] will not progressed.
 func progress() -> void:
@@ -96,7 +104,7 @@ func progress() -> void:
             progress_tween_reset.call()
         else:
             if step + 1 >= current_dialogue_length:
-                stop()
+                reset()
                 finished.emit()
             elif step + 1 < current_dialogue_length:
                 step += 1
@@ -113,3 +121,6 @@ func progress() -> void:
                 progress_tween.play()
                 progress_tween_start.call()
                 progressed.emit(step, current_dialogue_set)
+
+func is_playing() -> bool:
+    return step >= 0
