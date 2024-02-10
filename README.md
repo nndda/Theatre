@@ -2,26 +2,30 @@
 
 Text based linear dialogue system for Godot 4
 
-### Usage
-
+## Usage
+Set the Stage! define the `Label` & `RichTextLabel` node to display your Dialogue
 ```gdscript
-# Define Label and RichTextLabel node
 @onready var stage = Stage.new({
     container_name = $DialogueContainer/Name,
     container_body = $DialogueContainer/Body
 })
+```
 
-# Write your epic dalogue
+Write your epic Dialogue! Write it directly with triple quotation marks, or write it in a *.txt file, and load it.
+```gdscript
 var epic_dialogue = Dialogue.new("""
+
 character_name
    'You can write the dialogue directly like this'
 
 character_name
-   'Or load it with *.txt files'
+   'Or use *.txt files'
+
 """)
+```
 
+And start the Theatre
+```gdscript
 func _ready():
-	# Start the dialogue
-	stage.start(epic_dialogue)
-
+    stage.start(epic_dialogue)
 ```
