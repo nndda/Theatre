@@ -77,16 +77,23 @@ signal resetted(step_n : int, set_n : Dictionary)
 ## Start the [Dialogue] at step 0 or at defined preprogress parameter.
 ## If no parameter (or null) is passed, it will run the [member current_dialogue] if present
 func start(dialogue : Dialogue = null) -> void:
+    #print_debug("Starting Dialouge...")
     if dialogue != null:
         current_dialogue = dialogue
-    current_dialogue_length = current_dialogue.sets.size()
-    progress_tween = container_body.create_tween()
-    progress()
-    started.emit()
-    resetted.emit(step, current_dialogue.sets[step])
+        current_dialogue_length = current_dialogue.sets.size()
+        progress_tween = container_body.create_tween()
+
+        progress_tween.stop()
+        progress_tween_reset.call()
+
+        progress()
+        started.emit()
 
 ## Stop Dialogue and resets everything
 func reset(keep_dialogue : bool = false) -> void:
+    print_debug("Resetting Dialouge...")
+    resetted.emit(step, current_dialogue.sets[step])
+
     if !keep_dialogue:
         current_dialogue = null
     step = -1
@@ -94,6 +101,7 @@ func reset(keep_dialogue : bool = false) -> void:
     if container_name != null:
         container_name.text = ""
 
+    progress_tween.kill()
     container_body.text = ""
 
 ## Progress the [Dialogue] by 1 step. If [member progress_tween] is still running, [member progress_tween.stop()] and [member progress_tween_reset] will be called, and the [Dialogue] will not progressed.
@@ -103,24 +111,28 @@ func progress() -> void:
             progress_tween.stop()
             progress_tween_reset.call()
         else:
-            if step + 1 >= current_dialogue_length:
-                reset()
-                finished.emit()
-            elif step + 1 < current_dialogue_length:
+            if step + 1 < current_dialogue_length:
                 step += 1
                 current_dialogue_set = current_dialogue.sets[step]
                 body_text_length = current_dialogue_set["body"].length()
 
+                #Dialogue.print_set(current_dialogue_set)
+
                 if body_text_length > body_text_limit:
-                    push_error("Dialogue text length exceeded limit: %i/%i" % [body_text_length, body_text_limit])
+                    push_warning("Dialogue text length exceeded limit: %i/%i" % [body_text_length, body_text_limit])
 
                 if container_name != null:
                     container_name.text = current_dialogue_set["name"]
-
                 container_body.text = current_dialogue_set["body"]
-                progress_tween.play()
+
+                progress_tween = container_body.create_tween()
                 progress_tween_start.call()
+                progress_tween.play()
                 progressed.emit(step, current_dialogue_set)
+
+            elif step + 1 >= current_dialogue_length:
+                reset()
+                finished.emit()
 
 func is_playing() -> bool:
     return step >= 0
