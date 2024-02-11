@@ -11,9 +11,23 @@ config_version=5
 [application]
 
 config/name="godot-theatre"
+run/main_scene="res://theatre_demo/intro_1.tscn"
 config/features=PackedStringArray("4.2")
 config/icon="res://icon_color.png"
 
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/Theatre/plugin.cfg")
+
+[input]
+
+space={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":32,"key_label":0,"unicode":32,"echo":false,"script":null)
+]
+}
+esc={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194305,"key_label":0,"unicode":0,"echo":false,"script":null)
+]
+}
