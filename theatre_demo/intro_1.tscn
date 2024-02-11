@@ -1,31 +1,9 @@
-[gd_scene load_steps=2 format=3 uid="uid://6558c7m4g6i0"]
+[gd_scene load_steps=3 format=3 uid="uid://8mihrkqkjvea"]
 
+[ext_resource type="PackedScene" uid="uid://ctrohnpqthbtr" path="res://theatre_demo/demo_scene.tscn" id="1_mului"]
 [ext_resource type="Script" path="res://theatre_demo/intro_1.gd" id="1_yyntl"]
 
-[node name="Demo" type="Node2D"]
+[node name="Intro1" instance=ExtResource("1_mului")]
 script = ExtResource("1_yyntl")
 
-[node name="DialogueContainer" type="PanelContainer" parent="."]
-offset_left = 320.0
-offset_top = 448.0
-offset_right = 832.0
-offset_bottom = 648.0
-
-[node name="MarginContainer" type="MarginContainer" parent="DialogueContainer"]
-layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 8
-
-[node name="VBoxContainer" type="VBoxContainer" parent="DialogueContainer/MarginContainer"]
-layout_mode = 2
-
-[node name="Name" type="Label" parent="DialogueContainer/MarginContainer/VBoxContainer"]
-layout_mode = 2
-text = "Name"
-
-[node name="Body" type="RichTextLabel" parent="DialogueContainer/MarginContainer/VBoxContainer"]
-layout_mode = 2
-size_flags_vertical = 3
-text = "Dialogue body"
+[connection signal="ready" from="." to="." method="_on_ready"]

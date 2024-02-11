@@ -1,4 +1,4 @@
-extends Node2D
+extends Control
 
 # The Stage variable were defined here, so it can be accessible everywhere in this script.
 # Stage use Dictionary of Nodes and UI elements used as its parameter,
@@ -12,24 +12,25 @@ extends Node2D
 
 # The Dialogue were also defined here too for convenience.
 # You need to include `*.txt` in Project > Exports... > Resources
-var epic_dialogue = Dialogue.new("res://theatre_demo/demo_dialogue.en.txt")
+var epic_dialogue = Dialogue.load("res://theatre_demo/demo_dialogue.txt")
 
 func _ready():
     # Run `Dialogue.start()` method to start the assigned dialogue.
     stage.start(epic_dialogue)
 
-    print(epic_dialogue.word_count())
-
     # You might also want to hide dialogue UI when its finished,
     # and show it when its started.
     # The signal 'started' will be emitted when the dialogue started,
     # when the signal fired, the dialogue ui will be shown
-    stage.started.connect(
-        $DialogueContainer.show
+    stage.started.connect( func():
+        $DialogueContainer.show()
     )
     # Just like before, the 'finished' signal will be emitted when the dialogue is ended or aborted
-    stage.finished.connect(
-        $DialogueContainer.hide
+    stage.resetted.connect( func(_step, _set): # `resetted` signal return 2 arguments
+        $DialogueContainer.hide()
+    )
+    stage.finished.connect( func():
+        $DialogueContainer.hide()
     )
     # In that code above we simply used show/hide method to toggle the UI
     # You can use the signal to start your custom animation or tween
@@ -40,3 +41,17 @@ func _ready():
 func _input(event):
     if event.is_action_pressed("space"):
         stage.progress()
+
+
+# Demo scene stuff
+# =============================================================================
+
+
+@onready var start_button : Button = $StartButton
+
+func _on_ready():
+    start_button.pressed.connect(stage.start.bind(epic_dialogue))
+
+func _process(_delta):
+    start_button.disabled = stage.is_playing()
+    start_button.visible = !stage.is_playing()
