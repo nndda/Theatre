@@ -36,12 +36,13 @@ func _init(dlg_src : String):
         if FileAccess.file_exists(dlg_src):
             parse(FileAccess.get_file_as_string(dlg_src))
         else:
-            push_error("Unable to create Dialogue resource: file does not exists")
+            push_error("Unable to create Dialogue resource: %s does not exists" % dlg_src)
+
     elif dlg_src.get_slice_count("\n") >= 1:
         print("Parsing Dialogue from raw string: ", get_stack())
-        parse(dlg_src)
+
     else:
-        push_error("Unable to create Dialogue resource: unkbown source")
+        push_error("Unable to create Dialogue resource: unkbown source:", dlg_src)
 
 static func load(dlg_src : String) -> Dialogue:
     if (dlg_src.begins_with("res://") or
@@ -49,10 +50,11 @@ static func load(dlg_src : String) -> Dialogue:
         dlg_src.get_file().is_valid_filename():
 
         print("Getting Dialogue from file: ", dlg_src)
-        if Dialogue.compiled[dlg_src] != null:
+        if Dialogue.compiled.has(dlg_src):
             return Dialogue.compiled[dlg_src]
         else:
-            return null
+            push_warning("Compiled Dialogue %s does'nt exists. Creating new dialogue" % dlg_src)
+            return Dialogue.new(dlg_src)
 
     else:
         print("Parsing Dialogue from raw string: ", get_stack())
@@ -66,6 +68,10 @@ func parse(dlg_src : String) -> void:
 
     var output : Array[Dictionary] = []
     var dlg_raw : PackedStringArray = []
+
+    var is_indented = Callable( func(string : String) -> bool:
+        return string.begins_with(" ") or string.begins_with("\t")
+    )
 
     # Filter out comments, and create PackedStringArray
     # of every non-empty line in the source
@@ -82,7 +88,7 @@ func parse(dlg_src : String) -> void:
         # Current line
         var n := dlg_raw[i]
 
-        if n.begins_with(FUNC_IDENTIFIER) or !(n.begins_with(" ") or n.begins_with("\t")):
+        if n.begins_with(FUNC_IDENTIFIER) or !is_indented.call(n):
             var setsl := DATA_TEMPLATE.duplicate()
 
             if n.begins_with(FUNC_IDENTIFIER):
@@ -96,30 +102,41 @@ func parse(dlg_src : String) -> void:
                     setsl["func"] = parse_set_func(i, dlg_raw)
                     output.append(setsl)
 
-            elif !(n.begins_with(" ") or n.begins_with("\t")):
+            elif !is_indented.call(n):
 #                print("  ", output.size(), "  line...")
 
-                setsl["body"] = dlg_raw[ i + 1 ].dedent()
-                setsl["name"] = n.split(" ", false)[0]
+                if dlg_raw.size() < i + 1:
+                    assert(false, "Error: Dialogue name exists without a body")
+                else:
+                    setsl["body"] = dlg_raw[i + 1].dedent()
 
-                setsl["func"] = parse_set_func(i + 2, dlg_raw)
+                setsl["name"] = n.trim_suffix(":")
+
+                #setsl["func"] = parse_set_func(i + 2, dlg_raw)
 
                 if setsl["name"] == "_":
                     setsl["name"] = ""
 
                 output.append(setsl)
 
+    is_indented = null
 #            setsl.clear()
 
-    for n in output:
-        print("\n\n--------------------------------")
-        for t in n:
-            print(n[t])
+    #for n in output:
+        #print("\n\n--------------------------------")
+        #for t in n:
+            #print(n[t])
 
     sets = output
-    #return output
 
+# TODO: set function calls
 func parse_set_func(start : int, target_sets : PackedStringArray) -> Dictionary:
+    # => int: add(12)
+    # => float: rotate(20.5)
+    # => bool: toggle(true)
+    # => string: portrait("res://smiling.png")
+    # => color: portrait("#abcdef")
+
     var i := start
     var input := target_sets
 
@@ -144,7 +161,8 @@ func parse_set_func(start : int, target_sets : PackedStringArray) -> Dictionary:
 
                     if fun_raw.size() > 1:
                         for arg in fun_raw[1].split(",", false):
-                            fun_arg.append(varified(arg))
+                            #fun_arg.append(varified(arg))
+                            pass
 
                     fun_out.append([fun_name, fun_arg])
                     funs[type] = fun_out
@@ -156,47 +174,25 @@ static func print_set(input : Dictionary) -> void:
             "\n  name: ", input["name"],
             "\n  body: ", input["body"],
        )
-        for f in input["func"].keys() as Array:
-            print("    ", input["func"][f][0])
-            for a in input["func"][f]:
-                print("      ",a)
+        #for f in input["func"].keys() as Array:
+            #print("    ", input["func"][f][0])
+            #for a in input["func"][f]:
+                #print("      ",a)
 
-const COMMENTS  := "(#.*?(?=\\n|$))"
-const BODY      := "(\\n    .*(?=\\n|$))"
+# TODO: alternative translation
+#static func filename_switch_lang(
+    #file : String,
+    #lang : String = Dialogue.default_lang
+   #) -> String:
+    #return file.left(-10) + lang + ".dlg." + file.get_extension()
 
-static func get_components(
-    expressions : String,
-    target      : String) -> String:
+# TODO: file verification/validation
+#static func verify_filename(
+    #file : String
+   #) -> bool:
+    #return file.ends_with(".dlg.txt")
 
-    var output  : String    = ""
-    var regex   : RegEx     = RegEx.new()
-
-    regex.compile(expressions)
-    for result in regex.search_all(target):
-        print(result.get_string())
-        output += result.get_string()
-
-    regex.free()
-    return output
-
-func varified(input : String):
-    if    input.is_valid_int(): return input.to_int()
-    elif  input.is_valid_float(): return input.to_float()
-    elif  input.is_valid_html_color(): return Color(input)
-    else: return input
-
-static func filename_switch_lang(
-    file : String,
-    lang : String = Dialogue.default_lang
-   ) -> String:
-    return file.left(-10) + lang + ".dlg." + file.get_extension()
-
-static func verify_filename(
-    file : String
-   ) -> bool:
-    return file.ends_with(".dlg.txt")
-
-static func crawl(path := "res://", after := false):
+static func crawl(path := "res://"):
     var dir := DirAccess.open(path)
     var ignored_directories := Theatre.Config.get_ignored_directories()
 
@@ -205,38 +201,34 @@ static func crawl(path := "res://", after := false):
         var file_name := dir.get_next()
         while file_name != "":
             if dir.current_is_dir():
-                if !ignored_directories.has(dir.get_current_dir(false).trim_prefix("res://")):
-                    print("Crawling " + path + " for dialogue resources...")
-                    crawl(path + ("/" if after else "") + file_name, true)
+                if !file_name.begins_with("."):
+                    if !ignored_directories.has(file_name):
+                        var new_dir := path + ("" if path == "res://" else "/") + file_name
+                        print("Crawling " + new_dir + " for dialogue resources...")
+                        crawl(new_dir)
             else:
-                if verify_filename(file_name):
-                    var file : String = (
-                        path +
-                        #path + ("/" if after else "") +
-                        Dialogue.filename_switch_lang(file_name)
-                    )
+                if file_name.ends_with(".txt"):
+                    var file : String = path + "/" + file_name
                     var dlg := Dialogue.new(file)
 
                     if ProjectSettings.get_setting(Theatre.Config.dialogue_save_to_memory, true):
                         Dialogue.compiled[file] = dlg
 
-                    if ProjectSettings.get_setting(Theatre.Config.dialogue_save_to_userpath, true):
-                        var err := ResourceSaver.save(dlg, file
-                            .trim_suffix(".txt")
-                            .replace("res://", "user://")
-                            + ".res")
-                        if err != OK:
-                            push_error("Failed to save Dialogue resource: ", error_string(err))
-
-                    #print("  total lines: ", dlg.sets.size())
+                    #if ProjectSettings.get_setting(Theatre.Config.dialogue_save_to_userpath, true):
+                        #var err := ResourceSaver.save(dlg, file
+                            #.trim_suffix(".txt")
+                            #.replace("res://", "user://")
+                            #+ ".res")
+                        #if err != OK:
+                            #push_error("Failed to save Dialogue resource: ", error_string(err))
 
             file_name = dir.get_next()
 
 # TODO: these...
-func to_json() -> void:
-    pass
+func to_json(path : String) -> int:
+    return 0
 
-func word_count() -> int:
+func get_word_count() -> int:
     var output : int = 0
     for n in sets:
         output += n["body"].split(" ", false).size()
