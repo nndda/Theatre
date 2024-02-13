@@ -1,9 +1,9 @@
 # godot-theater
 
-Text based linear dialogue system for Godot 4
+Text based linear dialogue system for Godot 4.
 
-> [!IMPORTANT]
-> Make sure to include `*.txt` in the [resource options](https://docs.godotengine.org/en/stable/tutorials/export/exporting_projects.html#resource-options) when exporting your project, if you are using text files.
+> [!WARNING]
+> Make sure to ignore `*.dlg.res` and `*.dlg.tres` in `.gitignore` if you are using git.
 
 ## Usage
 Set the Stage! define the `Label` & `RichTextLabel` node to display your Dialogue
@@ -27,22 +27,8 @@ character_name
 """)
 ```
 
-And start your scene
+And start the Stage
 ```gdscript
 func _ready():
     stage.start(epic_dialogue)
-```
-
-### Preparsing Dialogues
-
-Parsing Dialogue files and string is slow. Its best to create and/or load them prior to loading your scene.
-
-If you used text files, you can call `Dialogue.crawl()` at the start of your project, to preparse all of the Dialogue text files. Which then you can load as usual using `Dialogue.load()`
-
-```gdscript
-func _init():
-    Dialogue.crawl()
-
-func _ready():
-    var story = Dialogue.load("res://story.txt")
 ```
