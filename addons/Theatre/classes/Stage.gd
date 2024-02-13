@@ -20,7 +20,7 @@ var body_text_length : int
 ## Maximum characters count to fit in the dialogue body. Running Dialogue with characters more than the specified number will throws out an error.
 var body_text_limit : int = 500
 
-var characters : Dictionary = {}
+var variables : Dictionary = {}
 
 ## The current [Dialogue] resource that is being used
 var current_dialogue : Dialogue
@@ -104,8 +104,9 @@ func progress() -> void:
                     push_warning("Dialogue text length exceeded limit: %i/%i" % [body_text_length, body_text_limit])
 
                 if container_name != null:
-                    container_name.text = current_dialogue_set["name"]
-                container_body.text = current_dialogue_set["body"]
+                    container_name.text = current_dialogue_set["name"].format(variables)
+
+                container_body.text = current_dialogue_set["body"].format(variables)
 
                 # Calling functions
                 for f : Dictionary in current_dialogue_set["func"]:
