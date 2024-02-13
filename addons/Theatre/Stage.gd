@@ -1,6 +1,6 @@
 class_name Stage extends Object
 
-## Run/play [Dialogue], and define and reference UIs and Nodes that will be used by the [Dialogue]. It takes a dictionary of elements of nodes as the constructor parameter.
+## Run/play [Dialogue], define and reference UIs and Nodes that will be used to display the [Dialogue]. It takes a dictionary of elements of nodes as the constructor parameter.
 ## [codeblock]@onready var stage = Stage.new({
 ##    container_name = $Label,
 ##    container_body = $RichTextLabel
@@ -33,8 +33,9 @@ var container_name : Label
 ## [RichTextLabel] node that displays the dialogue body [member Dialogue.set_current.dlg]. This element is [b]required[/b] for the dialogue to run.
 var container_body : RichTextLabel
 
-## Progress of the Dialogue.
-var step : int = -1
+static var handler := {
+    "STAGE" : self,
+}
 
 ## [Tween] that will be played when progressing. see [member progress_tween_start], and [member progress_tween_reset].
 var progress_tween : Tween
@@ -53,6 +54,9 @@ var progress_tween_start : Callable = func():
 ## [Callable] to be called to stop/reset the [member progress_tween] when the Dialogue progressed when the [member progress_tween] is still running.
 var progress_tween_reset : Callable = func():
     container_body.visible_ratio = 1.0
+
+## Progress of the Dialogue.
+var step : int = -1
 
 ## [Stage] needs to be initialized in _ready() or with @onready when passing the parameters required.
 ## [codeblock]
@@ -74,35 +78,13 @@ signal finished
 signal progressed(step_n : int, set_n : Dictionary)
 signal resetted(step_n : int, set_n : Dictionary)
 
-## Start the [Dialogue] at step 0 or at defined preprogress parameter.
-## If no parameter (or null) is passed, it will run the [member current_dialogue] if present
-func start(dialogue : Dialogue = null) -> void:
-    #print_debug("Starting Dialouge...")
-    if dialogue != null:
-        current_dialogue = dialogue
-        current_dialogue_length = current_dialogue.sets.size()
-        progress_tween = container_body.create_tween()
+func get_current_set() -> Dictionary:
+    if current_dialogue != null and step >= 0:
+        return current_dialogue.sets[step]
+    return {}
 
-        progress_tween.stop()
-        progress_tween_reset.call()
-
-        progress()
-        started.emit()
-
-## Stop Dialogue and resets everything
-func reset(keep_dialogue : bool = false) -> void:
-    print_debug("Resetting Dialouge...")
-    resetted.emit(step, current_dialogue.sets[step])
-
-    if !keep_dialogue:
-        current_dialogue = null
-    step = -1
-
-    if container_name != null:
-        container_name.text = ""
-
-    progress_tween.kill()
-    container_body.text = ""
+func is_playing() -> bool:
+    return step >= 0
 
 ## Progress the [Dialogue] by 1 step. If [member progress_tween] is still running, [member progress_tween.stop()] and [member progress_tween_reset] will be called, and the [Dialogue] will not progressed.
 func progress() -> void:
@@ -125,6 +107,14 @@ func progress() -> void:
                     container_name.text = current_dialogue_set["name"]
                 container_body.text = current_dialogue_set["body"]
 
+                # Calling functions
+                for f : Dictionary in current_dialogue_set["func"]:
+                    #if handler.has(f["handler"]):
+                        print("\n", f["handler"], ",", f["func_name"])
+                        for p in f["param"]:
+                            print("  ", type_string(typeof(p)), ": ", p)
+
+                # Playing Tween
                 progress_tween = container_body.create_tween()
                 progress_tween_start.call()
                 progress_tween.play()
@@ -134,5 +124,32 @@ func progress() -> void:
                 reset()
                 finished.emit()
 
-func is_playing() -> bool:
-    return step >= 0
+## Stop Dialogue and resets everything
+func reset(keep_dialogue : bool = false) -> void:
+    print_debug("Resetting Dialouge...")
+    resetted.emit(step, current_dialogue.sets[step])
+
+    if !keep_dialogue:
+        current_dialogue = null
+    step = -1
+
+    if container_name != null:
+        container_name.text = ""
+
+    progress_tween.kill()
+    container_body.text = ""
+
+## Start the [Dialogue] at step 0 or at defined preprogress parameter.
+## If no parameter (or null) is passed, it will run the [member current_dialogue] if present
+func start(dialogue : Dialogue = null) -> void:
+    #print_debug("Starting Dialouge...")
+    if dialogue != null:
+        current_dialogue = dialogue
+        current_dialogue_length = current_dialogue.sets.size()
+        progress_tween = container_body.create_tween()
+
+        progress_tween.stop()
+        progress_tween_reset.call()
+
+        progress()
+        started.emit()
