@@ -7,15 +7,6 @@ static var default_lang : String = "en"
 
 @export var sets : Array[Dictionary] = []
 
-const DATA_TEMPLATE : Dictionary = {
-    "name"   : "",
-    "body"    : "",
-    "func"   : [], # Array[Dictionary]
-}
-
-const FUNC_IDENTIFIER := "FUNC"
-const DLGSET_IDENTIFIER := "-"
-
 var indent = "    "
 
 ## Parsed and compiled Dialogue files.
@@ -61,15 +52,16 @@ static func load(dlg_src : String) -> Dialogue:
         return Dialogue.new(dlg_src)
 
 # TODO: handle errors and non-Dialogue text files
-func parse(dlg_src : String) -> void:
-    #print("parse.dialogue_raw:\n", dialogue_raw)
 
+## Parse the raw string used for the dialogue.
+func parse(dlg_src : String) -> void:
     sets = []
+    const FUNC_IDENTIFIER := "=>"
 
     var output : Array[Dictionary] = []
     var dlg_raw : PackedStringArray = []
 
-    var is_indented = Callable( func(string : String) -> bool:
+    var is_indented := Callable( func(string : String) -> bool:
         return string.begins_with(" ") or string.begins_with("\t")
     )
 
@@ -84,43 +76,66 @@ func parse(dlg_src : String) -> void:
 #           arg1 arg2
 #       callv(name,arg_arr)
 
+    var parse_func := Callable( func(src : String) -> Dictionary:
+        return {}
+    )
+
+    var body_pos : int = 0
     for i in dlg_raw.size():
-        # Current line
         var n := dlg_raw[i]
 
         if n.begins_with(FUNC_IDENTIFIER) or !is_indented.call(n):
-            var setsl := DATA_TEMPLATE.duplicate()
+            var setsl := {
+                "name": "",
+                "body": "",
+                "func": [],
+            }
 
-            if n.begins_with(FUNC_IDENTIFIER):
-#                print("  ", output.size(), "  standalone functions...")
-                var prev := clampi(i - 1, 0, output.size() - 1)
-                if !(
-                    i != 0 and
-                    output[prev]["body"].is_empty() and
-                    output[prev]["name"].is_empty()
-                   ):
-                    setsl["func"] = parse_set_func(i, dlg_raw)
-                    output.append(setsl)
-
-            elif !is_indented.call(n):
-#                print("  ", output.size(), "  line...")
-
+            if !is_indented.call(n):
                 if dlg_raw.size() < i + 1:
                     assert(false, "Error: Dialogue name exists without a body")
-                else:
-                    setsl["body"] = dlg_raw[i + 1].dedent()
 
                 setsl["name"] = n.trim_suffix(":")
-
-                #setsl["func"] = parse_set_func(i + 2, dlg_raw)
 
                 if setsl["name"] == "_":
                     setsl["name"] = ""
 
                 output.append(setsl)
+                body_pos = output.size() - 1
 
-    is_indented = null
-#            setsl.clear()
+        elif is_indented.call(n):
+            if n.dedent().begins_with(FUNC_IDENTIFIER):
+                var fun_str := n.split("(", false, 2)
+
+                var identifier := fun_str[0]\
+                    .strip_edges()\
+                    .trim_suffix(":")\
+                    .trim_prefix(FUNC_IDENTIFIER)\
+                    .split(" ", false, 3)
+
+                var param_str := fun_str[-1].strip_edges().trim_suffix(")").split(",", false, 2)
+                var param = []
+
+                for p in param_str:
+                    if identifier.size() >= 3:
+                        match identifier[1].to_upper():
+                            "COLOR":
+                                param.append(Color(p))
+                            "STRING":
+                                param.append(p)
+                            _:
+                                param.append(str_to_var(p))
+
+                var fun := {
+                    "handler": identifier[0],
+                    "func_name": StringName(identifier[-1]),
+                    "param": param,
+                }
+
+                output[body_pos]["func"].append(fun)
+
+            else:
+                output[body_pos]["body"] += dlg_raw[i].dedent() + " "
 
     #for n in output:
         #print("\n\n--------------------------------")
@@ -130,44 +145,32 @@ func parse(dlg_src : String) -> void:
     sets = output
 
 # TODO: set function calls
-func parse_set_func(start : int, target_sets : PackedStringArray) -> Dictionary:
-    # => int: add(12)
-    # => float: rotate(20.5)
+#func parse_set_func(start : int, target_sets : PackedStringArray) -> Dictionary:
+    #HANDLER : [
+        #[ FUNC1, [ARG1, ARG2] ]
+    #]
+
+    #Safe arguments: int, float, bool
+
+    # => HANDLER : add(12)
+    # => PLAYER : rotate(20.5)
+    # => PLAYER : kill()
     # => bool: toggle(true)
-    # => string: portrait("res://smiling.png")
-    # => color: portrait("#abcdef")
 
-    var i := start
-    var input := target_sets
+    # => PORTRAIT string: change("res://smiling.png")
+    # => BACKGROUND color: change("#abcdef")
 
-    var funs := {}
-    var break_flag := false
+    # => PORTRAIT string: change
+    # "res://smiling.png")
 
-    for f in range(i, input.size()):
-        if !break_flag:
+    # split "(" false, 2
 
-            if !input[f].dedent().begins_with(FUNC_IDENTIFIER):
-                break_flag = true
+    # IDENTIFIER:
+    # dedent().trim_prefix(FUNC_IDENTIFIER).trim_suffix(":")
+    # split " "
 
-            else:
-                var fun_out : Array = []
-                var input_f := input[f].dedent()
-                var type := input_f.left(input_f.find(" ")).trim_prefix("-")
-
-                for fun in (input_f.right((type.length() + 1) * -1)).split(")", false):
-                    var fun_arg : Array = []
-                    var fun_raw := (fun.replace(" ", "")).split("(", true)
-                    var fun_name := fun_raw[0].replace(" ", "")
-
-                    if fun_raw.size() > 1:
-                        for arg in fun_raw[1].split(",", false):
-                            #fun_arg.append(varified(arg))
-                            pass
-
-                    fun_out.append([fun_name, fun_arg])
-                    funs[type] = fun_out
-
-    return funs
+    # PARAMETER
+    # dedent()
 
 static func print_set(input : Dictionary) -> void:
         print(
@@ -185,12 +188,6 @@ static func print_set(input : Dictionary) -> void:
     #lang : String = Dialogue.default_lang
    #) -> String:
     #return file.left(-10) + lang + ".dlg." + file.get_extension()
-
-# TODO: file verification/validation
-#static func verify_filename(
-    #file : String
-   #) -> bool:
-    #return file.ends_with(".dlg.txt")
 
 static func crawl(path := "res://"):
     var dir := DirAccess.open(path)
