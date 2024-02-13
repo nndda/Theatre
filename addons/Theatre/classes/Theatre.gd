@@ -5,13 +5,11 @@ class Config:
     const DEBUG_SHOW_CRAWL_FOLDER := "theatre/debug/log/show_current_crawling_directory"
 
     const DIALOGUE_IGNORED_DIR := "theatre/resources/dialogue/ignored_directories"
-    const DIALOGUE_GITIGNORE_DLG := "theatre/resources/dialogue/add_to_gitignore"
 
     static func init_configs() -> void:
         for config_item : Array in [
             [ DEBUG_SHOW_CRAWL_FOLDER, TYPE_BOOL, false, PROPERTY_HINT_NONE, "", ],
             [ DIALOGUE_IGNORED_DIR, TYPE_STRING, "addons", PROPERTY_HINT_NONE, "", ],
-            [ DIALOGUE_GITIGNORE_DLG, TYPE_BOOL, true, PROPERTY_HINT_NONE, "", ],
         ]:
             if ProjectSettings.has_setting(config_item[0]):
                 print(config_item[0], " already exist on ProjectSettings")
@@ -32,7 +30,6 @@ class Config:
             DEBUG_SHOW_CRAWL_FOLDER,
 
             DIALOGUE_IGNORED_DIR,
-            DIALOGUE_GITIGNORE_DLG,
         ]:
             ProjectSettings.set_setting(config_item, null)
 
@@ -47,6 +44,20 @@ func _enter_tree() -> void:
     # Initialize Theatre config
     print("Theatre v%s by nnda" % get_plugin_version())
     Config.init_configs()
+
+    var ignore_dlg := "\n\n# Parsed Dialogue resources\n*.dlg.tres\n*.dlg.res"
+    var gitignore_prev := FileAccess.get_file_as_string("res://.gitignore")
+
+    if FileAccess.file_exists("res://.gitignore"):
+        if !FileAccess\
+            .get_file_as_string("res://.gitignore")\
+            .contains(ignore_dlg):
+            var gitignore := FileAccess.open("res://.gitignore", FileAccess.WRITE)
+            gitignore.store_line(
+                gitignore_prev +
+                ignore_dlg
+            )
+            gitignore.close()
 
 func _exit_tree() -> void:
     # Clean-up of the plugin goes here.
