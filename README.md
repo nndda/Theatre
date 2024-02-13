@@ -27,7 +27,7 @@ character_name
 """)
 ```
 
-And start the Theatre
+And start your scene
 ```gdscript
 func _ready():
     stage.start(epic_dialogue)
@@ -35,7 +35,7 @@ func _ready():
 
 ### Preparsing Dialogues
 
-Parsing Dialogue files and string is slow. Its best to create them prior to loading your scene, so that they are created and ready to be used.
+Parsing Dialogue files and string is slow. Its best to create and/or load them prior to loading your scene.
 
 If you used text files, you can call `Dialogue.crawl()` at the start of your project, to preparse all of the Dialogue text files. Which then you can load as usual using `Dialogue.load()`
 
