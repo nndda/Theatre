@@ -7,7 +7,9 @@ var allow_skip := true
 
 var auto := false
 
-var auto_delay := 1.5
+var auto_delay : float = 1.5
+
+var speed_scale
 
 ## Run/play [Dialogue], define and reference UIs and Nodes that will be used to display the [Dialogue]. It takes a dictionary of elements of nodes as the constructor parameter.
 ## [codeblock]@onready var stage = Stage.new({
@@ -36,35 +38,16 @@ var current_dialogue_set : Dictionary
 
 #var delay_timer := Timer.new()
 
+
 ## Optional [Label] node that displays [member Dialogue.set_current.name]. Usually used as the name of the narrator or the speaker of the current dialogue.
 var name_label : Label
 
 ## [RichTextLabel] node that displays the dialogue body [member Dialogue.set_current.dlg]. This element is [b]required[/b] for the dialogue to run.
-var body_label : RichTextLabel
+var body_label : DialogueLabel
 
 var handler := {
     "STAGE" : self,
 }
-
-## [Tween] that will be played when progressing. see [member progress_tween_start], and [member progress_tween_reset].
-var progress_tween : Tween
-
-var progress_tween_speed_scale : float = 1.0
-
-## [Callable] to be called to start the [member progress_tween] when the Dialogue progressed.
-#var progress_tween_start : Callable = func(from_zero : bool = false):
-    #progress_tween.tween_property(
-            #body_label,
-            #^"visible_characters",
-            #body_text_length,
-            #0.03 * body_text_length )\
-        #.set_trans(Tween.TRANS_LINEAR)\
-        #.set_ease(Tween.EASE_IN_OUT)\
-        #.from(0 as int)
-
-## [Callable] to be called to stop/reset the [member progress_tween] when the Dialogue progressed when the [member progress_tween] is still running.
-#var progress_tween_reset : Callable = func():
-    #body_label.visible_ratio = 1.0
 
 ## Progress of the Dialogue.
 var step : int = -1
@@ -81,15 +64,14 @@ var variables : Dictionary = {}:
 ## [codeblock]
 ##@onready var stage = Stage.new({
 ##    name_label = $Label,
-##    body_label = $RichTextLabel
+##    body_label = $DialogueLabel
 ##})
 ## [/codeblock]
 func _init(parameters : Dictionary):
     if parameters.has("name_label"):
         name_label = parameters["name_label"]
     if parameters.has("progress_speed"):
-        progress_tween_speed_scale = parameters["progress_speed"]
-
+        speed_scale
     if parameters.has("body_label"):
         body_label = parameters["body_label"]
         if body_label is DialogueLabel:
@@ -115,43 +97,15 @@ func is_playing() -> bool:
 func progress() -> void:
     if current_dialogue != null:
         # Skip dialogue
-        # BUG: it wont skip, itll just repeat the current set
-        if (progress_tween.is_running() or
-            body_label.visible_ratio < 1.0) and\
+        if body_label.visible_ratio < 1.0 and\
             allow_skip:
-
-            #if current_dialogue_set["delays"].is_empty() or\
-                #current_dialogue_set["delays"].keys().max() <=\
-                #current_dialogue_set["body_raw"].length():
-
-                #body_label.visible_ratio = 1.0
-                #progress_tween.stop()
-
-            if body_label.visible_ratio < 1.0 and body_label is DialogueLabel:
-                if body_label.is_delayed:
-
-                    body_label.is_delayed = false
-                    body_label.delay_timer.stop()
-                    body_label.visible_characters += 1
-                    progress_tween = body_label.create_tween()
-                    progress_tween.tween_property(
-                            body_label,
-                            ^"visible_characters",
-                            body_text_length,
-                            0.03 * body_text_length )\
-                        .set_trans(Tween.TRANS_LINEAR)\
-                        .set_ease(Tween.EASE_IN_OUT)\
-                        .from(body_label.visible_characters)
-                    progress_tween.play()
-
-            elif body_label.visible_ratio < 1.0:
-                body_label.visible_ratio = 1.0
-                progress_tween.stop()
+                body_label.visible_characters = current_dialogue_set["body_raw"].length()
 
         # Progress dialogue
         else:
             if step + 1 < current_dialogue_length:
                 step += 1
+                body_label.visible_characters = 0
                 current_dialogue_set = current_dialogue.sets[step]
                 body_text_length = current_dialogue_set["body_raw"].length()
 
@@ -170,21 +124,6 @@ func progress() -> void:
                         for p in f["param"]:
                             print("  ", type_string(typeof(p)), ": ", p)
 
-                # Playing Tween
-                progress_tween = body_label.create_tween()
-                progress_tween.tween_property(
-                        body_label,
-                        ^"visible_characters",
-                        body_text_length,
-                        0.03 * body_text_length )\
-                    .set_trans(Tween.TRANS_LINEAR)\
-                    .set_ease(Tween.EASE_IN_OUT)\
-                    .from(int(0))
-                progress_tween = progress_tween.set_speed_scale(
-                    progress_tween_speed_scale
-                )
-                progress_tween.play()
-
                 progressed.emit(step, current_dialogue_set)
 
             elif step + 1 >= current_dialogue_length:
@@ -202,8 +141,6 @@ func reset(keep_dialogue : bool = false) -> void:
 
     if name_label != null:
         name_label.text = ""
-
-    progress_tween.kill()
     body_label.text = ""
 
 ## Start the [Dialogue] at step 0 or at defined preprogress parameter.
@@ -217,10 +154,6 @@ func start(dialogue : Dialogue = null) -> void:
         push_error("Cannot start the Stage: `current_dialogue` is null")
     else:
         current_dialogue_length = current_dialogue.sets.size()
-        progress_tween = body_label.create_tween()
-
-        progress_tween.stop()
-        body_label.visible_ratio = 1.0
 
         progress()
         started.emit()
