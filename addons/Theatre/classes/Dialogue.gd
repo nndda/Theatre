@@ -39,14 +39,14 @@ static func load(dlg_src : String) -> Dialogue:
         dlg_src.begins_with("user://")) and\
         dlg_src.get_file().is_valid_filename():
 
-        print("Getting Dialogue from file: ", dlg_src)
-        if FileAccess.file_exists(dlg_src):
-            var dlg := load(
-                dlg_src.trim_suffix(".txt") + ".dlg.res"
-            )
+        var dlg_compiled := dlg_src.trim_suffix(".txt") + ".dlg.res"
+
+        print("Getting Dialogue from file: ", dlg_compiled)
+        if FileAccess.file_exists(dlg_compiled):
+            var dlg := load(dlg_compiled)
             return dlg as Dialogue
         else:
-            push_warning("Compiled Dialogue %s does'nt exists. Creating new dialogue" % dlg_src)
+            push_warning("Compiled Dialogue %s does'nt exists. Creating new dialogue" % dlg_compiled)
             return Dialogue.new(dlg_src)
 
     else:
@@ -79,11 +79,10 @@ func parse(src : String) -> void:
             var setsl := {
                 "name": "",
                 "body_raw": "",
-                "delays": {
-                    20 : .5,
-                    35 : 2,
-                },
+                "delays": {},
+                "speeds": {},
                 "func": [],
+                "offsets": {},
             }
 
             if !is_indented.call(n):
@@ -135,26 +134,35 @@ func parse(src : String) -> void:
 
             else:
                 # Dialogue body
+                var dlg_body := dlg_raw[i].dedent() + " "
 
                 # Inline parameter
                 var regex_inline_attr := RegEx.new()
                 regex_inline_attr.compile(REGEX_INLINE_ATTR)
 
-                var regex_inline_attr_match := regex_inline_attr.search_all(dlg_raw[i])
+                var regex_inline_attr_match := regex_inline_attr.search_all(dlg_body)
+
+                var param_pos_offset : int = 0
 
                 for b in regex_inline_attr_match:
-                    #print(b.strings)
+                    var param_pos : int = b.get_start()\
+                        - param_pos_offset\
+                        + output[body_pos]["body_raw"].length()
                     var param_key := b.strings[1]
                     var param_value := b.strings[2]
-                    print(param_key, " = ", param_value)
 
-                var dlg_body := dlg_raw[i].dedent() + " "
+                    param_pos_offset = b.strings[0].length()
 
+                    dlg_body = dlg_body.replace(b.strings[0], "")
+                    match param_key.to_upper():
+                        "DELAY":
+                            output[body_pos]["delays"][param_pos] = float(param_value)
+                        "WAIT":
+                            output[body_pos]["delays"][param_pos] = float(param_value)
+                        _:
+                            push_warning("Unknown inline parameter: ", b.strings[0])
 
-                #for p in regex_inline_attr_match:
-
-
-                output[body_pos]["body_raw"] += dlg_raw[i].dedent() + " "
+                output[body_pos]["body_raw"] += dlg_body
 
     #for n in output:
         #print("\n\n--------------------------------")
@@ -172,15 +180,18 @@ func parse(src : String) -> void:
     # => bool : toggle(true)
     # => PORTRAIT : change("res://smiling.png")
 
-#static func print_set(input : Dictionary) -> void:
-        #print(
-            #"\n  name: ", input["name"],
-            #"\n  body: ", input["body_raw"],
-       #)
-        #for f in input["func"].keys() as Array:
-            #print("    ", input["func"][f][0])
-            #for a in input["func"][f]:
-                #print("      ",a)
+static func print_set(input : Dictionary) -> void:
+    print(
+        "\n", input["name"],
+        "\n", input["body_raw"],
+    )
+    if !input["delays"].is_empty():
+        "    delays at:"
+        for d : int in input["delays"].keys():
+            print("position %i, for %f seconds" % d, input["delays"][d])
+
+    for f in input["func"].keys():
+        pass
 
 # TODO: this
 func to_json(path : String) -> int:
