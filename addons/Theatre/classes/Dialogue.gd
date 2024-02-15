@@ -3,10 +3,14 @@ extends Resource
 
 # TODO: handle errors and non-Dialogue text files
 # TODO: localization support
+# TODO: regex stuff
 
 ## A Dialogue resource, saved as sets of instruction on how the Dialogue flow.
 
 #static var default_lang := "en"
+
+const REGEX_INLINE_ATTR := r"\{\s*(\w+)\s*=\s*(.+?)\s*\}"
+const REGEX_FUNC_CALL := r"(?<=\n*)(\w+)\(([^)]*)\)$"
 
 @export var sets : Array[Dictionary] = []
 
@@ -130,6 +134,26 @@ func parse(src : String) -> void:
                 output[body_pos]["func"].append(fun)
 
             else:
+                # Dialogue body
+
+                # Inline parameter
+                var regex_inline_attr := RegEx.new()
+                regex_inline_attr.compile(REGEX_INLINE_ATTR)
+
+                var regex_inline_attr_match := regex_inline_attr.search_all(dlg_raw[i])
+
+                for b in regex_inline_attr_match:
+                    #print(b.strings)
+                    var param_key := b.strings[1]
+                    var param_value := b.strings[2]
+                    print(param_key, " = ", param_value)
+
+                var dlg_body := dlg_raw[i].dedent() + " "
+
+
+                #for p in regex_inline_attr_match:
+
+
                 output[body_pos]["body_raw"] += dlg_raw[i].dedent() + " "
 
     #for n in output:
