@@ -68,14 +68,31 @@ var variables : Dictionary = {}:
 ##})
 ## [/codeblock]
 func _init(parameters : Dictionary):
-    if parameters.has("name_label"):
-        name_label = parameters["name_label"]
-    if parameters.has("progress_speed"):
-        speed_scale
-    if parameters.has("body_label"):
-        body_label = parameters["body_label"]
-        if body_label is DialogueLabel:
-            body_label.current_stage = self
+    if !parameters.is_empty():
+        if parameters.has("name_label"):
+            assert(
+                parameters["name_label"] is Label,
+                "Object of type %s is used. Only use `Label` as \"name_label\""
+                % type_string(typeof(parameters["name_label"]))
+            )
+            if parameters["name_label"] is Label:
+                name_label = parameters["name_label"]
+
+        if parameters.has("body_label"):
+            assert(
+                parameters["body_label"] is DialogueLabel,
+                "Object of type %s is used. Only use `DialogueLabel` as \"body_label\""
+                % type_string(typeof(parameters["body_label"]))
+            )
+            if parameters["body_label"] is DialogueLabel:
+                body_label = parameters["body_label"]
+                body_label.current_stage = self
+
+        if parameters.has("progress_speed"):
+            speed_scale = parameters["progress_speed"]
+
+        if parameters.has("allow_skip"):
+            allow_skip = parameters["allow_skip"]
 
 ## Emitted when [Dialogue] started ([member step] == 0)
 signal started
@@ -97,8 +114,8 @@ func is_playing() -> bool:
 func progress() -> void:
     if current_dialogue != null:
         # Skip dialogue
-        if body_label.visible_ratio < 1.0 and\
-            allow_skip:
+        if body_label.visible_ratio < 1.0:
+            if allow_skip:
                 body_label.visible_characters = current_dialogue_set["body_raw"].length()
 
         # Progress dialogue
@@ -133,7 +150,17 @@ func progress() -> void:
 ## Stop Dialogue and resets everything
 func reset(keep_dialogue : bool = false) -> void:
     print_debug("Resetting Dialouge...")
-    resetted.emit(step, current_dialogue.sets[step])
+    resetted.emit(step,
+        current_dialogue.sets[step] if step != -1 else\
+        {
+            "name" : "",
+            "body_raw" : "",
+            "func" : [],
+            "delays" : {},
+            "speeds" : {},
+            "offets" : {},
+        }
+    )
 
     if !keep_dialogue:
         current_dialogue = null
