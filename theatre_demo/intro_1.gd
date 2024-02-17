@@ -5,9 +5,9 @@ extends Control
 # it needs to be initialized in _ready() or with @onready
 @onready var stage = Stage.new({
     # Label node used to display the name of the speaker/narrator
-    container_name = $DialogueContainer/MarginContainer/VBoxContainer/Name,
+    "name_label" : $DialogueContainer/MarginContainer/VBoxContainer/Name,
     # RichTextLabel node used to display the Dialogue body
-    container_body = $DialogueContainer/MarginContainer/VBoxContainer/Body
+    "body_label" : $DialogueContainer/MarginContainer/VBoxContainer/Body
 })
 
 # The Dialogue were also defined here too for convenience.
@@ -17,6 +17,9 @@ var epic_dialogue = Dialogue.load("res://theatre_demo/demo_dialogue.txt")
 func _ready():
     # Run `Dialogue.start()` method to start the assigned dialogue.
     stage.start(epic_dialogue)
+    stage.variables = {
+        "player_name" : ""
+    }
 
     # You might also want to hide dialogue UI when its finished,
     # and show it when its started.
