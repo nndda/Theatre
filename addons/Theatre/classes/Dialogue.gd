@@ -9,8 +9,9 @@ extends Resource
 
 #static var default_lang := "en"
 
-const REGEX_INLINE_ATTR := r"\{\s*(\w+)\s*=\s*(.+?)\s*\}"
+const REGEX_DLG_TAGS := r"\{\s*(\w+)\s*=\s*(.+?)\s*\}"
 const REGEX_FUNC_CALL := r"(?<=\n*)(\w+)\(([^)]*)\)$"
+const REGEX_PLACEHOLDER = r"\{(\w+?)\}"
 
 @export var sets : Array[Dictionary] = []
 
@@ -30,7 +31,7 @@ func _init(dlg_src : String = ""):
         print("Parsing Dialogue from raw string: ", get_stack())
         parse(dlg_src)
 
-    # Loading Dialogue with load() also trigger this
+    # BUG? Loading Dialogue with @GDScript load() also trigger this
     #else:
         #push_error("Unable to create Dialogue resource: unkbown source:", dlg_src)
 
@@ -79,10 +80,19 @@ func parse(src : String) -> void:
             var setsl := {
                 "name": "",
                 "body_raw": "",
-                "delays": {},
-                "speeds": {},
+                "delays": {
+                    #   pos,    delay(s)
+                    #   15,     5
+                },
+                "speeds": {
+                    #   pos,    scale(f)
+                    #   15:     1.2
+                },
                 "func": [],
-                "offsets": {},
+                "offsets": {
+                    #   start, end
+                    #   15: 20
+                },
             }
 
             if !is_indented.call(n):
@@ -98,6 +108,7 @@ func parse(src : String) -> void:
                 body_pos = output.size() - 1
 
         elif is_indented.call(n):
+            # Function calls
             if n.dedent().begins_with(FUNC_IDENTIFIER):
                 var fun_str := n.split("(", false, 2)
 
@@ -132,42 +143,50 @@ func parse(src : String) -> void:
 
                 output[body_pos]["func"].append(fun)
 
+            # Dialogue text body
             else:
-                # Dialogue body
                 var dlg_body := dlg_raw[i].dedent() + " "
 
-                # Inline parameter
-                var regex_inline_attr := RegEx.new()
-                regex_inline_attr.compile(REGEX_INLINE_ATTR)
+                # Dialogue tags
+                var regex_tags := RegEx.new()
+                regex_tags.compile(REGEX_DLG_TAGS)
+                var regex_tags_match := regex_tags.search_all(dlg_body)
 
-                var regex_inline_attr_match := regex_inline_attr.search_all(dlg_body)
+                var tag_pos_offset : int = 0
 
-                var param_pos_offset : int = 0
-
-                for b in regex_inline_attr_match:
-                    var param_pos : int = b.get_start()\
-                        - param_pos_offset\
+                for b in regex_tags_match:
+                    var tag_pos : int = b.get_start()\
+                        - tag_pos_offset\
                         + output[body_pos]["body_raw"].length()
-                    var param_key := b.strings[1]
-                    var param_value := b.strings[2]
+                    var tag_key := b.strings[1]
+                    var tag_value := b.strings[2]
 
-                    param_pos_offset = b.strings[0].length()
+                    tag_pos_offset = b.strings[0].length()
 
                     dlg_body = dlg_body.replace(b.strings[0], "")
-                    match param_key.to_upper():
+                    match tag_key.to_upper():
                         "DELAY":
-                            output[body_pos]["delays"][param_pos] = float(param_value)
+                            output[body_pos]["delays"][tag_pos] = float(tag_value)
                         "WAIT":
-                            output[body_pos]["delays"][param_pos] = float(param_value)
+                            output[body_pos]["delays"][tag_pos] = float(tag_value)
                         _:
-                            push_warning("Unknown inline parameter: ", b.strings[0])
+                            push_warning("Unknown tags: ", b.strings[0])
 
                 output[body_pos]["body_raw"] += dlg_body
 
-    #for n in output:
-        #print("\n\n--------------------------------")
-        #for t in n:
-            #print(n[t])
+                # Placeholder position for offset
+                var regex_placeholders := RegEx.new()
+                regex_placeholders.compile(REGEX_PLACEHOLDER)
+                var regex_placeholder_match := regex_placeholders.search_all(output[body_pos]["body_raw"])
+
+                for b in regex_placeholder_match:
+                    if !output[body_pos]["offsets"].keys().has(b.get_start()):
+                        output[body_pos]["offsets"][b.get_start()] = b.get_end()
+
+    for n in output:
+        print("\n\n--------------------------------")
+        for t in n:
+            print(n[t])
 
     sets = output
 
@@ -198,10 +217,12 @@ func to_json(path : String) -> int:
     JSON
     return 0
 
-# TODO: Consider comma and semicolon
 func get_word_count() -> int:
     var output : int = 0
+    var text : String
     for n in sets:
-        output += n["body_raw"].split(" ", false).size()
+        for chr in ";,{}":
+            text = n["body_raw"].replace(chr, " ")
+        output += text.split(" ", false).size()
     return output
 
