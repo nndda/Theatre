@@ -3,7 +3,6 @@ class_name Theatre extends EditorPlugin
 
 class Config:
     const DEBUG_SHOW_CRAWL_FOLDER := "theatre/debug/log/show_current_crawling_directory"
-
     const DIALOGUE_IGNORED_DIR := "theatre/resources/dialogue/ignored_directories"
 
     static func init_configs() -> void:
@@ -40,40 +39,32 @@ class Config:
         if err != OK:
             push_error("Error in saving Theatre config: ", err)
 
-func _enter_tree() -> void:
-    # Initialize Theatre config
-    print("Theatre v%s by nnda" % get_plugin_version())
-    Config.init_configs()
-
-    var ignore_dlg := "\n\n# Parsed Dialogue resources\n*.dlg.tres\n*.dlg.res"
-    var gitignore_prev := FileAccess.get_file_as_string("res://.gitignore")
-
-    if FileAccess.file_exists("res://.gitignore"):
-        if !FileAccess\
-            .get_file_as_string("res://.gitignore")\
-            .contains(ignore_dlg):
-            var gitignore := FileAccess.open("res://.gitignore", FileAccess.WRITE)
-            gitignore.store_line(
-                gitignore_prev +
-                ignore_dlg
-            )
-            gitignore.close()
-
-func _exit_tree() -> void:
-    # Clean-up of the plugin goes here.
-    pass
+var plugin_submenu : PopupMenu = preload(
+    "res://addons/Theatre/components/tool_submenu.tscn"
+).instantiate()
 
 func _build() -> bool:
     print("Compiling Dialogue resources...")
     crawl()
-    print("")
     return true
 
-func _enable_plugin() -> void:
+func _enter_tree() -> void:
+    # Initialize Theatre config
+    print("Theatre v%s by nnda" % get_plugin_version())
+    # Initialize project settings
     Config.init_configs()
 
-func _disable_plugin() -> void:
+    # Initialize plugin submenu
+    plugin_submenu.id_pressed.connect(tool_submenu_id_pressed)
+    add_tool_submenu_item("Theatre", plugin_submenu)
+
+func _exit_tree() -> void:
+    # Clear project settings
     Config.remove_configs()
+
+    # Clear plugin submenu
+    plugin_submenu.id_pressed.disconnect(tool_submenu_id_pressed)
+    remove_tool_menu_item("Theatre")
 
 func crawl(path : String = "res://") -> void:
     var dir := DirAccess.open(path)
@@ -106,7 +97,30 @@ func crawl(path : String = "res://") -> void:
                     if FileAccess.file_exists(file_com):
                         DirAccess.remove_absolute(file_com)
 
-                    ResourceSaver.save(Dialogue.new(file), file_com,
+                    ResourceSaver.save(
+                        Dialogue.new(file), file_com,
                         ResourceSaver.FLAG_CHANGE_PATH
                     )
             file_name = dir.get_next()
+
+func init_gitignore() -> void:
+    if FileAccess.file_exists("res://.gitignore"):
+        print("Found `.gitignore`, initializing...")
+        var gitignore_prev := FileAccess.get_file_as_string("res://.gitignore")
+        var gitignore := FileAccess.open("res://.gitignore", FileAccess.WRITE)
+        for i in [
+            "\n# Parsed Dialogue resources",
+            "*.dlg.tres",
+            "*.dlg.res",
+        ] as PackedStringArray:
+            gitignore_prev.replace(i, "")
+            gitignore.store_line(gitignore_prev + i)
+        gitignore.close()
+    else:
+        push_error("`.gitignore` not found")
+
+func tool_submenu_id_pressed(id : int) -> void: match id:
+    1:
+        crawl()
+    10:
+        init_gitignore()

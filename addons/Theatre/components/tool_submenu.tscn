@@ -1,0 +1,21 @@
+[gd_scene load_steps=2 format=3 uid="uid://capvb4718qfui"]
+
+[ext_resource type="Script" path="res://addons/Theatre/components/tool_submenu.gd" id="1_g2vws"]
+
+[node name="TheatreToolSubmenu" type="PopupMenu"]
+title = "Theatre"
+size = Vector2i(279, 116)
+visible = true
+item_count = 4
+item_0/text = "Compile Dialogue text resources"
+item_0/id = 1
+item_1/text = "Exclude/include folders"
+item_1/id = 10
+item_2/text = ""
+item_2/id = 1024
+item_2/separator = true
+item_3/text = "Initialize .gitignore"
+item_3/id = 1
+script = ExtResource("1_g2vws")
+
+[connection signal="id_pressed" from="." to="." method="_on_id_pressed"]
