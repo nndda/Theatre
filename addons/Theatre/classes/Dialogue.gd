@@ -10,11 +10,16 @@ extends Resource
 class Parser extends RefCounted:
     var output : Array[Dictionary]
 
-    const REGEX_DLG_TAGS := r"\{\s*(\w+)\s*=\s*(.+?)\s*\}"
-    const REGEX_FUNC_CALL := r"(?<=\n*)(\w+)\(([^)]*)\)$"
-    const REGEX_PLACEHOLDER := r"\{(\w+?)\}"
-    const REGEX_INDENT := r"\n*(!?\s*)\w+"
-    const REGEX_VALID_DLG := r"\n+\w+\:\n+\s+\w+"
+    const REGEX_DLG_TAGS :=\
+        r"\{\s*(\w+)\s*=\s*(.+?)\s*\}"
+    const REGEX_FUNC_CALL :=\
+        r"(?<=\n+)\s+(?<handler>\w+)\s+(?:\=\>)\s+(?<func_name>\w+)\((?<func_args>[^)]*)\)$"
+    const REGEX_PLACEHOLDER :=\
+        r"\{(\w+?)\}"
+    const REGEX_INDENT :=\
+        r"(?<=\n{1})\s+"
+    const REGEX_VALID_DLG :=\
+        r"\n+\w+\:\n+\s+\w+"
 
     func _init(src : String = ""):
         output = []
@@ -34,8 +39,9 @@ class Parser extends RefCounted:
 
             if n.begins_with(FUNC_IDENTIFIER) or !is_indented(n):
                 var setsl := {
-                    "name": "",
-                    "body_raw": "",
+                    "actor": "",
+                    "line": "",
+                    "line_raw": "",
                     "delays": {
                         #   pos,    delay(s)
                         #   15,     5
@@ -55,55 +61,58 @@ class Parser extends RefCounted:
                     if dlg_raw.size() < i + 1:
                         assert(false, "Error: Dialogue name exists without a body")
 
-                    setsl["name"] = n.trim_suffix(":")
+                    setsl["actor"] = n.trim_suffix(":")
 
-                    if setsl["name"] == "_":
-                        setsl["name"] = ""
+                    if setsl["actor"] == "_":
+                        setsl["actor"] = ""
 
                     output.append(setsl)
                     body_pos = output.size() - 1
 
             elif is_indented(n):
                 # Function calls
-                if n.dedent().begins_with(FUNC_IDENTIFIER):
-                    var fun_str := n.split("(", false, 2)
-
-                    var identifier := fun_str[0]\
-                        .strip_edges()\
-                        .trim_suffix(":")\
-                        .trim_prefix(FUNC_IDENTIFIER)\
-                        .split(" ", false, 3)
-
-                    var param_str := fun_str[-1]\
-                        .strip_edges().\
-                        trim_suffix(")")\
-                        .split(",", false, 2)
-
-                    var param : Array = []
-
-                    for p in param_str:
-                        if identifier.size() >= 3:
-                            match identifier[1].to_upper():
-                                "COLOR":
-                                    param.append(Color(p))
-                                "STRING":
-                                    param.append(p)
-                                _:
-                                    param.append(str_to_var(p))
-
-                    var fun := {
-                        "handler": identifier[0],
-                        "func_name": StringName(identifier[-1]),
-                        "param": param,
-                    }
-
-                    output[body_pos]["func"].append(fun)
+                if false:
+                    pass
+                #if n.dedent().begins_with(FUNC_IDENTIFIER):
+                    #var fun_str := n.split("(", false, 2)
+#
+                    #var identifier := fun_str[0]\
+                        #.strip_edges()\
+                        #.trim_suffix(":")\
+                        #.trim_prefix(FUNC_IDENTIFIER)\
+                        #.split(" ", false, 3)
+#
+                    #var param_str := fun_str[-1]\
+                        #.strip_edges().\
+                        #trim_suffix(")")\
+                        #.split(",", false, 2)
+#
+                    #var param : Array = []
+#
+                    #for p in param_str:
+                        #if identifier.size() >= 3:
+                            #match identifier[1].to_upper():
+                                #"COLOR":
+                                    #param.append(Color(p))
+                                #"STRING":
+                                    #param.append(p)
+                                #_:
+                                    #param.append(str_to_var(p))
+#
+                    #var fun := {
+                        #"handler": identifier[0],
+                        #"func_name": StringName(identifier[-1]),
+                        #"param": param,
+                    #}
+#
+                    #output[body_pos]["func"].append(fun)
 
                 # Dialogue text body
                 else:
                     var dlg_body := dlg_raw[i].dedent() + " "
+                    output[body_pos]["line_raw"] += dlg_body
 
-                    # Dialogue tags
+                    # Dialogue built-in tags
                     var regex_tags := RegEx.new()
                     regex_tags.compile(REGEX_DLG_TAGS)
                     var regex_tags_match := regex_tags.search_all(dlg_body)
@@ -113,7 +122,7 @@ class Parser extends RefCounted:
                     for b in regex_tags_match:
                         var tag_pos : int = b.get_start()\
                             - tag_pos_offset\
-                            + output[body_pos]["body_raw"].length()
+                            + output[body_pos]["line_raw"].length()
                         var tag_key := b.strings[1]
                         var tag_value := b.strings[2]
 
@@ -128,16 +137,16 @@ class Parser extends RefCounted:
                             _:
                                 push_warning("Unknown tags: ", b.strings[0])
 
-                    output[body_pos]["body_raw"] += dlg_body
+                    output[body_pos]["line"] += dlg_body
 
                     # Placeholder position for offset
-                    var regex_placeholders := RegEx.new()
-                    regex_placeholders.compile(REGEX_PLACEHOLDER)
-                    var regex_placeholder_match := regex_placeholders.search_all(output[body_pos]["body_raw"])
-
-                    for b in regex_placeholder_match:
-                        if !output[body_pos]["offsets"].keys().has(b.get_start()):
-                            output[body_pos]["offsets"][b.get_start()] = b.get_end()
+                    #var regex_placeholders := RegEx.new()
+                    #regex_placeholders.compile(REGEX_PLACEHOLDER)
+                    #var regex_placeholder_match := regex_placeholders.search_all(output[body_pos]["line_raw"])
+#
+                    #for b in regex_placeholder_match:
+                        #if !output[body_pos]["offsets"].keys().has(b.get_start()):
+                            #output[body_pos]["offsets"][b.get_start()] = b.get_end()
 
         #for n in output:
             #print("\n\n--------------------------------")
@@ -147,7 +156,12 @@ class Parser extends RefCounted:
     func is_indented(string : String) -> bool:
         return string.begins_with(" ") or string.begins_with("\t")
 
-    static func normalize_indentation(string : String) -> String:
+    static func is_valid_source(string : String) -> bool:
+        var regex := RegEx.new()
+        regex.compile(REGEX_VALID_DLG)
+        return regex.search(string) == null
+
+    func normalize_indentation(string : String) -> String:
         var regex := RegEx.new()
         var indents : Array[int] = []
 
@@ -165,10 +179,36 @@ class Parser extends RefCounted:
 
         return string
 
-    static func is_valid_source(string : String) -> bool:
-        var regex := RegEx.new()
-        regex.compile(REGEX_VALID_DLG)
-        return regex.search(string) == null
+    static func update_tags_position(dlg : Dialogue, pos : int) -> String:
+        var dlg_str : String = dlg.sets[pos]["line_raw"]
+        var output := ""
+
+        # Dialogue built-in tags
+        var regex_tags := RegEx.new()
+        regex_tags.compile(REGEX_DLG_TAGS)
+        var regex_tags_match := regex_tags.search_all(dlg_str)
+
+        var tag_pos_offset : int = 0
+
+        for b in regex_tags_match:
+            var tag_pos : int = b.get_start()\
+                - tag_pos_offset\
+                + dlg_str.length()
+            var tag_key := b.strings[1]
+            var tag_value := b.strings[2]
+
+            tag_pos_offset = b.strings[0].length()
+
+            dlg_str = dlg_str.replace(b.strings[0], "")
+            match tag_key.to_upper():
+                "DELAY":
+                    dlg.sets[pos]["delays"][tag_pos] = float(tag_value)
+                "WAIT":
+                    dlg.sets[pos]["delays"][tag_pos] = float(tag_value)
+                _:
+                    push_warning("Unknown tags: ", b.strings[0])
+
+        return dlg_str
 
 #static var default_lang := "en"
 
@@ -237,30 +277,30 @@ static func load(dlg_src : String) -> Dialogue:
     # => bool : toggle(true)
     # => PORTRAIT : change("res://smiling.png")
 
-static func print_set(input : Dictionary) -> void:
-    print(
-        "\n", input["name"],
-        "\n", input["body_raw"],
-    )
-    if !input["delays"].is_empty():
-        "    delays at:"
-        for d : int in input["delays"].keys():
-            print("position %i, for %f seconds" % d, input["delays"][d])
-
-    for f in input["func"].keys():
-        pass
+#static func print_set(input : Dictionary) -> void:
+    #print(
+        #"\n", input["actor"],
+        #"\n", input["line_raw"],
+    #)
+    #if !input["delays"].is_empty():
+        #"    delays at:"
+        #for d : int in input["delays"].keys():
+            #print("position %i, for %f seconds" % d, input["delays"][d])
+#
+    #for f in input["func"].keys():
+        #pass
 
 # TODO: this
-func to_json(path : String) -> int:
-    JSON
-    return 0
+#func to_json(path : String) -> Error:
+    #JSON
+    #return 0
 
 func get_word_count() -> int:
     var output : int = 0
     var text : String
     for n in sets:
         for chr in ";,{}":
-            text = n["body_raw"].replace(chr, " ")
+            text = n["line_raw"].replace(chr, " ")
         output += text.split(" ", false).size()
     return output
 
