@@ -7,7 +7,7 @@ var delay_queue : Array = []
 var delay_timer := Timer.new()
 var characters_ticker := Timer.new()
 
-var formatted_offset : int = 0
+#var formatted_offset : int = 0
 
 var is_delayed := false
 
@@ -28,7 +28,7 @@ func _process(_delta : float) -> void:
     if current_stage != null and current_stage.is_playing():
         if visible_characters == 0:
             visible_characters += 1
-            formatted_offset = current_stage.current_dialogue_set["body_raw"].length() -  text.length()
+            #formatted_offset = current_stage.current_dialogue_set["line"].length() -  text.length()
 
             characters_ticker.start(.009)
             delay_queue = current_stage.current_dialogue_set["delays"].keys()
@@ -46,11 +46,11 @@ func characters_ticker_timeout() -> void:
 
         if !offset_queue.is_empty():
             if delay_queue[0] > offset_queue[0]:
-                stop = delay_queue[0] + formatted_offset
+                stop = delay_queue[0]# + formatted_offset
 
         if stop == visible_characters:
-            if stop == delay_queue[0] + formatted_offset:
-                offset_queue.remove_at(0)
+            #if stop == delay_queue[0] + formatted_offset:
+                #offset_queue.remove_at(0)
 
         # ======================================================================
 

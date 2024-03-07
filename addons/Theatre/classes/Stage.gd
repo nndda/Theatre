@@ -49,7 +49,7 @@ var handler := {
     "STAGE" : self,
 }
 
-## Progress of the Dialogue.
+## Current progress of the Dialogue.
 var step : int = -1
 
 var variables : Dictionary = {}:
@@ -72,7 +72,7 @@ func _init(parameters : Dictionary):
         if parameters.has("name_label"):
             assert(
                 parameters["name_label"] is Label,
-                "Object of type %s is used. Only use `Label` as \"name_label\""
+                "Object of type %s is used. Only use `Label` as \"name_label\""\
                 % type_string(typeof(parameters["name_label"]))
             )
             if parameters["name_label"] is Label:
@@ -116,7 +116,7 @@ func progress() -> void:
         # Skip dialogue
         if body_label.visible_ratio < 1.0:
             if allow_skip:
-                body_label.visible_characters = current_dialogue_set["body_raw"].length()
+                body_label.visible_characters = current_dialogue_set["line"].length()
 
         # Progress dialogue
         else:
@@ -124,7 +124,7 @@ func progress() -> void:
                 step += 1
                 body_label.visible_characters = 0
                 current_dialogue_set = current_dialogue.sets[step]
-                body_text_length = current_dialogue_set["body_raw"].length()
+                body_text_length = current_dialogue_set["line"].length()
 
                 if body_text_length > body_text_limit:
                     push_warning(
@@ -153,8 +153,9 @@ func reset(keep_dialogue : bool = false) -> void:
     resetted.emit(step,
         current_dialogue.sets[step] if step != -1 else\
         {
-            "name" : "",
-            "body_raw" : "",
+            "actor" : "",
+            "line" : "",
+            "line_raw" : "",
             "func" : [],
             "delays" : {},
             "speeds" : {},
@@ -187,5 +188,5 @@ func start(dialogue : Dialogue = null) -> void:
 
 func update_display() -> void:
     if name_label != null:
-        name_label.text = current_dialogue_set["name"].format(variables)
-    body_label.text = current_dialogue_set["body_raw"].format(variables)
+        name_label.text = current_dialogue_set["actor"].format(variables)
+    body_label.text = current_dialogue_set["line"].format(variables)
