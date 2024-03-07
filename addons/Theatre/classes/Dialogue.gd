@@ -109,8 +109,8 @@ class Parser extends RefCounted:
 
                 # Dialogue text body
                 else:
+                    # TODO: perhaps can be merged with update_tags_position()?
                     var dlg_body := dlg_raw[i].dedent() + " "
-                    output[body_pos]["line_raw"] += dlg_body
 
                     # Dialogue built-in tags
                     var regex_tags := RegEx.new()
@@ -138,6 +138,7 @@ class Parser extends RefCounted:
                                 push_warning("Unknown tags: ", b.strings[0])
 
                     output[body_pos]["line"] += dlg_body
+                    output[body_pos]["line_raw"] += dlg_raw[i].dedent() + " "
 
                     # Placeholder position for offset
                     #var regex_placeholders := RegEx.new()
@@ -179,11 +180,13 @@ class Parser extends RefCounted:
 
         return string
 
-    static func update_tags_position(dlg : Dialogue, pos : int) -> String:
-        var dlg_str : String = dlg.sets[pos]["line_raw"]
-        var output := ""
+    # Temporary solution when using variables and tags at the same time
+    # Might not be performant when dealing with real-time variables
+    static func update_tags_position(dlg : Dialogue, pos : int, vars : Dictionary) -> String:
+        var dlg_str : String = dlg.sets[pos]["line_raw"].format(vars)
+        for n in ["delays", "speeds"]:
+            dlg.sets[pos][n].clear()
 
-        # Dialogue built-in tags
         var regex_tags := RegEx.new()
         regex_tags.compile(REGEX_DLG_TAGS)
         var regex_tags_match := regex_tags.search_all(dlg_str)
@@ -192,8 +195,7 @@ class Parser extends RefCounted:
 
         for b in regex_tags_match:
             var tag_pos : int = b.get_start()\
-                - tag_pos_offset\
-                + dlg_str.length()
+                - tag_pos_offset
             var tag_key := b.strings[1]
             var tag_value := b.strings[2]
 
