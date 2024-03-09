@@ -32,14 +32,23 @@ var body_text_length : int
 var body_text_limit : int = 500
 
 ## The current [Dialogue] resource that is being used
-var current_dialogue : Dialogue
+var current_dialogue : Dialogue:
+    set(new_var):
+        current_dialogue = new_var
+        if !variables.is_empty():
+            for n in current_dialogue.sets.size():
+                current_dialogue.sets[n]["line"] =\
+                Dialogue.Parser.update_tags_position(
+                    current_dialogue, n, variables
+                )
+
 var current_dialogue_length : int
 var current_dialogue_set : Dictionary
 
 #var delay_timer := Timer.new()
 
 
-## Optional [Label] node that displays [member Dialogue.set_current.name]. Usually used as the name of the narrator or the speaker of the current dialogue.
+## Optional [Label] node that displays [member Dialogue.set_current.actor]. Usually used as the name of the character, narrator, or speaker of the current dialogue.
 var actor_label : Label
 
 ## [RichTextLabel] node that displays the dialogue body [member Dialogue.set_current.dlg]. This element is [b]required[/b] for the dialogue to run.
