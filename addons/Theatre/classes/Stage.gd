@@ -13,7 +13,7 @@ var speed_scale
 
 ## Run/play [Dialogue], define and reference UIs and Nodes that will be used to display the [Dialogue]. It takes a dictionary of elements of nodes as the constructor parameter.
 ## [codeblock]@onready var stage = Stage.new({
-##    name_label = $Label,
+##    actor_label = $Label,
 ##    body_label = $RichTextLabel
 ##})
 ##
@@ -22,7 +22,7 @@ var speed_scale
 ##func _ready():
 ##    stage.start(epic_dialogue) [/codeblock]
 ## The parameters in the dictionary are as follows: [br]
-## - [param "name_label"]. see [member name_label] [br]
+## - [param "actor_label"]. see [member actor_label] [br]
 ## - [param "body_label"]. see [member body_label]
 
 ## Characters count of the dialogue body. The same as [member current_dialogue.sets.size()]
@@ -40,7 +40,7 @@ var current_dialogue_set : Dictionary
 
 
 ## Optional [Label] node that displays [member Dialogue.set_current.name]. Usually used as the name of the narrator or the speaker of the current dialogue.
-var name_label : Label
+var actor_label : Label
 
 ## [RichTextLabel] node that displays the dialogue body [member Dialogue.set_current.dlg]. This element is [b]required[/b] for the dialogue to run.
 var body_label : DialogueLabel
@@ -71,20 +71,20 @@ var variables : Dictionary = {}:
 ## [Stage] needs to be initialized in _ready() or with @onready when passing the parameters required.
 ## [codeblock]
 ##@onready var stage = Stage.new({
-##    name_label = $Label,
+##    actor_label = $Label,
 ##    body_label = $DialogueLabel
 ##})
 ## [/codeblock]
 func _init(parameters : Dictionary):
     if !parameters.is_empty():
-        if parameters.has("name_label"):
+        if parameters.has("actor_label"):
             assert(
-                parameters["name_label"] is Label,
-                "Object of type %s is used. Only use `Label` as \"name_label\""\
-                % type_string(typeof(parameters["name_label"]))
+                parameters["actor_label"] is Label,
+                "Object of type %s is used. Only use `Label` as \"actor_label\""\
+                % type_string(typeof(parameters["actor_label"]))
             )
-            if parameters["name_label"] is Label:
-                name_label = parameters["name_label"]
+            if parameters["actor_label"] is Label:
+                actor_label = parameters["actor_label"]
 
         if parameters.has("body_label"):
             assert(
@@ -96,11 +96,14 @@ func _init(parameters : Dictionary):
                 body_label = parameters["body_label"]
                 body_label.current_stage = self
 
-        if parameters.has("progress_speed"):
-            speed_scale = parameters["progress_speed"]
-
-        if parameters.has("allow_skip"):
-            allow_skip = parameters["allow_skip"]
+        for property in parameters.keys():
+            if property in self and (
+                property != "body_label" or
+                property != "actor_label"
+            ):
+                set(StringName(property), parameters[property])
+            else:
+                push_error("Error constructing Theatre, `%s` does not exists" % property)
 
 ## Emitted when [Dialogue] started ([member step] == 0)
 signal started
@@ -175,8 +178,8 @@ func reset(keep_dialogue : bool = false) -> void:
         current_dialogue = null
     step = -1
 
-    if name_label != null:
-        name_label.text = ""
+    if actor_label != null:
+        actor_label.text = ""
     body_label.text = ""
 
 ## Start the [Dialogue] at step 0 or at defined preprogress parameter.
@@ -195,6 +198,6 @@ func start(dialogue : Dialogue = null) -> void:
         started.emit()
 
 func update_display() -> void:
-    if name_label != null:
-        name_label.text = current_dialogue_set["actor"].format(variables)
+    if actor_label != null:
+        actor_label.text = current_dialogue_set["actor"].format(variables)
     body_label.text = current_dialogue_set["line"].format(variables)
