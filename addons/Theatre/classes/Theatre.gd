@@ -111,15 +111,17 @@ func crawl(path : String = "res://") -> void:
 func init_gitignore() -> void:
     if FileAccess.file_exists("res://.gitignore"):
         print("Found `.gitignore`, initializing...")
-        var gitignore_prev := FileAccess.get_file_as_string("res://.gitignore")
+        var gitignore_str := FileAccess.get_file_as_string("res://.gitignore")
         var gitignore := FileAccess.open("res://.gitignore", FileAccess.WRITE)
-        for i in [
-            "\n# Parsed Dialogue resources",
-            "*.dlg.tres",
-            "*.dlg.res",
-        ] as PackedStringArray:
-            gitignore_prev.replace(i, "")
-            gitignore.store_line(gitignore_prev + i)
+        for i : String in [
+                "# Parsed Dialogue resources",
+                "*.dlg.tres",
+                "*.dlg.res",
+            ]:
+            gitignore_str = gitignore_str.replace( "\n" + i, "")
+            gitignore_str += "\n" + i
+
+        gitignore.store_string(gitignore_str)
         gitignore.close()
     else:
         push_error("`.gitignore` not found")
