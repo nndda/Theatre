@@ -4,6 +4,9 @@ extends Resource
 # TODO: handle errors and non-Dialogue text files
 # TODO: localization support
 
+# low priority
+# TODO: something to flag that the dialogue have been played or not. Maybe something that utilize `user://` savedata
+
 ## A Dialogue resource, saved as sets of instruction on how the Dialogue flow.
 
 ## Parser class for processing the raw string used for the dialogue.
@@ -93,19 +96,19 @@ class Parser extends RefCounted:
 
                 # Dialogue text body
                 else:
-                    # TODO: perhaps can be merged with update_tags_position()?
                     var dlg_body := dlg_raw[i].dedent() + " "
-                    var parsed_tags := parse_tags(dlg_body)
 
-                    output[body_pos]["tags"] = parsed_tags["tags"]
-
-                    output[body_pos]["line"] += parsed_tags["string"]
                     output[body_pos]["line_raw"] += dlg_body
+                    output[body_pos]["line"] += dlg_body
 
-        #for n in output:
-            #print("\n\n--------------------------------")
-            #for t in n:
-                #print(n[t])
+        for n in output.size():
+            # Implement built-in tags
+            var parsed_tags := parse_tags(output[n]["line_raw"])
+
+            for tag : String in SETS_TEMPLATE["tags"].keys():
+                output[n]["tags"][tag].merge(parsed_tags["tags"][tag])
+
+            output[n]["line"] = parsed_tags["string"]
 
     ## Check if [param string] is indented with tabs or spaces.
     func is_indented(string : String) -> bool:
