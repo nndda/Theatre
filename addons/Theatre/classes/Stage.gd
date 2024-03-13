@@ -35,9 +35,8 @@ var body_text_limit : int = 500
 var current_dialogue : Dialogue:
     set(new_var):
         current_dialogue = new_var
-        if !variables.is_empty():
+        if !variables.is_empty() and new_var != null:
             for n in current_dialogue.sets.size():
-                current_dialogue.sets[n]["line"] =\
                 Dialogue.Parser.update_tags_position(
                     current_dialogue, n, variables
                 )
@@ -70,7 +69,6 @@ var variables : Dictionary = {}:
         if current_dialogue != null:
             var stepn := clampi(step, 0, current_dialogue.sets.size())
             # NOTE, BUG: NOT COMPATIBLE WHEN CHANGING VARIABLE REAL-TIME
-            current_dialogue.sets[stepn]["line"] =\
             Dialogue.Parser.update_tags_position(
                 current_dialogue, stepn, new_var
             )

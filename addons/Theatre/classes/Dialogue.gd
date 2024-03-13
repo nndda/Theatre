@@ -21,6 +21,27 @@ class Parser extends RefCounted:
     const REGEX_VALID_DLG :=\
         r"\n+\w+\:\n+\s+\w+"
 
+    const SETS_TEMPLATE := {
+        "actor": "",
+        "line": "",
+        "line_raw": "",
+        "tags": {
+            "delays": {
+                #   pos,    delay(s)
+                #   15,     5
+            },
+            "speeds": {
+                #   pos,    scale(f)
+                #   15:     1.2
+            },
+        },
+        "func": [],
+        "offsets": {
+            #   start, end
+            #   15: 20
+        },
+    }
+
     func _init(src : String = ""):
         output = []
         const FUNC_IDENTIFIER := "=>"
@@ -38,26 +59,7 @@ class Parser extends RefCounted:
             var n := dlg_raw[i]
 
             if n.begins_with(FUNC_IDENTIFIER) or !is_indented(n):
-                var setsl := {
-                    "actor": "",
-                    "line": "",
-                    "line_raw": "",
-                    "tags": {
-                        "delays": {
-                            #   pos,    delay(s)
-                            #   15,     5
-                        },
-                        "speeds": {
-                            #   pos,    scale(f)
-                            #   15:     1.2
-                        },
-                    },
-                    "func": [],
-                    "offsets": {
-                        #   start, end
-                        #   15: 20
-                    },
-                }
+                var setsl := SETS_TEMPLATE.duplicate(true)
 
                 if !is_indented(n):
                     if dlg_raw.size() < i + 1:
@@ -113,34 +115,12 @@ class Parser extends RefCounted:
                 else:
                     # TODO: perhaps can be merged with update_tags_position()?
                     var dlg_body := dlg_raw[i].dedent() + " "
+                    var parsed_tags := parse_tags(dlg_body)
 
-                    # Dialogue built-in tags
-                    var regex_tags := RegEx.new()
-                    regex_tags.compile(REGEX_DLG_TAGS)
-                    var regex_tags_match := regex_tags.search_all(dlg_body)
+                    output[body_pos]["tags"] = parsed_tags["tags"]
 
-                    var tag_pos_offset : int = 0
-
-                    for b in regex_tags_match:
-                        var tag_pos : int = b.get_start()\
-                            - tag_pos_offset\
-                            + output[body_pos]["line_raw"].length()
-                        var tag_key := b.strings[1]
-                        var tag_value := b.strings[2]
-
-                        tag_pos_offset = b.strings[0].length()
-
-                        dlg_body = dlg_body.replace(b.strings[0], "")
-                        match tag_key.to_upper():
-                            "DELAY":
-                                output[body_pos]["tags"]["delays"][tag_pos] = float(tag_value)
-                            "WAIT":
-                                output[body_pos]["tags"]["delays"][tag_pos] = float(tag_value)
-                            _:
-                                push_warning("Unknown tags: ", b.strings[0])
-
-                    output[body_pos]["line"] += dlg_body
-                    output[body_pos]["line_raw"] += dlg_raw[i].dedent() + " "
+                    output[body_pos]["line"] += parsed_tags["string"]
+                    output[body_pos]["line_raw"] += dlg_body
 
                     # Placeholder position for offset
                     #var regex_placeholders := RegEx.new()
@@ -160,13 +140,13 @@ class Parser extends RefCounted:
     func is_indented(string : String) -> bool:
         return string.begins_with(" ") or string.begins_with("\t")
 
-    ## Check if the [param string] is written in a valid Dialogue string format/syntax or not.
+    ## Check if [param string] is written in a valid Dialogue string format/syntax or not.
     static func is_valid_source(string : String) -> bool:
         var regex := RegEx.new()
         regex.compile(REGEX_VALID_DLG)
         return regex.search(string) == null
 
-    ## Normalize indentation of the Dialogue string.
+    ## Normalize indentation of the Dialogue raw string.
     func normalize_indentation(string : String) -> String:
         var regex := RegEx.new()
         var indents : Array[int] = []
@@ -185,41 +165,56 @@ class Parser extends RefCounted:
 
         return string
 
-    # Temporary solution when using variables and tags at the same time
-    # Might not be performant when dealing with real-time variables
-    ## Format Dialogue body at [param pos] position with [member Stage.variables], and update the positions of the built-in tags.
-    ## Return the formatted string.
-    static func update_tags_position(dlg : Dialogue, pos : int, vars : Dictionary) -> String:
-        var dlg_str : String = dlg.sets[pos]["line_raw"].format(vars)
-        for n in ["delays", "speeds"]:
-            dlg.sets[pos]["tags"][n].clear()
+    static func parse_tags(string : String) -> Dictionary:
+        var output : Dictionary = {}
+        var tags : Dictionary = SETS_TEMPLATE["tags"].duplicate(true)
 
         var regex_tags := RegEx.new()
         regex_tags.compile(REGEX_DLG_TAGS)
-        var regex_tags_match := regex_tags.search_all(dlg_str)
+        var regex_tags_match := regex_tags.search_all(string)
 
         var tag_pos_offset : int = 0
 
         for b in regex_tags_match:
-            var tag_pos : int = b.get_start()\
-                - tag_pos_offset
+            #string = string.erase(b.get_start(), b.get_end())
+            string = string.replace(b.strings[0], "")
+
+            var tag_pos : int = b.get_start() - tag_pos_offset
             var tag_key := b.strings[1]
             var tag_value := b.strings[2]
 
-            tag_pos_offset = b.strings[0].length()
+            tag_pos_offset += b.strings[0].length()
 
-            dlg_str = dlg_str.replace(b.strings[0], "")
             match tag_key.to_upper():
                 "DELAY":
-                    dlg.sets[pos]["tags"]["delays"][tag_pos] = float(tag_value)
+                    tags["delays"][tag_pos] = float(tag_value)
                 "WAIT":
-                    dlg.sets[pos]["tags"]["delays"][tag_pos] = float(tag_value)
+                    tags["delays"][tag_pos] = float(tag_value)
                 "SPEED":
-                    dlg.sets[pos]["tags"]["speeds"][tag_pos] = float(tag_value)
+                    tags["speeds"][tag_pos] = float(tag_value)
                 _:
                     push_warning("Unknown tags: ", b.strings[0])
 
-        return dlg_str
+        output["tags"] = tags
+        output["string"] = string
+
+        #print()
+        #print("  >  ", string)
+        #print()
+
+        return output
+
+    # Temporary solution when using variables and tags at the same time
+    # Might not be performant when dealing with real-time variables
+    ## Format Dialogue body at [param pos] position with [member Stage.variables], and update the positions of the built-in tags.
+    ## Return the formatted string.
+    static func update_tags_position(dlg : Dialogue, pos : int, vars : Dictionary) -> void:
+        var dlg_str : String = dlg.sets[pos]["line_raw"].format(vars)
+        for n in ["delays", "speeds"]:
+            dlg.sets[pos]["tags"][n].clear()
+
+        dlg.sets[pos]["tags"] = parse_tags(dlg_str)["tags"]
+        dlg.sets[pos]["line"] = parse_tags(dlg_str)["string"]
 
 #static var default_lang := "en"
 
