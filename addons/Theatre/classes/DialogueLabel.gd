@@ -2,14 +2,16 @@ class_name DialogueLabel
 extends RichTextLabel
 
 var current_stage : Stage
-var offset_queue : Array = []
-var delay_queue : Array = []
+var offset_queue : PackedInt32Array = []
+var delay_queue : PackedInt32Array = []
+var speed_queue : PackedInt32Array = []
+
 var delay_timer := Timer.new()
+
 var characters_ticker := Timer.new()
+@export var characters_draw_tick : float = .009
 
-#var formatted_offset : int = 0
-
-var is_delayed := false
+signal text_rendered
 
 func _ready() -> void:
     for timer : Timer in [
@@ -25,43 +27,45 @@ func _ready() -> void:
     delay_timer.timeout.connect(delay_timer_timeout)
 
 func _process(_delta : float) -> void:
+    # TODO: trigger on Stage signals instead
     if current_stage != null and current_stage.is_playing():
         if visible_characters == 0:
             visible_characters += 1
-            #formatted_offset = current_stage.current_dialogue_set["line"].length() -  text.length()
 
-            characters_ticker.start(.009)
-            delay_queue = current_stage.current_dialogue_set["delays"].keys()
+            characters_ticker.start(characters_draw_tick)
+            speed_queue = current_stage.current_dialogue_set["tags"]["speeds"].keys()
+            delay_queue = current_stage.current_dialogue_set["tags"]["delays"].keys()
             offset_queue = current_stage.current_dialogue_set["offsets"].keys()
 
 func characters_ticker_timeout() -> void:
     visible_characters += 1
 
     if !delay_queue.is_empty():
-        var stop : int = 0
-        var delay : float = 0
         # TODO: Issue #12 ======================================================
-        stop = delay_queue[0]
-        delay = current_stage.current_dialogue_set["delays"][delay_queue[0]]
-
-        if !offset_queue.is_empty():
-            if delay_queue[0] > offset_queue[0]:
-                stop = delay_queue[0]# + formatted_offset
+        var stop : int = delay_queue[0]
+        var delay : float = current_stage.current_dialogue_set["tags"]["delays"][delay_queue[0]]
 
         if stop == visible_characters:
-            #if stop == delay_queue[0] + formatted_offset:
-                #offset_queue.remove_at(0)
-
-        # ======================================================================
-
             characters_ticker.stop()
-            print(stop, ", ", delay)
+            #print(stop, ", ", delay)
             await get_tree().create_timer(delay).timeout
             characters_ticker.start()
             delay_queue.remove_at(0)
 
+    if !speed_queue.is_empty():
+        var stop : int = speed_queue[0]
+        var speed : float = current_stage.current_dialogue_set["tags"]["speeds"][stop]
+
+        if stop == visible_characters:
+            #print(stop, ", ", speed)
+            characters_ticker.wait_time = characters_draw_tick / speed
+            characters_ticker.start()
+            speed_queue.remove_at(0)
+
     if visible_ratio >= 1.0:
         characters_ticker.stop()
+        text_rendered.emit()
+        characters_ticker.wait_time = characters_draw_tick
 
 func delay_timer_timeout() -> void:
     pass
