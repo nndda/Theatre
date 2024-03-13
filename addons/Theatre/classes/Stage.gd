@@ -1,9 +1,20 @@
-class_name Stage extends Object
+class_name Stage
+extends Object
+
+# TODO: hamdle errors for required parameters
+
+var allow_skip := true
+
+var auto := false
+
+var auto_delay : float = 1.5
+
+var speed_scale
 
 ## Run/play [Dialogue], define and reference UIs and Nodes that will be used to display the [Dialogue]. It takes a dictionary of elements of nodes as the constructor parameter.
 ## [codeblock]@onready var stage = Stage.new({
-##    container_name = $Label,
-##    container_body = $RichTextLabel
+##    actor_label = $Label,
+##    dialogue_label = $RichTextLabel
 ##})
 ##
 ##var epic_dialogue = Dialogue.new("res://epic_dialogue.txt")
@@ -11,8 +22,8 @@ class_name Stage extends Object
 ##func _ready():
 ##    stage.start(epic_dialogue) [/codeblock]
 ## The parameters in the dictionary are as follows: [br]
-## - [param "container_name"]. see [member container_name] [br]
-## - [param "container_body"]. see [member container_body]
+## - [param "actor_label"]. see [member actor_label] [br]
+## - [param "dialogue_label"]. see [member dialogue_label]
 
 ## Characters count of the dialogue body. The same as [member current_dialogue.sets.size()]
 var body_text_length : int
@@ -20,55 +31,83 @@ var body_text_length : int
 ## Maximum characters count to fit in the dialogue body. Running Dialogue with characters more than the specified number will throws out an error.
 var body_text_limit : int = 500
 
-var characters : Dictionary = {}
-
 ## The current [Dialogue] resource that is being used
-var current_dialogue : Dialogue
+var current_dialogue : Dialogue:
+    set(new_var):
+        current_dialogue = new_var
+        if !variables.is_empty() and new_var != null:
+            for n in current_dialogue.sets.size():
+                Dialogue.Parser.update_tags_position(
+                    current_dialogue, n, variables
+                )
+
 var current_dialogue_length : int
 var current_dialogue_set : Dictionary
 
-## Optional [Label] node that displays [member Dialogue.set_current.name]. Usually used as the name of the narrator or the speaker of the current dialogue.
-var container_name : Label
+## Optional [Label] node that displays [member Dialogue.set_current.actor]. Usually used as the name of the character, narrator, or speaker of the current dialogue.
+var actor_label : Label
 
 ## [RichTextLabel] node that displays the dialogue body [member Dialogue.set_current.dlg]. This element is [b]required[/b] for the dialogue to run.
-var container_body : RichTextLabel
+var dialogue_label : DialogueLabel
 
-static var handler := {
-    "STAGE" : self,
+var handler : Dictionary = {
+    "Stage" : self,
 }
 
-## [Tween] that will be played when progressing. see [member progress_tween_start], and [member progress_tween_reset].
-var progress_tween : Tween
-
-## [Callable] to be called to start the [member progress_tween] when the Dialogue progressed.
-var progress_tween_start : Callable = func():
-    progress_tween.tween_property(
-            container_body,
-            ^"visible_characters",
-            body_text_length,
-            0.025 * body_text_length )\
-        .set_trans(Tween.TRANS_LINEAR)\
-        .set_ease(Tween.EASE_IN_OUT)\
-        .from(0 as int)
-
-## [Callable] to be called to stop/reset the [member progress_tween] when the Dialogue progressed when the [member progress_tween] is still running.
-var progress_tween_reset : Callable = func():
-    container_body.visible_ratio = 1.0
-
-## Progress of the Dialogue.
+## Current progress of the Dialogue.
 var step : int = -1
+
+var variables : Dictionary = {}:
+    set(new_var):
+        variables = new_var
+        if is_playing():
+            update_display()
+
+        if current_dialogue != null:
+            var stepn := clampi(step, 0, current_dialogue.sets.size())
+            # NOTE, BUG: NOT COMPATIBLE WHEN CHANGING VARIABLE REAL-TIME
+            Dialogue.Parser.update_tags_position(
+                current_dialogue, stepn, new_var
+            )
+    get:
+        return variables
 
 ## [Stage] needs to be initialized in _ready() or with @onready when passing the parameters required.
 ## [codeblock]
 ##@onready var stage = Stage.new({
-##    container_name = $Label,
-##    container_body = $RichTextLabel
+##    actor_label = $Label,
+##    dialogue_label = $DialogueLabel
 ##})
 ## [/codeblock]
 func _init(parameters : Dictionary):
-    if parameters.has("container_name"):
-        container_name = parameters["container_name"]
-    container_body = parameters["container_body"]
+    if !parameters.is_empty():
+        if parameters.has("actor_label"):
+            assert(
+                parameters["actor_label"] is Label,
+                "Object of type %s is used. Only use `Label` as \"actor_label\""\
+                % type_string(typeof(parameters["actor_label"]))
+            )
+            if parameters["actor_label"] is Label:
+                actor_label = parameters["actor_label"]
+
+        if parameters.has("dialogue_label"):
+            assert(
+                parameters["dialogue_label"] is DialogueLabel,
+                "Object of type %s is used. Only use `DialogueLabel` as \"dialogue_label\""
+                % type_string(typeof(parameters["dialogue_label"]))
+            )
+            if parameters["dialogue_label"] is DialogueLabel:
+                dialogue_label = parameters["dialogue_label"]
+                dialogue_label.current_stage = self
+
+        for property in parameters.keys():
+            if property in self and (
+                property != "dialogue_label" or
+                property != "actor_label"
+            ):
+                set(StringName(property), parameters[property])
+            else:
+                push_error("Error constructing Stage, `%s` does not exists" % property)
 
 ## Emitted when [Dialogue] started ([member step] == 0)
 signal started
@@ -89,35 +128,42 @@ func is_playing() -> bool:
 ## Progress the [Dialogue] by 1 step. If [member progress_tween] is still running, [member progress_tween.stop()] and [member progress_tween_reset] will be called, and the [Dialogue] will not progressed.
 func progress() -> void:
     if current_dialogue != null:
-        if progress_tween.is_running():
-            progress_tween.stop()
-            progress_tween_reset.call()
+        # Skip dialogue
+        if dialogue_label.visible_ratio < 1.0:
+            if allow_skip:
+                dialogue_label.visible_characters = current_dialogue_set["line"].length()
+
+        # Progress dialogue
         else:
             if step + 1 < current_dialogue_length:
                 step += 1
+                dialogue_label.visible_characters = 0
                 current_dialogue_set = current_dialogue.sets[step]
-                body_text_length = current_dialogue_set["body"].length()
-
-                #Dialogue.print_set(current_dialogue_set)
+                body_text_length = current_dialogue_set["line"].length()
 
                 if body_text_length > body_text_limit:
-                    push_warning("Dialogue text length exceeded limit: %i/%i" % [body_text_length, body_text_limit])
+                    push_warning(
+                        "Dialogue text length exceeded limit: %i/%i"
+                        % [body_text_length, body_text_limit]
+                    )
 
-                if container_name != null:
-                    container_name.text = current_dialogue_set["name"]
-                container_body.text = current_dialogue_set["body"]
+                update_display()
 
                 # Calling functions
                 for f : Dictionary in current_dialogue_set["func"]:
-                    #if handler.has(f["handler"]):
-                        print("\n", f["handler"], ",", f["func_name"])
-                        for p in f["param"]:
-                            print("  ", type_string(typeof(p)), ": ", p)
+                    print("Calling function: \"%s\" on \"%s\"" % [
+                        f["name"], f["handler"]
+                    ])
+                    if !handler.has(f["handler"]):
+                        push_error("Handler %s doesn't exists" % f["handler"])
+                    else:
+                        if !handler[f["handler"]].has_method(f["name"]):
+                            push_error("Function %s doesn't exists on %s" % [
+                                f["name"], f["handler"]]
+                            )
+                        else:
+                            handler[f["handler"]].call(f["name"])
 
-                # Playing Tween
-                progress_tween = container_body.create_tween()
-                progress_tween_start.call()
-                progress_tween.play()
                 progressed.emit(step, current_dialogue_set)
 
             elif step + 1 >= current_dialogue_length:
@@ -127,29 +173,45 @@ func progress() -> void:
 ## Stop Dialogue and resets everything
 func reset(keep_dialogue : bool = false) -> void:
     print_debug("Resetting Dialouge...")
-    resetted.emit(step, current_dialogue.sets[step])
+    resetted.emit(step,
+        current_dialogue.sets[step] if step != -1 else\
+        {
+            "actor" : "",
+            "line" : "",
+            "line_raw" : "",
+            "func" : [],
+            "tags": {
+                "delays" : {},
+                "speeds" : {},
+            },
+            "offets" : {},
+        }
+    )
 
     if !keep_dialogue:
         current_dialogue = null
     step = -1
 
-    if container_name != null:
-        container_name.text = ""
-
-    progress_tween.kill()
-    container_body.text = ""
+    if actor_label != null:
+        actor_label.text = ""
+    dialogue_label.text = ""
 
 ## Start the [Dialogue] at step 0 or at defined preprogress parameter.
 ## If no parameter (or null) is passed, it will run the [member current_dialogue] if present
 func start(dialogue : Dialogue = null) -> void:
-    #print_debug("Starting Dialouge...")
+    print_debug("Starting Dialouge...")
     if dialogue != null:
         current_dialogue = dialogue
-        current_dialogue_length = current_dialogue.sets.size()
-        progress_tween = container_body.create_tween()
 
-        progress_tween.stop()
-        progress_tween_reset.call()
+    if current_dialogue == null:
+        push_error("Cannot start the Stage: `current_dialogue` is null")
+    else:
+        current_dialogue_length = current_dialogue.sets.size()
 
         progress()
         started.emit()
+
+func update_display() -> void:
+    if actor_label != null:
+        actor_label.text = current_dialogue_set["actor"].format(variables)
+    dialogue_label.text = current_dialogue_set["line"].format(variables)

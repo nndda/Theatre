@@ -1,2 +1,9 @@
 # Godot 4+ specific ignores
 .godot/
+
+# Temporary files
+*.tmp
+
+# Parsed Dialogue resources
+*.dlg.tres
+*.dlg.res

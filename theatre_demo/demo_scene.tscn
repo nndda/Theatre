@@ -1,4 +1,6 @@
-[gd_scene format=3 uid="uid://ctrohnpqthbtr"]
+[gd_scene load_steps=2 format=3 uid="uid://ctrohnpqthbtr"]
+
+[ext_resource type="Script" path="res://addons/Theatre/classes/DialogueLabel.gd" id="1_kg1di"]
 
 [node name="DemoScene" type="Control"]
 layout_mode = 3
@@ -36,8 +38,7 @@ text = "Name"
 
 [node name="Body" type="RichTextLabel" parent="DialogueContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
-size_flags_vertical = 3
-text = "Dialogue body"
+script = ExtResource("1_kg1di")
 
 [node name="StartButton" type="Button" parent="."]
 layout_mode = 1

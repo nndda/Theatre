@@ -6,4 +6,7 @@
 [node name="Intro1" instance=ExtResource("1_mului")]
 script = ExtResource("1_yyntl")
 
+[node name="Body" parent="DialogueContainer/MarginContainer/VBoxContainer" index="1"]
+size_flags_vertical = 3
+
 [connection signal="ready" from="." to="." method="_on_ready"]
