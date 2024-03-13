@@ -177,8 +177,10 @@ func reset(keep_dialogue : bool = false) -> void:
             "line" : "",
             "line_raw" : "",
             "func" : [],
-            "delays" : {},
-            "speeds" : {},
+            "tags": {
+                "delays" : {},
+                "speeds" : {},
+            },
             "offets" : {},
         }
     )

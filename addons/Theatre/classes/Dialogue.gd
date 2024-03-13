@@ -42,13 +42,15 @@ class Parser extends RefCounted:
                     "actor": "",
                     "line": "",
                     "line_raw": "",
-                    "delays": {
-                        #   pos,    delay(s)
-                        #   15,     5
-                    },
-                    "speeds": {
-                        #   pos,    scale(f)
-                        #   15:     1.2
+                    "tags": {
+                        "delays": {
+                            #   pos,    delay(s)
+                            #   15,     5
+                        },
+                        "speeds": {
+                            #   pos,    scale(f)
+                            #   15:     1.2
+                        },
                     },
                     "func": [],
                     "offsets": {
@@ -131,9 +133,9 @@ class Parser extends RefCounted:
                         dlg_body = dlg_body.replace(b.strings[0], "")
                         match tag_key.to_upper():
                             "DELAY":
-                                output[body_pos]["delays"][tag_pos] = float(tag_value)
+                                output[body_pos]["tags"]["delays"][tag_pos] = float(tag_value)
                             "WAIT":
-                                output[body_pos]["delays"][tag_pos] = float(tag_value)
+                                output[body_pos]["tags"]["delays"][tag_pos] = float(tag_value)
                             _:
                                 push_warning("Unknown tags: ", b.strings[0])
 
@@ -154,14 +156,17 @@ class Parser extends RefCounted:
             #for t in n:
                 #print(n[t])
 
+    ## Check if [param string] is indented with tabs or spaces.
     func is_indented(string : String) -> bool:
         return string.begins_with(" ") or string.begins_with("\t")
 
+    ## Check if the [param string] is written in a valid Dialogue string format/syntax or not.
     static func is_valid_source(string : String) -> bool:
         var regex := RegEx.new()
         regex.compile(REGEX_VALID_DLG)
         return regex.search(string) == null
 
+    ## Normalize indentation of the Dialogue string.
     func normalize_indentation(string : String) -> String:
         var regex := RegEx.new()
         var indents : Array[int] = []
@@ -182,10 +187,12 @@ class Parser extends RefCounted:
 
     # Temporary solution when using variables and tags at the same time
     # Might not be performant when dealing with real-time variables
+    ## Format Dialogue body at [param pos] position with [member Stage.variables], and update the positions of the built-in tags.
+    ## Return the formatted string.
     static func update_tags_position(dlg : Dialogue, pos : int, vars : Dictionary) -> String:
         var dlg_str : String = dlg.sets[pos]["line_raw"].format(vars)
         for n in ["delays", "speeds"]:
-            dlg.sets[pos][n].clear()
+            dlg.sets[pos]["tags"][n].clear()
 
         var regex_tags := RegEx.new()
         regex_tags.compile(REGEX_DLG_TAGS)
@@ -204,9 +211,11 @@ class Parser extends RefCounted:
             dlg_str = dlg_str.replace(b.strings[0], "")
             match tag_key.to_upper():
                 "DELAY":
-                    dlg.sets[pos]["delays"][tag_pos] = float(tag_value)
+                    dlg.sets[pos]["tags"]["delays"][tag_pos] = float(tag_value)
                 "WAIT":
-                    dlg.sets[pos]["delays"][tag_pos] = float(tag_value)
+                    dlg.sets[pos]["tags"]["delays"][tag_pos] = float(tag_value)
+                "SPEED":
+                    dlg.sets[pos]["tags"]["speeds"][tag_pos] = float(tag_value)
                 _:
                     push_warning("Unknown tags: ", b.strings[0])
 
