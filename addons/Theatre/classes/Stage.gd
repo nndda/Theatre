@@ -14,7 +14,7 @@ var speed_scale
 ## Run/play [Dialogue], define and reference UIs and Nodes that will be used to display the [Dialogue]. It takes a dictionary of elements of nodes as the constructor parameter.
 ## [codeblock]@onready var stage = Stage.new({
 ##    actor_label = $Label,
-##    body_label = $RichTextLabel
+##    dialogue_label = $RichTextLabel
 ##})
 ##
 ##var epic_dialogue = Dialogue.new("res://epic_dialogue.txt")
@@ -23,7 +23,7 @@ var speed_scale
 ##    stage.start(epic_dialogue) [/codeblock]
 ## The parameters in the dictionary are as follows: [br]
 ## - [param "actor_label"]. see [member actor_label] [br]
-## - [param "body_label"]. see [member body_label]
+## - [param "dialogue_label"]. see [member dialogue_label]
 
 ## Characters count of the dialogue body. The same as [member current_dialogue.sets.size()]
 var body_text_length : int
@@ -44,14 +44,11 @@ var current_dialogue : Dialogue:
 var current_dialogue_length : int
 var current_dialogue_set : Dictionary
 
-#var delay_timer := Timer.new()
-
-
 ## Optional [Label] node that displays [member Dialogue.set_current.actor]. Usually used as the name of the character, narrator, or speaker of the current dialogue.
 var actor_label : Label
 
 ## [RichTextLabel] node that displays the dialogue body [member Dialogue.set_current.dlg]. This element is [b]required[/b] for the dialogue to run.
-var body_label : DialogueLabel
+var dialogue_label : DialogueLabel
 
 var handler : Dictionary = {
     "Stage" : self,
@@ -79,7 +76,7 @@ var variables : Dictionary = {}:
 ## [codeblock]
 ##@onready var stage = Stage.new({
 ##    actor_label = $Label,
-##    body_label = $DialogueLabel
+##    dialogue_label = $DialogueLabel
 ##})
 ## [/codeblock]
 func _init(parameters : Dictionary):
@@ -93,19 +90,19 @@ func _init(parameters : Dictionary):
             if parameters["actor_label"] is Label:
                 actor_label = parameters["actor_label"]
 
-        if parameters.has("body_label"):
+        if parameters.has("dialogue_label"):
             assert(
-                parameters["body_label"] is DialogueLabel,
-                "Object of type %s is used. Only use `DialogueLabel` as \"body_label\""
-                % type_string(typeof(parameters["body_label"]))
+                parameters["dialogue_label"] is DialogueLabel,
+                "Object of type %s is used. Only use `DialogueLabel` as \"dialogue_label\""
+                % type_string(typeof(parameters["dialogue_label"]))
             )
-            if parameters["body_label"] is DialogueLabel:
-                body_label = parameters["body_label"]
-                body_label.current_stage = self
+            if parameters["dialogue_label"] is DialogueLabel:
+                dialogue_label = parameters["dialogue_label"]
+                dialogue_label.current_stage = self
 
         for property in parameters.keys():
             if property in self and (
-                property != "body_label" or
+                property != "dialogue_label" or
                 property != "actor_label"
             ):
                 set(StringName(property), parameters[property])
@@ -132,15 +129,15 @@ func is_playing() -> bool:
 func progress() -> void:
     if current_dialogue != null:
         # Skip dialogue
-        if body_label.visible_ratio < 1.0:
+        if dialogue_label.visible_ratio < 1.0:
             if allow_skip:
-                body_label.visible_characters = current_dialogue_set["line"].length()
+                dialogue_label.visible_characters = current_dialogue_set["line"].length()
 
         # Progress dialogue
         else:
             if step + 1 < current_dialogue_length:
                 step += 1
-                body_label.visible_characters = 0
+                dialogue_label.visible_characters = 0
                 current_dialogue_set = current_dialogue.sets[step]
                 body_text_length = current_dialogue_set["line"].length()
 
@@ -197,7 +194,7 @@ func reset(keep_dialogue : bool = false) -> void:
 
     if actor_label != null:
         actor_label.text = ""
-    body_label.text = ""
+    dialogue_label.text = ""
 
 ## Start the [Dialogue] at step 0 or at defined preprogress parameter.
 ## If no parameter (or null) is passed, it will run the [member current_dialogue] if present
@@ -217,4 +214,4 @@ func start(dialogue : Dialogue = null) -> void:
 func update_display() -> void:
     if actor_label != null:
         actor_label.text = current_dialogue_set["actor"].format(variables)
-    body_label.text = current_dialogue_set["line"].format(variables)
+    dialogue_label.text = current_dialogue_set["line"].format(variables)
