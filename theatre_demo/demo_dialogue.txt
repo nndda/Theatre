@@ -1,18 +1,16 @@
-Some character:
-    "Welcome to the Theatre!{wait = 1.2} Hi there, {wait = 1.2}{player_name}!{wait = 2.0}
+Dia:
+    "Welcome to the Theatre!{delay = 0.5} Hi there!{delay = 0.4}
     this is a demo dialogue to demonstrate Theatre plugin's core feature."
 
-Some character:
-    "There are 3 main custom classes that makes part of Theatre plugin:{wait = 0.7}
-    Dialogue, {wait = 0.7}
-    Stage, {wait = 0.7}
+Dia:
+    "There are 4 classes that makes part of Theatre plugin:{delay = 0.7}
+    Dialogue, {delay = 0.7}
+    DialogueLabel, {delay = 0.7}
+    Stage, {delay = 0.7}
     and Theatre"
 
-Some character:
-    "`Dialogue` are resources that contains the play of the... well, dialogue.
-    It uses a simple syntax, that can be written in plain text files. Or, since
-    what it do is just parse a string of text, you can write it directly
-    when creating the Dialogue variable"
-
-Some character:
-    "`Stage` are the UIs that will display the dialogue. It use `Label` & `RichTextLabel` nodes. It has signals such as: `started`, `progressed`, or `finished`"
+Dia:
+    "`Dialogue` are resources that contains the play of the... {delay = 0.2} well,{delay = 0.4} dialogue!{delay = 0.7}
+    It uses a simple syntax, that can be written in plain text files.{delay = 0.4} Or,{delay = 0.1} since
+    what it do is just parse a string of text,{delay = 0.2} you can write it directly
+    when creating the Dialogue variable!"
