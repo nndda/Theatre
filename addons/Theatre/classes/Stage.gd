@@ -53,8 +53,8 @@ var actor_label : Label
 ## [RichTextLabel] node that displays the dialogue body [member Dialogue.set_current.dlg]. This element is [b]required[/b] for the dialogue to run.
 var body_label : DialogueLabel
 
-var handler := {
-    "STAGE" : self,
+var handler : Dictionary = {
+    "Stage" : self,
 }
 
 ## Current progress of the Dialogue.
@@ -110,7 +110,7 @@ func _init(parameters : Dictionary):
             ):
                 set(StringName(property), parameters[property])
             else:
-                push_error("Error constructing Theatre, `%s` does not exists" % property)
+                push_error("Error constructing Stage, `%s` does not exists" % property)
 
 ## Emitted when [Dialogue] started ([member step] == 0)
 signal started
@@ -154,10 +154,18 @@ func progress() -> void:
 
                 # Calling functions
                 for f : Dictionary in current_dialogue_set["func"]:
-                    #if handler.has(f["handler"]):
-                        print("\n", f["handler"], ",", f["func_name"])
-                        for p in f["param"]:
-                            print("  ", type_string(typeof(p)), ": ", p)
+                    print("Calling function: \"%s\" on \"%s\"" % [
+                        f["name"], f["handler"]
+                    ])
+                    if !handler.has(f["handler"]):
+                        push_error("Handler %s doesn't exists" % f["handler"])
+                    else:
+                        if !handler[f["handler"]].has_method(f["name"]):
+                            push_error("Function %s doesn't exists on %s" % [
+                                f["name"], f["handler"]]
+                            )
+                        else:
+                            handler[f["handler"]].call(f["name"])
 
                 progressed.emit(step, current_dialogue_set)
 

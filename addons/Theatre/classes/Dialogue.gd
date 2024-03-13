@@ -13,7 +13,7 @@ class Parser extends RefCounted:
     const REGEX_DLG_TAGS :=\
         r"\{\s*(\w+)\s*=\s*(.+?)\s*\}"
     const REGEX_FUNC_CALL :=\
-        r"(?<=\n+)\s+(?<handler>\w+)\s+(?:\=\>)\s+(?<func_name>\w+)\((?<func_args>[^)]*)\)$"
+        r"(?<handler>\w+)\s+(\=\>)\s+(?<name>\w+)\((?<args>[^\)]*)\)"
     const REGEX_PLACEHOLDER :=\
         r"\{(\w+?)\}"
     const REGEX_INDENT :=\
@@ -44,14 +44,14 @@ class Parser extends RefCounted:
 
     func _init(src : String = ""):
         output = []
-        const FUNC_IDENTIFIER := "=>"
+        const FUNC_IDENTIFIER := "_FUNC:"
 
         var dlg_raw : PackedStringArray = []
 
         # Filter out comments, and create PackedStringArray
         # of every non-empty line in the source
         for n in src.split("\n", false):
-            if !n.begins_with("#") and !n.is_empty():
+            if !n.begins_with("#"):
                 dlg_raw.append(n)
 
         var body_pos : int = 0
@@ -75,41 +75,21 @@ class Parser extends RefCounted:
 
             elif is_indented(n):
                 # Function calls
-                if false:
-                    pass
-                #if n.dedent().begins_with(FUNC_IDENTIFIER):
-                    #var fun_str := n.split("(", false, 2)
-#
-                    #var identifier := fun_str[0]\
-                        #.strip_edges()\
-                        #.trim_suffix(":")\
-                        #.trim_prefix(FUNC_IDENTIFIER)\
-                        #.split(" ", false, 3)
-#
-                    #var param_str := fun_str[-1]\
-                        #.strip_edges().\
-                        #trim_suffix(")")\
-                        #.split(",", false, 2)
-#
-                    #var param : Array = []
-#
-                    #for p in param_str:
-                        #if identifier.size() >= 3:
-                            #match identifier[1].to_upper():
-                                #"COLOR":
-                                    #param.append(Color(p))
-                                #"STRING":
-                                    #param.append(p)
-                                #_:
-                                    #param.append(str_to_var(p))
-#
-                    #var fun := {
-                        #"handler": identifier[0],
-                        #"func_name": StringName(identifier[-1]),
-                        #"param": param,
-                    #}
-#
-                    #output[body_pos]["func"].append(fun)
+                var regex_func := RegEx.new()
+                regex_func.compile(REGEX_FUNC_CALL)
+                var regex_func_match := regex_func.search(dlg_raw[i].dedent())
+
+                if regex_func_match != null:
+                    var func_dict := {}
+                    for func_n : String in [
+                        "handler",
+                        "name",
+                        #"args", NOTE, TODO: currently not accepting parameters
+                    ]:
+                        func_dict[func_n] = regex_func_match.get_string(
+                            regex_func_match.names[func_n]
+                        )
+                    output[body_pos]["func"].append(func_dict)
 
                 # Dialogue text body
                 else:
@@ -121,15 +101,6 @@ class Parser extends RefCounted:
 
                     output[body_pos]["line"] += parsed_tags["string"]
                     output[body_pos]["line_raw"] += dlg_body
-
-                    # Placeholder position for offset
-                    #var regex_placeholders := RegEx.new()
-                    #regex_placeholders.compile(REGEX_PLACEHOLDER)
-                    #var regex_placeholder_match := regex_placeholders.search_all(output[body_pos]["line_raw"])
-#
-                    #for b in regex_placeholder_match:
-                        #if !output[body_pos]["offsets"].keys().has(b.get_start()):
-                            #output[body_pos]["offsets"][b.get_start()] = b.get_end()
 
         #for n in output:
             #print("\n\n--------------------------------")
@@ -165,6 +136,16 @@ class Parser extends RefCounted:
 
         return string
 
+    static func parse_func(string : String) -> Array:
+        var funcs : Array[Dictionary] = SETS_TEMPLATE["func"].duplicate(true)
+        const FUNC_TEMPLATE := {
+            "handler": "",
+            "name": "",
+            "args": "",
+        }
+
+        return funcs
+
     static func parse_tags(string : String) -> Dictionary:
         var output : Dictionary = {}
         var tags : Dictionary = SETS_TEMPLATE["tags"].duplicate(true)
@@ -176,7 +157,6 @@ class Parser extends RefCounted:
         var tag_pos_offset : int = 0
 
         for b in regex_tags_match:
-            #string = string.erase(b.get_start(), b.get_end())
             string = string.replace(b.strings[0], "")
 
             var tag_pos : int = b.get_start() - tag_pos_offset
@@ -197,10 +177,6 @@ class Parser extends RefCounted:
 
         output["tags"] = tags
         output["string"] = string
-
-        #print()
-        #print("  >  ", string)
-        #print()
 
         return output
 
