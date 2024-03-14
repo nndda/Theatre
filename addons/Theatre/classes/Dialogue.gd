@@ -101,7 +101,12 @@ class Parser extends RefCounted:
                         elif arg.is_valid_int():
                             args.append(int(arg))
                         else:
-                            args.append(arg)
+                            for q in ["\"", "\'"]:
+                                if arg.begins_with(q) and\
+                                    arg.ends_with(q):
+                                    arg\
+                                    .trim_prefix(q)\
+                                    .trim_suffix(q)
 
                     func_dict["args"] = args
                     output[body_pos]["func"].append(func_dict)
