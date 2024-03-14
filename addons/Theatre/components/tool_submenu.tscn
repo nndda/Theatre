@@ -3,11 +3,11 @@
 [ext_resource type="Script" path="res://addons/Theatre/components/tool_submenu.gd" id="1_g2vws"]
 
 [node name="TheatreToolSubmenu" type="PopupMenu"]
-title = "Theatre"
-size = Vector2i(279, 116)
+title = "🎭 Theatre"
+size = Vector2i(305, 116)
 visible = true
 item_count = 4
-item_0/text = "Compile Dialogue text resources"
+item_0/text = "💬 Compile Dialogue text resources"
 item_0/id = 1
 item_1/text = "Exclude/include folders"
 item_1/id = 2
