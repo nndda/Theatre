@@ -56,7 +56,7 @@ func _enter_tree() -> void:
 
     # Initialize plugin submenu
     plugin_submenu.id_pressed.connect(tool_submenu_id_pressed)
-    add_tool_submenu_item("Theatre", plugin_submenu)
+    add_tool_submenu_item("🎭 Theatre", plugin_submenu)
 
 func _exit_tree() -> void:
     # Clear project settings
