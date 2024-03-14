@@ -6,11 +6,11 @@ Text based linear dialogue system for Godot 4.
 > This project is in alpha and still under development.
 
 ## Usage
-Set the Stage! define the `Label` & `RichTextLabel` node to display your Dialogue
+Set the Stage! define the `Label` & `DialogueLabel` node to display your Dialogue
 ```gdscript
 @onready var stage = Stage.new({
-    actor_label = $DialogueContainer/Name,
-    dialogue_label = $DialogueContainer/Body
+    actor_label = $DialogueContainer/Label,
+    dialogue_label = $DialogueContainer/DialogueLabel
 })
 ```
 
