@@ -85,13 +85,25 @@ class Parser extends RefCounted:
                 if regex_func_match != null:
                     var func_dict := {}
                     for func_n : String in [
-                        "handler",
-                        "name",
-                        #"args", NOTE, TODO: currently not accepting parameters
+                        "handler", "name",
                     ]:
                         func_dict[func_n] = regex_func_match.get_string(
                             regex_func_match.names[func_n]
                         )
+
+                    # Function parameters/arguments
+                    var args = []
+                    for arg : String in regex_func_match.get_string(
+                            regex_func_match.names["args"]
+                    ).split(",", false):
+                        if arg.is_valid_float():
+                            args.append(float(arg))
+                        elif arg.is_valid_int():
+                            args.append(int(arg))
+                        else:
+                            args.append(arg)
+
+                    func_dict["args"] = args
                     output[body_pos]["func"].append(func_dict)
 
                 # Dialogue text body
