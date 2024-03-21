@@ -16,7 +16,7 @@ class Parser extends RefCounted:
     const REGEX_DLG_TAGS :=\
         r"\{\s*(\w+)\s*=\s*(.+?)\s*\}"
     const REGEX_FUNC_CALL :=\
-        r"(?<handler>\w+)\s+(\=\>)\s+(?<name>\w+)\((?<args>[^\)]*)\)"
+        r"(?<caller>\w+)\.(?<name>\w+)\((?<args>[^\)]*)\)"
     const REGEX_PLACEHOLDER :=\
         r"\{(\w+?)\}"
     const REGEX_INDENT :=\
@@ -85,7 +85,7 @@ class Parser extends RefCounted:
                 if regex_func_match != null:
                     var func_dict := {}
                     for func_n : String in [
-                        "handler", "name",
+                        "caller", "name",
                     ]:
                         func_dict[func_n] = regex_func_match.get_string(
                             regex_func_match.names[func_n]
@@ -107,6 +107,7 @@ class Parser extends RefCounted:
                                     arg\
                                     .trim_prefix(q)\
                                     .trim_suffix(q)
+                                    args.append(arg)
 
                     func_dict["args"] = args
                     output[body_pos]["func"].append(func_dict)
@@ -159,7 +160,7 @@ class Parser extends RefCounted:
     static func parse_func(string : String) -> Array:
         var funcs : Array[Dictionary] = SETS_TEMPLATE["func"].duplicate(true)
         const FUNC_TEMPLATE := {
-            "handler": "",
+            "caller": "",
             "name": "",
             "args": "",
         }

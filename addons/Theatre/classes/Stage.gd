@@ -50,9 +50,7 @@ var actor_label : Label
 ## [RichTextLabel] node that displays the dialogue body [member Dialogue.set_current.dlg]. This element is [b]required[/b] for the dialogue to run.
 var dialogue_label : DialogueLabel
 
-var handler : Dictionary = {
-    "Stage" : self,
-}
+var caller : Dictionary = {}
 
 ## Current progress of the Dialogue.
 var step : int = -1
@@ -152,17 +150,17 @@ func progress() -> void:
                 # Calling functions
                 for f : Dictionary in current_dialogue_set["func"]:
                     print("Calling function: \"%s\" on \"%s\"" % [
-                        f["name"], f["handler"]
+                        f["name"], f["caller"]
                     ])
-                    if !handler.has(f["handler"]):
-                        push_error("Handler %s doesn't exists" % f["handler"])
+                    if !caller.has(f["caller"]):
+                        push_error("Handler %s doesn't exists" % f["caller"])
                     else:
-                        if !handler[f["handler"]].has_method(f["name"]):
+                        if !caller[f["caller"]].has_method(f["name"]):
                             push_error("Function %s doesn't exists on %s" % [
-                                f["name"], f["handler"]]
+                                f["name"], f["caller"]]
                             )
                         else:
-                            handler[f["handler"]].call(f["name"])
+                            caller[f["caller"]].call(f["name"])
 
                 progressed.emit(step, current_dialogue_set)
 
@@ -210,6 +208,13 @@ func start(dialogue : Dialogue = null) -> void:
 
         progress()
         started.emit()
+
+func set_caller(id : String, node : Node) -> void:
+    caller[id] = node
+    node.tree_exited.connect(remove_caller.bind(id))
+
+func remove_caller(id : String) -> void:
+    caller.erase(id)
 
 func update_display() -> void:
     if actor_label != null:
