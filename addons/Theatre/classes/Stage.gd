@@ -9,7 +9,14 @@ var auto := false
 
 var auto_delay : float = 1.5
 
-var speed_scale : float = 1.0
+var speed_scale : float = 1.0:
+    set(s):
+        speed_scale = s
+        if dialogue_label != null:
+            dialogue_label.characters_draw_tick_scaled =\
+                dialogue_label.characters_draw_tick / s
+            dialogue_label.characters_ticker.wait_time =\
+                dialogue_label.characters_draw_tick_scaled
 
 ## Run/play [Dialogue], define and reference UIs and Nodes that will be used to display the [Dialogue]. It takes a dictionary of elements of nodes as the constructor parameter.
 
