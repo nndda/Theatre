@@ -184,20 +184,17 @@ class Parser extends RefCounted:
             string = string.replace(b.strings[0], "")
 
             var tag_pos : int = b.get_start() - tag_pos_offset
-            var tag_key := b.strings[1]
+            var tag_key := b.strings[1].to_upper()
             var tag_value := b.strings[2]
 
             tag_pos_offset += b.strings[0].length()
 
-            match tag_key.to_upper():
-                "DELAY":
-                    tags["delays"][tag_pos] = float(tag_value)
-                "WAIT":
-                    tags["delays"][tag_pos] = float(tag_value)
-                "SPEED":
-                    tags["speeds"][tag_pos] = float(tag_value)
-                _:
-                    push_warning("Unknown tags: ", b.strings[0])
+            if ["DELAY", "WAIT", "D", "W"].has(tag_key):
+                tags["delays"][tag_pos] = float(tag_value)
+            elif ["SPEED", "SPD", "S"].has(tag_key):
+                tags["speeds"][tag_pos] = float(tag_value)
+            else:
+                push_warning("Unknown tags: ", b.strings[0])
 
         output["tags"] = tags
         output["string"] = string
