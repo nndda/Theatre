@@ -9,7 +9,7 @@ var auto := false
 
 var auto_delay : float = 1.5
 
-var speed_scale
+var speed_scale : float = 1.0
 
 ## Run/play [Dialogue], define and reference UIs and Nodes that will be used to display the [Dialogue]. It takes a dictionary of elements of nodes as the constructor parameter.
 ## [codeblock]@onready var stage = Stage.new({
@@ -47,10 +47,10 @@ var current_dialogue_set : Dictionary
 ## Optional [Label] node that displays [member Dialogue.set_current.actor]. Usually used as the name of the character, narrator, or speaker of the current dialogue.
 var actor_label : Label
 
+var caller : Dictionary = {}
+
 ## [RichTextLabel] node that displays the dialogue body [member Dialogue.set_current.dlg]. This element is [b]required[/b] for the dialogue to run.
 var dialogue_label : DialogueLabel
-
-var caller : Dictionary = {}
 
 ## Current progress of the Dialogue.
 var step : int = -1
@@ -160,7 +160,7 @@ func progress() -> void:
                                 f["name"], f["caller"]]
                             )
                         else:
-                            caller[f["caller"]].call(f["name"])
+                            caller[f["caller"]].callv(f["name"], f["args"])
 
                 progressed.emit(step, current_dialogue_set)
 
@@ -173,17 +173,7 @@ func reset(keep_dialogue : bool = false) -> void:
     print_debug("Resetting Dialogue...")
     resetted.emit(step,
         current_dialogue.sets[step] if step != -1 else\
-        {
-            "actor" : "",
-            "line" : "",
-            "line_raw" : "",
-            "func" : [],
-            "tags": {
-                "delays" : {},
-                "speeds" : {},
-            },
-            "offets" : {},
-        }
+        Dialogue.Parser.SETS_TEMPLATE
     )
 
     if !keep_dialogue:
