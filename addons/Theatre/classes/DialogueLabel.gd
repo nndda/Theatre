@@ -30,19 +30,14 @@ func _enter_tree() -> void:
     delay_timer.timeout.connect(delay_timer_timeout)
 
 func start_render() -> void:
-    if visible_characters == 0:
-        visible_characters += 1
+    characters_draw_tick_scaled = characters_draw_tick / current_stage.speed_scale
+    characters_ticker.start(characters_draw_tick_scaled)
 
-        characters_draw_tick_scaled = characters_draw_tick / current_stage.speed_scale
-        characters_ticker.start(characters_draw_tick_scaled)
-
-        speed_queue = current_stage.current_dialogue_set["tags"]["speeds"].keys()
-        delay_queue = current_stage.current_dialogue_set["tags"]["delays"].keys()
-        offset_queue = current_stage.current_dialogue_set["offsets"].keys()
+    speed_queue = current_stage.current_dialogue_set["tags"]["speeds"].keys()
+    delay_queue = current_stage.current_dialogue_set["tags"]["delays"].keys()
+    offset_queue = current_stage.current_dialogue_set["offsets"].keys()
 
 func characters_ticker_timeout() -> void:
-    visible_characters += 1
-
     if !delay_queue.is_empty():
         # TODO: Issue #12 ======================================================
         var stop : int = delay_queue[0]
@@ -62,6 +57,8 @@ func characters_ticker_timeout() -> void:
             characters_ticker.wait_time = characters_draw_tick_scaled / speed
             characters_ticker.start()
             speed_queue.remove_at(0)
+
+    visible_characters += 1
 
     if visible_ratio >= 1.0:
         characters_ticker.stop()
