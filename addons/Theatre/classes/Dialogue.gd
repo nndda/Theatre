@@ -218,7 +218,7 @@ class Parser extends RefCounted:
 
 #static var default_lang := "en"
 
-var sets : Array[Dictionary] = []
+@export var sets : Array[Dictionary] = []
 
 func _init(dlg_src : String = ""):
     sets = []
