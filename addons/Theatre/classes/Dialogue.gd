@@ -100,6 +100,9 @@ class Parser extends RefCounted:
                             args.append(float(arg))
                         elif arg.is_valid_int():
                             args.append(int(arg))
+                        elif arg.to_lower() == "true" or\
+                            arg.to_lower() == "false":
+                            args.append(arg.to_lower() == "true")
                         else:
                             for q in ["\"", "\'"]:
                                 if arg.begins_with(q) and\
@@ -215,7 +218,7 @@ class Parser extends RefCounted:
 
 #static var default_lang := "en"
 
-@export var sets : Array[Dictionary] = []
+var sets : Array[Dictionary] = []
 
 func _init(dlg_src : String = ""):
     sets = []
@@ -271,15 +274,6 @@ static func load(dlg_src : String) -> Dialogue:
         print("Parsing Dialogue from raw string: ", get_stack())
         return Dialogue.new(dlg_src)
 
-# TODO: set function calls
-    #Safe arguments: int, float, bool
-
-    # => HANDLER : add(12)
-    # => PLAYER : rotate(20.5)
-    # => PLAYER : heal(25)
-    # => bool : toggle(true)
-    # => PORTRAIT : change("res://smiling.png")
-
 #static func print_set(input : Dictionary) -> void:
     #print(
         #"\n", input["actor"],
@@ -302,7 +296,7 @@ func get_word_count() -> int:
     var output : int = 0
     var text : String
     for n in sets:
-        for chr in ";,{}":
+        for chr in ":;.,{}":
             text = n["line_raw"].replace(chr, " ")
         output += text.split(" ", false).size()
     return output
