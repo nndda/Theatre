@@ -9,11 +9,13 @@ var speed_queue : PackedInt32Array = []
 var delay_timer := Timer.new()
 
 var characters_ticker := Timer.new()
-@export var characters_draw_tick : float = .009
+
+## Each string character will be drawn every `characters_draw_tick` seconds
+@export var characters_draw_tick : float = .012
 
 signal text_rendered
 
-func _ready() -> void:
+func _enter_tree() -> void:
     for timer : Timer in [
         delay_timer,
         characters_ticker,
