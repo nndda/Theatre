@@ -7,7 +7,6 @@ var delay_queue : PackedInt32Array = []
 var speed_queue : PackedInt32Array = []
 
 var delay_timer := Timer.new()
-
 var characters_ticker := Timer.new()
 
 ## Each string character will be drawn every `characters_draw_tick` seconds
@@ -28,16 +27,14 @@ func _enter_tree() -> void:
     characters_ticker.timeout.connect(characters_ticker_timeout)
     delay_timer.timeout.connect(delay_timer_timeout)
 
-func _process(_delta : float) -> void:
-    # TODO: trigger on Stage signals instead
-    if current_stage != null and current_stage.is_playing():
-        if visible_characters == 0:
-            visible_characters += 1
+func start_render() -> void:
+    if visible_characters == 0:
+        visible_characters += 1
 
-            characters_ticker.start(characters_draw_tick)
-            speed_queue = current_stage.current_dialogue_set["tags"]["speeds"].keys()
-            delay_queue = current_stage.current_dialogue_set["tags"]["delays"].keys()
-            offset_queue = current_stage.current_dialogue_set["offsets"].keys()
+        characters_ticker.start(characters_draw_tick)
+        speed_queue = current_stage.current_dialogue_set["tags"]["speeds"].keys()
+        delay_queue = current_stage.current_dialogue_set["tags"]["delays"].keys()
+        offset_queue = current_stage.current_dialogue_set["offsets"].keys()
 
 func characters_ticker_timeout() -> void:
     visible_characters += 1
@@ -49,7 +46,6 @@ func characters_ticker_timeout() -> void:
 
         if stop == visible_characters:
             characters_ticker.stop()
-            #print(stop, ", ", delay)
             await get_tree().create_timer(delay).timeout
             characters_ticker.start()
             delay_queue.remove_at(0)
@@ -59,7 +55,6 @@ func characters_ticker_timeout() -> void:
         var speed : float = current_stage.current_dialogue_set["tags"]["speeds"][stop]
 
         if stop == visible_characters:
-            #print(stop, ", ", speed)
             characters_ticker.wait_time = characters_draw_tick / speed
             characters_ticker.start()
             speed_queue.remove_at(0)

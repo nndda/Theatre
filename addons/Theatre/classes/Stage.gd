@@ -85,6 +85,7 @@ func _init(parameters : Dictionary):
             if parameters["dialogue_label"] is DialogueLabel:
                 dialogue_label = parameters["dialogue_label"]
                 dialogue_label.current_stage = self
+                progressed.connect(dialogue_label.start_render)
 
         var constructor_property : PackedStringArray = [
             "allow_skip",
@@ -105,7 +106,7 @@ signal started
 ## Emitted when [Dialogue] finished ([member step] == [member step.size()])
 signal finished
 ## Emitted when [Dialogue] progressed
-signal progressed(step_n : int, set_n : Dictionary)
+signal progressed
 signal resetted(step_n : int, set_n : Dictionary)
 
 func get_current_set() -> Dictionary:
@@ -155,7 +156,7 @@ func progress() -> void:
                         else:
                             caller[f["caller"]].callv(f["name"], f["args"])
 
-                progressed.emit(step, current_dialogue_set)
+                progressed.emit()
 
             elif step + 1 >= current_dialogue_length:
                 reset()
