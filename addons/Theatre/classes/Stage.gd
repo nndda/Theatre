@@ -170,7 +170,7 @@ func progress() -> void:
 
 ## Stop Dialogue and resets everything
 func reset(keep_dialogue : bool = false) -> void:
-    print_debug("Resetting Dialouge...")
+    print_debug("Resetting Dialogue...")
     resetted.emit(step,
         current_dialogue.sets[step] if step != -1 else\
         {
@@ -197,7 +197,7 @@ func reset(keep_dialogue : bool = false) -> void:
 ## Start the [Dialogue] at step 0 or at defined preprogress parameter.
 ## If no parameter (or null) is passed, it will run the [member current_dialogue] if present
 func start(dialogue : Dialogue = null) -> void:
-    print_debug("Starting Dialouge...")
+    print_debug("Starting Dialogue...")
     if dialogue != null:
         current_dialogue = dialogue
 
@@ -209,7 +209,7 @@ func start(dialogue : Dialogue = null) -> void:
         progress()
         started.emit()
 
-func set_caller(id : String, node : Node) -> void:
+func add_caller(id : String, node : Node) -> void:
     caller[id] = node
     node.tree_exited.connect(remove_caller.bind(id))
 
