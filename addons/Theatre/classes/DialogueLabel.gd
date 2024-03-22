@@ -12,6 +12,8 @@ var characters_ticker := Timer.new()
 ## Each string character will be drawn every `characters_draw_tick` seconds
 @export var characters_draw_tick : float = .012
 
+var characters_draw_tick_scaled : float
+
 signal text_rendered
 
 func _enter_tree() -> void:
@@ -31,7 +33,9 @@ func start_render() -> void:
     if visible_characters == 0:
         visible_characters += 1
 
-        characters_ticker.start(characters_draw_tick)
+        characters_draw_tick_scaled = characters_draw_tick / current_stage.speed_scale
+        characters_ticker.start(characters_draw_tick_scaled)
+
         speed_queue = current_stage.current_dialogue_set["tags"]["speeds"].keys()
         delay_queue = current_stage.current_dialogue_set["tags"]["delays"].keys()
         offset_queue = current_stage.current_dialogue_set["offsets"].keys()
@@ -55,14 +59,14 @@ func characters_ticker_timeout() -> void:
         var speed : float = current_stage.current_dialogue_set["tags"]["speeds"][stop]
 
         if stop == visible_characters:
-            characters_ticker.wait_time = characters_draw_tick / speed
+            characters_ticker.wait_time = characters_draw_tick_scaled / speed
             characters_ticker.start()
             speed_queue.remove_at(0)
 
     if visible_ratio >= 1.0:
         characters_ticker.stop()
         text_rendered.emit()
-        characters_ticker.wait_time = characters_draw_tick
+        characters_ticker.wait_time = characters_draw_tick_scaled
 
 func delay_timer_timeout() -> void:
     pass
