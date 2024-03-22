@@ -12,18 +12,6 @@ var auto_delay : float = 1.5
 var speed_scale : float = 1.0
 
 ## Run/play [Dialogue], define and reference UIs and Nodes that will be used to display the [Dialogue]. It takes a dictionary of elements of nodes as the constructor parameter.
-## [codeblock]@onready var stage = Stage.new({
-##    actor_label = $Label,
-##    dialogue_label = $RichTextLabel
-##})
-##
-##var epic_dialogue = Dialogue.new("res://epic_dialogue.txt")
-##
-##func _ready():
-##    stage.start(epic_dialogue) [/codeblock]
-## The parameters in the dictionary are as follows: [br]
-## - [param "actor_label"]. see [member actor_label] [br]
-## - [param "dialogue_label"]. see [member dialogue_label]
 
 ## Characters count of the dialogue body. The same as [member current_dialogue.sets.size()]
 var body_text_length : int
@@ -98,14 +86,19 @@ func _init(parameters : Dictionary):
                 dialogue_label = parameters["dialogue_label"]
                 dialogue_label.current_stage = self
 
+        var constructor_property : PackedStringArray = [
+            "allow_skip",
+            "auto",
+            "auto_delay",
+            "speed_scale",
+            "body_text_limit",
+        ]
         for property in parameters.keys():
-            if property in self and (
-                property != "dialogue_label" or
-                property != "actor_label"
-            ):
-                set(StringName(property), parameters[property])
-            else:
-                push_error("Error constructing Stage, `%s` does not exists" % property)
+            if !["actor_label", "dialogue_label"].has(property):
+                if property in self and constructor_property.has(property):
+                    set(StringName(property), parameters[property])
+                else:
+                    push_error("Error constructing Stage, `%s` does not exists" % property)
 
 ## Emitted when [Dialogue] started ([member step] == 0)
 signal started
@@ -153,7 +146,7 @@ func progress() -> void:
                         f["name"], f["caller"]
                     ])
                     if !caller.has(f["caller"]):
-                        push_error("Handler %s doesn't exists" % f["caller"])
+                        push_error("caller %s doesn't exists" % f["caller"])
                     else:
                         if !caller[f["caller"]].has_method(f["name"]):
                             push_error("Function %s doesn't exists on %s" % [
