@@ -217,6 +217,8 @@ class Parser extends RefCounted:
 
 @export var sets : Array[Dictionary] = []
 
+var source_path : String = ""
+
 func _init(dlg_src : String = ""):
     sets = []
     var parser : Parser
@@ -225,6 +227,7 @@ func _init(dlg_src : String = ""):
         print("Parsing Dialogue from file: ", dlg_src)
         if FileAccess.file_exists(dlg_src):
             parser = Parser.new(FileAccess.get_file_as_string(dlg_src))
+            source_path = dlg_src
             sets = parser.output
         else:
             push_error("Unable to create Dialogue resource: %s does not exists" % dlg_src)
