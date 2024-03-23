@@ -93,11 +93,9 @@ func crawl(path : String = "res://") -> void:
                     var file := path + "/" + file_name
                     var file_com := file.trim_suffix(".txt") + ".dlg.res"
 
-                    # Is this necessary?
                     if FileAccess.file_exists(file_com):
                         var rem_err := DirAccess.remove_absolute(file_com)
-                        if rem_err != OK:
-                            push_error("Error removing resource: ", error_string(rem_err))
+                        EditorInterface.get_resource_filesystem().scan()
 
                     var sav_err := ResourceSaver.save(
                         Dialogue.new(file), file_com,
