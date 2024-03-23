@@ -95,6 +95,8 @@ func crawl(path : String = "res://") -> void:
 
                     if FileAccess.file_exists(file_com):
                         var rem_err := DirAccess.remove_absolute(file_com)
+                        if rem_err != OK:
+                            push_error("Error removing Dialogue resource: ", rem_err)
                         EditorInterface.get_resource_filesystem().scan()
 
                     var sav_err := ResourceSaver.save(
