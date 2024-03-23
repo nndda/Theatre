@@ -1,8 +1,6 @@
 class_name Stage
 extends Object
 
-# TODO: hamdle errors for required parameters
-
 var allow_skip := true
 
 var auto := false
@@ -171,7 +169,7 @@ func progress() -> void:
 
 ## Stop Dialogue and resets everything
 func reset(keep_dialogue : bool = false) -> void:
-    print_debug("Resetting Dialogue...")
+    print("Resetting Dialogue [%s]..." % current_dialogue.source_path)
     resetted.emit(step,
         current_dialogue.sets[step] if step != -1 else\
         Dialogue.Parser.SETS_TEMPLATE
@@ -188,13 +186,13 @@ func reset(keep_dialogue : bool = false) -> void:
 ## Start the [Dialogue] at step 0 or at defined preprogress parameter.
 ## If no parameter (or null) is passed, it will run the [member current_dialogue] if present
 func start(dialogue : Dialogue = null) -> void:
-    print_debug("Starting Dialogue...")
     if dialogue != null:
         current_dialogue = dialogue
 
     if current_dialogue == null:
         push_error("Cannot start the Stage: `current_dialogue` is null")
     else:
+        print("Starting Dialogue [%s]..." % current_dialogue.source_path)
         current_dialogue_length = current_dialogue.sets.size()
 
         progress()
