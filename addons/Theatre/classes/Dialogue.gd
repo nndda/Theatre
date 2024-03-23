@@ -287,10 +287,13 @@ static func load(dlg_src : String) -> Dialogue:
     #for f in input["func"].keys():
         #pass
 
-# TODO: this
-#func to_json(path : String) -> Error:
-    #JSON
-    #return 0
+func to_json(path : String) -> Error:
+    var file := FileAccess.open(path, FileAccess.WRITE)
+    file.store_string(
+        JSON.stringify(sets, "  ")
+    )
+    file.close()
+    return file.get_error()
 
 func get_word_count() -> int:
     var output : int = 0
