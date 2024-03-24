@@ -14,7 +14,7 @@ var characters_ticker := Timer.new()
 
 var characters_draw_tick_scaled : float
 
-signal text_rendered
+signal text_rendered(rendered_text : String)
 
 func _enter_tree() -> void:
     for timer : Timer in [
@@ -29,7 +29,8 @@ func _enter_tree() -> void:
     characters_ticker.timeout.connect(characters_ticker_timeout)
 
 func start_render() -> void:
-    characters_draw_tick_scaled = characters_draw_tick / current_stage.speed_scale
+    characters_draw_tick_scaled = characters_draw_tick /\
+        Theatre.speed_scale / current_stage.speed_scale
     characters_ticker.start(characters_draw_tick_scaled)
 
     speed_queue = current_stage.current_dialogue_set["tags"]["speeds"].keys()
@@ -58,6 +59,7 @@ func characters_ticker_timeout() -> void:
 
         if speed_queue[0] == visible_characters:
             characters_ticker.wait_time = characters_draw_tick_scaled /\
+                Theatre.speed_scale /\
                 current_stage.current_dialogue_set["tags"]["speeds"][speed_queue[0]]
             characters_ticker.start()
             speed_queue.remove_at(0)
@@ -66,5 +68,5 @@ func characters_ticker_timeout() -> void:
 
     if visible_ratio >= 1.0:
         characters_ticker.stop()
-        text_rendered.emit()
+        text_rendered.emit(text)
         characters_ticker.wait_time = characters_draw_tick_scaled
