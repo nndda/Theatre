@@ -36,6 +36,12 @@ func start_render() -> void:
     delay_queue = current_stage.current_dialogue_set["tags"]["delays"].keys()
     offset_queue = current_stage.current_dialogue_set["offsets"].keys()
 
+func rerender() -> void:
+    visible_characters = 0
+    delay_timer.stop()
+    characters_ticker.stop()
+    start_render()
+
 func characters_ticker_timeout() -> void:
     if !delay_queue.is_empty():
         # TODO: Issue #12 ======================================================
