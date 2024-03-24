@@ -37,8 +37,6 @@ var current_dialogue : Dialogue:
 var current_dialogue_length : int
 var current_dialogue_set : Dictionary
 
-static var default_lang := "en"
-
 ## Optional [Label] node that displays [member Dialogue.set_current.actor]. Usually used as the name of the character, narrator, or speaker of the current dialogue.
 var actor_label : Label
 
@@ -92,7 +90,6 @@ func _init(parameters : Dictionary):
             if parameters["dialogue_label"] is DialogueLabel:
                 dialogue_label = parameters["dialogue_label"]
                 dialogue_label.current_stage = self
-                progressed.connect(dialogue_label.start_render)
 
         var constructor_property : PackedStringArray = [
             "allow_skip",
@@ -108,12 +105,14 @@ func _init(parameters : Dictionary):
                 else:
                     push_error("Error constructing Stage, `%s` does not exists" % property)
 
+    Theatre.locale_changed.connect(switch_lang)
+
 ## Emitted when [Dialogue] started ([member step] == 0)
 signal started
 ## Emitted when [Dialogue] finished ([member step] == [member step.size()])
 signal finished
 ## Emitted when [Dialogue] progressed
-signal progressed
+signal progressed(step_n : int, set_n : Dictionary)
 signal resetted(step_n : int, set_n : Dictionary)
 signal locale_changed(lang : String)
 
@@ -164,7 +163,10 @@ func progress() -> void:
                         else:
                             caller[f["caller"]].callv(f["name"], f["args"])
 
-                progressed.emit()
+                if dialogue_label != null:
+                    dialogue_label.start_render()
+
+                progressed.emit(step, current_dialogue_set)
 
             elif step + 1 >= current_dialogue_length:
                 reset()
@@ -211,7 +213,7 @@ func switch_lang(lang : String = "") -> void:
             var regex_lang := RegEx.new()
             regex_lang.compile(r"\.\w{2,4}\.txt$")
             var src := current_dialogue.source_path
-            var ext := "" if lang == "" or lang == default_lang\
+            var ext := "" if lang == "" or lang == Theatre.default_lang\
                 else ("." + lang)
 
             # TODO: mybe `default_lang` is not necessary.
