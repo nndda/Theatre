@@ -37,6 +37,8 @@ var current_dialogue : Dialogue:
 var current_dialogue_length : int
 var current_dialogue_set : Dictionary
 
+static var default_lang := "en"
+
 ## Optional [Label] node that displays [member Dialogue.set_current.actor]. Usually used as the name of the character, narrator, or speaker of the current dialogue.
 var actor_label : Label
 
@@ -197,6 +199,44 @@ func start(dialogue : Dialogue = null) -> void:
 
         progress()
         started.emit()
+
+func switch_lang(lang_id : String = "") -> void:
+    if current_dialogue == null:
+        push_error("Failed switching lang: current_dialogue is null")
+    else:
+        if current_dialogue.source_path == "":
+            push_error("Failed switching lang: no Dialogue source_path")
+        else:
+            var regex_lang := RegEx.new()
+            regex_lang.compile(r"\.\w{2,4}\.txt$")
+            var src := current_dialogue.source_path
+            var ext := "" if lang_id == "" or lang_id == default_lang\
+                else ("." + lang_id)
+
+            # TODO: mybe `default_lang` is not necessary.
+            # Make `default_lang` as an alias
+            print("-".repeat(80))
+
+            if regex_lang.search(src) == null: # is using default lang
+                src = src.insert(src.rfind(".txt"), ext)
+            else:
+                src = src.replace(
+                    regex_lang.search(src).strings[0], ext + ".txt"
+                )
+
+            if !FileAccess.file_exists(src):
+                push_error("Failed switching lang: %s does not exists" % src)
+            else:
+                var dlg_tr := Dialogue.load(src)
+                if dlg_tr.sets.size() != current_dialogue.sets.size():
+                    push_error("Failed switching lang: Dialogue length does not match")
+                else:
+                    current_dialogue = dlg_tr
+                    if is_playing():
+                        current_dialogue_set = current_dialogue.sets[step]
+                        update_display()
+                        if dialogue_label != null:
+                            dialogue_label.rerender()
 
 func add_caller(id : String, node : Node) -> void:
     caller[id] = node
