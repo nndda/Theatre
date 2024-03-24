@@ -115,6 +115,7 @@ signal finished
 ## Emitted when [Dialogue] progressed
 signal progressed
 signal resetted(step_n : int, set_n : Dictionary)
+signal locale_changed(lang : String)
 
 func get_current_set() -> Dictionary:
     if current_dialogue != null and step >= 0:
@@ -200,7 +201,7 @@ func start(dialogue : Dialogue = null) -> void:
         progress()
         started.emit()
 
-func switch_lang(lang_id : String = "") -> void:
+func switch_lang(lang : String = "") -> void:
     if current_dialogue == null:
         push_error("Failed switching lang: current_dialogue is null")
     else:
@@ -210,12 +211,11 @@ func switch_lang(lang_id : String = "") -> void:
             var regex_lang := RegEx.new()
             regex_lang.compile(r"\.\w{2,4}\.txt$")
             var src := current_dialogue.source_path
-            var ext := "" if lang_id == "" or lang_id == default_lang\
-                else ("." + lang_id)
+            var ext := "" if lang == "" or lang == default_lang\
+                else ("." + lang)
 
             # TODO: mybe `default_lang` is not necessary.
             # Make `default_lang` as an alias
-            print("-".repeat(80))
 
             if regex_lang.search(src) == null: # is using default lang
                 src = src.insert(src.rfind(".txt"), ext)
@@ -232,6 +232,7 @@ func switch_lang(lang_id : String = "") -> void:
                     push_error("Failed switching lang: Dialogue length does not match")
                 else:
                     current_dialogue = dlg_tr
+                    locale_changed.emit(lang)
                     if is_playing():
                         current_dialogue_set = current_dialogue.sets[step]
                         update_display()
