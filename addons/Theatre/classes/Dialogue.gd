@@ -100,6 +100,9 @@ class Parser extends RefCounted:
                             args.append(float(arg))
                         elif arg.is_valid_int():
                             args.append(int(arg))
+                        elif arg.to_lower() == "true" or\
+                            arg.to_lower() == "false":
+                            args.append(arg.to_lower() == "true")
                         else:
                             for q in ["\"", "\'"]:
                                 if arg.begins_with(q) and\
@@ -181,20 +184,17 @@ class Parser extends RefCounted:
             string = string.replace(b.strings[0], "")
 
             var tag_pos : int = b.get_start() - tag_pos_offset
-            var tag_key := b.strings[1]
+            var tag_key := b.strings[1].to_upper()
             var tag_value := b.strings[2]
 
             tag_pos_offset += b.strings[0].length()
 
-            match tag_key.to_upper():
-                "DELAY":
-                    tags["delays"][tag_pos] = float(tag_value)
-                "WAIT":
-                    tags["delays"][tag_pos] = float(tag_value)
-                "SPEED":
-                    tags["speeds"][tag_pos] = float(tag_value)
-                _:
-                    push_warning("Unknown tags: ", b.strings[0])
+            if ["DELAY", "WAIT", "D", "W"].has(tag_key):
+                tags["delays"][tag_pos] = float(tag_value)
+            elif ["SPEED", "SPD", "S"].has(tag_key):
+                tags["speeds"][tag_pos] = float(tag_value)
+            else:
+                push_warning("Unknown tags: ", b.strings[0])
 
         output["tags"] = tags
         output["string"] = string
@@ -217,6 +217,8 @@ class Parser extends RefCounted:
 
 @export var sets : Array[Dictionary] = []
 
+@export var source_path : String = ""
+
 func _init(dlg_src : String = ""):
     sets = []
     var parser : Parser
@@ -224,6 +226,7 @@ func _init(dlg_src : String = ""):
     if is_valid_filename(dlg_src):
         print("Parsing Dialogue from file: ", dlg_src)
         if FileAccess.file_exists(dlg_src):
+            source_path = dlg_src
             parser = Parser.new(FileAccess.get_file_as_string(dlg_src))
             sets = parser.output
         else:
@@ -271,15 +274,6 @@ static func load(dlg_src : String) -> Dialogue:
         print("Parsing Dialogue from raw string: ", get_stack())
         return Dialogue.new(dlg_src)
 
-# TODO: set function calls
-    #Safe arguments: int, float, bool
-
-    # => HANDLER : add(12)
-    # => PLAYER : rotate(20.5)
-    # => PLAYER : heal(25)
-    # => bool : toggle(true)
-    # => PORTRAIT : change("res://smiling.png")
-
 #static func print_set(input : Dictionary) -> void:
     #print(
         #"\n", input["actor"],
@@ -293,16 +287,19 @@ static func load(dlg_src : String) -> Dialogue:
     #for f in input["func"].keys():
         #pass
 
-# TODO: this
-#func to_json(path : String) -> Error:
-    #JSON
-    #return 0
+func to_json(path : String) -> Error:
+    var file := FileAccess.open(path, FileAccess.WRITE)
+    file.store_string(
+        JSON.stringify(sets, "  ")
+    )
+    file.close()
+    return file.get_error()
 
 func get_word_count() -> int:
     var output : int = 0
     var text : String
     for n in sets:
-        for chr in ";,{}":
+        for chr in ":;.,{}":
             text = n["line_raw"].replace(chr, " ")
         output += text.split(" ", false).size()
     return output

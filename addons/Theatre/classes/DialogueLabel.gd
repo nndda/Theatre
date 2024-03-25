@@ -7,13 +7,16 @@ var delay_queue : PackedInt32Array = []
 var speed_queue : PackedInt32Array = []
 
 var delay_timer := Timer.new()
-
 var characters_ticker := Timer.new()
-@export var characters_draw_tick : float = .009
 
-signal text_rendered
+## Each string character will be drawn every `characters_draw_tick` seconds
+@export var characters_draw_tick : float = .012
 
-func _ready() -> void:
+var characters_draw_tick_scaled : float
+
+signal text_rendered(rendered_text : String)
+
+func _enter_tree() -> void:
     for timer : Timer in [
         delay_timer,
         characters_ticker,
@@ -24,48 +27,46 @@ func _ready() -> void:
 
     characters_ticker.one_shot = false
     characters_ticker.timeout.connect(characters_ticker_timeout)
-    delay_timer.timeout.connect(delay_timer_timeout)
 
-func _process(_delta : float) -> void:
-    # TODO: trigger on Stage signals instead
-    if current_stage != null and current_stage.is_playing():
-        if visible_characters == 0:
-            visible_characters += 1
+func start_render() -> void:
+    characters_draw_tick_scaled = characters_draw_tick /\
+        Theatre.speed_scale / current_stage.speed_scale
+    characters_ticker.start(characters_draw_tick_scaled)
 
-            characters_ticker.start(characters_draw_tick)
-            speed_queue = current_stage.current_dialogue_set["tags"]["speeds"].keys()
-            delay_queue = current_stage.current_dialogue_set["tags"]["delays"].keys()
-            offset_queue = current_stage.current_dialogue_set["offsets"].keys()
+    speed_queue = current_stage.current_dialogue_set["tags"]["speeds"].keys()
+    delay_queue = current_stage.current_dialogue_set["tags"]["delays"].keys()
+    offset_queue = current_stage.current_dialogue_set["offsets"].keys()
+
+func rerender() -> void:
+    visible_characters = 0
+    delay_timer.stop()
+    characters_ticker.stop()
+    start_render()
 
 func characters_ticker_timeout() -> void:
-    visible_characters += 1
-
     if !delay_queue.is_empty():
         # TODO: Issue #12 ======================================================
-        var stop : int = delay_queue[0]
-        var delay : float = current_stage.current_dialogue_set["tags"]["delays"][delay_queue[0]]
-
-        if stop == visible_characters:
+        if delay_queue[0] == visible_characters:
             characters_ticker.stop()
-            #print(stop, ", ", delay)
-            await get_tree().create_timer(delay).timeout
+            delay_timer.start(
+                current_stage.current_dialogue_set["tags"]["delays"][delay_queue[0]]
+            )
+            await delay_timer.timeout
             characters_ticker.start()
             delay_queue.remove_at(0)
 
     if !speed_queue.is_empty():
-        var stop : int = speed_queue[0]
-        var speed : float = current_stage.current_dialogue_set["tags"]["speeds"][stop]
 
-        if stop == visible_characters:
-            #print(stop, ", ", speed)
-            characters_ticker.wait_time = characters_draw_tick / speed
+        if speed_queue[0] == visible_characters:
+            characters_ticker.wait_time = characters_draw_tick_scaled /\
+                Theatre.speed_scale /\
+                current_stage.current_dialogue_set["tags"]["speeds"][speed_queue[0]]
             characters_ticker.start()
             speed_queue.remove_at(0)
 
+    visible_characters += 1
+
     if visible_ratio >= 1.0:
         characters_ticker.stop()
-        text_rendered.emit()
-        characters_ticker.wait_time = characters_draw_tick
-
-func delay_timer_timeout() -> void:
-    pass
+        text_rendered.emit(text)
+        characters_ticker.wait_time = characters_draw_tick_scaled

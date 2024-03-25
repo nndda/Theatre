@@ -1,29 +1,22 @@
 class_name Stage
 extends Object
 
-# TODO: hamdle errors for required parameters
-
 var allow_skip := true
 
 var auto := false
 
 var auto_delay : float = 1.5
 
-var speed_scale
+var speed_scale : float = 1.0:
+    set(s):
+        speed_scale = s
+        if dialogue_label != null:
+            dialogue_label.characters_draw_tick_scaled =\
+                dialogue_label.characters_draw_tick / s
+            dialogue_label.characters_ticker.wait_time =\
+                dialogue_label.characters_draw_tick_scaled
 
 ## Run/play [Dialogue], define and reference UIs and Nodes that will be used to display the [Dialogue]. It takes a dictionary of elements of nodes as the constructor parameter.
-## [codeblock]@onready var stage = Stage.new({
-##    actor_label = $Label,
-##    dialogue_label = $RichTextLabel
-##})
-##
-##var epic_dialogue = Dialogue.new("res://epic_dialogue.txt")
-##
-##func _ready():
-##    stage.start(epic_dialogue) [/codeblock]
-## The parameters in the dictionary are as follows: [br]
-## - [param "actor_label"]. see [member actor_label] [br]
-## - [param "dialogue_label"]. see [member dialogue_label]
 
 ## Characters count of the dialogue body. The same as [member current_dialogue.sets.size()]
 var body_text_length : int
@@ -47,10 +40,10 @@ var current_dialogue_set : Dictionary
 ## Optional [Label] node that displays [member Dialogue.set_current.actor]. Usually used as the name of the character, narrator, or speaker of the current dialogue.
 var actor_label : Label
 
+var caller : Dictionary = {}
+
 ## [RichTextLabel] node that displays the dialogue body [member Dialogue.set_current.dlg]. This element is [b]required[/b] for the dialogue to run.
 var dialogue_label : DialogueLabel
-
-var caller : Dictionary = {}
 
 ## Current progress of the Dialogue.
 var step : int = -1
@@ -98,14 +91,21 @@ func _init(parameters : Dictionary):
                 dialogue_label = parameters["dialogue_label"]
                 dialogue_label.current_stage = self
 
+        var constructor_property : PackedStringArray = [
+            "allow_skip",
+            "auto",
+            "auto_delay",
+            "speed_scale",
+            "body_text_limit",
+        ]
         for property in parameters.keys():
-            if property in self and (
-                property != "dialogue_label" or
-                property != "actor_label"
-            ):
-                set(StringName(property), parameters[property])
-            else:
-                push_error("Error constructing Stage, `%s` does not exists" % property)
+            if !["actor_label", "dialogue_label"].has(property):
+                if property in self and constructor_property.has(property):
+                    set(StringName(property), parameters[property])
+                else:
+                    push_error("Error constructing Stage, `%s` does not exists" % property)
+
+    Theatre.locale_changed.connect(switch_lang)
 
 ## Emitted when [Dialogue] started ([member step] == 0)
 signal started
@@ -114,6 +114,7 @@ signal finished
 ## Emitted when [Dialogue] progressed
 signal progressed(step_n : int, set_n : Dictionary)
 signal resetted(step_n : int, set_n : Dictionary)
+signal locale_changed(lang : String)
 
 func get_current_set() -> Dictionary:
     if current_dialogue != null and step >= 0:
@@ -153,14 +154,17 @@ func progress() -> void:
                         f["name"], f["caller"]
                     ])
                     if !caller.has(f["caller"]):
-                        push_error("Handler %s doesn't exists" % f["caller"])
+                        push_error("caller %s doesn't exists" % f["caller"])
                     else:
                         if !caller[f["caller"]].has_method(f["name"]):
                             push_error("Function %s doesn't exists on %s" % [
                                 f["name"], f["caller"]]
                             )
                         else:
-                            caller[f["caller"]].call(f["name"])
+                            caller[f["caller"]].callv(f["name"], f["args"])
+
+                if dialogue_label != null:
+                    dialogue_label.start_render()
 
                 progressed.emit(step, current_dialogue_set)
 
@@ -170,20 +174,10 @@ func progress() -> void:
 
 ## Stop Dialogue and resets everything
 func reset(keep_dialogue : bool = false) -> void:
-    print_debug("Resetting Dialouge...")
+    print("Resetting Dialogue [%s]..." % current_dialogue.source_path)
     resetted.emit(step,
         current_dialogue.sets[step] if step != -1 else\
-        {
-            "actor" : "",
-            "line" : "",
-            "line_raw" : "",
-            "func" : [],
-            "tags": {
-                "delays" : {},
-                "speeds" : {},
-            },
-            "offets" : {},
-        }
+        Dialogue.Parser.SETS_TEMPLATE
     )
 
     if !keep_dialogue:
@@ -197,19 +191,57 @@ func reset(keep_dialogue : bool = false) -> void:
 ## Start the [Dialogue] at step 0 or at defined preprogress parameter.
 ## If no parameter (or null) is passed, it will run the [member current_dialogue] if present
 func start(dialogue : Dialogue = null) -> void:
-    print_debug("Starting Dialouge...")
     if dialogue != null:
         current_dialogue = dialogue
 
     if current_dialogue == null:
         push_error("Cannot start the Stage: `current_dialogue` is null")
     else:
+        print("Starting Dialogue [%s]..." % current_dialogue.source_path)
         current_dialogue_length = current_dialogue.sets.size()
 
         progress()
         started.emit()
 
-func set_caller(id : String, node : Node) -> void:
+func switch_lang(lang : String = "") -> void:
+    if current_dialogue == null:
+        push_error("Failed switching lang: current_dialogue is null")
+    else:
+        if current_dialogue.source_path == "":
+            push_error("Failed switching lang: no Dialogue source_path")
+        else:
+            var regex_lang := RegEx.new()
+            regex_lang.compile(r"\.\w{2,4}\.txt$")
+            var src := current_dialogue.source_path
+            var ext := "" if lang == "" or lang == Theatre.default_lang\
+                else ("." + lang)
+
+            # TODO: mybe `default_lang` is not necessary.
+            # Make `default_lang` as an alias
+
+            if regex_lang.search(src) == null: # is using default lang
+                src = src.insert(src.rfind(".txt"), ext)
+            else:
+                src = src.replace(
+                    regex_lang.search(src).strings[0], ext + ".txt"
+                )
+
+            if !FileAccess.file_exists(src):
+                push_error("Failed switching lang: %s does not exists" % src)
+            else:
+                var dlg_tr := Dialogue.load(src)
+                if dlg_tr.sets.size() != current_dialogue.sets.size():
+                    push_error("Failed switching lang: Dialogue length does not match")
+                else:
+                    current_dialogue = dlg_tr
+                    locale_changed.emit(lang)
+                    if is_playing():
+                        current_dialogue_set = current_dialogue.sets[step]
+                        update_display()
+                        if dialogue_label != null:
+                            dialogue_label.rerender()
+
+func add_caller(id : String, node : Node) -> void:
     caller[id] = node
     node.tree_exited.connect(remove_caller.bind(id))
 

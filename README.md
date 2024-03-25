@@ -28,7 +28,7 @@ Dia:
 
 Get more control on how your dialogue flow with `{delay}` and `{speed}`.
 ```
-Dia:
+Godette:
     "Hello!{delay = 0.7} nice to meet"
 ```
 
@@ -38,7 +38,7 @@ Connect your story to the game with function calls.
 ```
 {player_name}:
     "Thanks! that feels so much better"
-    Player => heal(20)
+    player.heal(20)
 ```
 
 # Quick Start
