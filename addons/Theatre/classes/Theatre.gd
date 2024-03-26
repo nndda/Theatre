@@ -1,3 +1,4 @@
+@icon("res://addons/Theatre/assets/icons/Theatre.svg")
 extends Node
 
 var speed_scale : float = 1.0
@@ -11,5 +12,5 @@ signal locale_changed(lang : String)
 func set_locale(lang : String = "") -> void:
     locale_changed.emit(lang)
 
-func print_silly():
+func print_silly() -> void:
     print("silly :p")

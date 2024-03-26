@@ -1,3 +1,4 @@
+@icon("res://addons/Theatre/assets/icons/Theatre.svg")
 @tool
 class_name TheatrePlugin extends EditorPlugin
 
