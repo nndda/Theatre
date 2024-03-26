@@ -69,7 +69,7 @@ func _exit_tree() -> void:
 
     # Clear plugin submenu
     plugin_submenu.id_pressed.disconnect(tool_submenu_id_pressed)
-    remove_tool_menu_item("Theatre")
+    remove_tool_menu_item("🎭 Theatre")
 
     # Remove Theatre singleton
     remove_autoload_singleton("Theatre")
@@ -105,7 +105,6 @@ func crawl(path : String = "res://") -> void:
                         var rem_err := DirAccess.remove_absolute(file_com)
                         if rem_err != OK:
                             push_error("Error removing Dialogue resource: ", rem_err)
-                        EditorInterface.get_resource_filesystem().scan()
 
                     var sav_err := ResourceSaver.save(
                         Dialogue.new(file), file_com,
@@ -113,6 +112,7 @@ func crawl(path : String = "res://") -> void:
                     )
                     if sav_err != OK:
                         push_error("Error saving Dialogue resource: ", sav_err)
+                    EditorInterface.get_resource_filesystem().scan()
 
             file_name = dir.get_next()
 
@@ -126,7 +126,7 @@ func init_gitignore() -> void:
                 "*.dlg.tres",
                 "*.dlg.res",
             ]:
-            gitignore_str = gitignore_str.replace( "\n" + i, "")
+            gitignore_str = gitignore_str.replace("\n" + i, "")
             gitignore_str += "\n" + i
 
         gitignore.store_string(gitignore_str)
