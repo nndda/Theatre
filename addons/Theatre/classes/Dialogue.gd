@@ -97,11 +97,13 @@ class Parser extends RefCounted:
                         )
 
                     # Function parameters/arguments
-                    var args_raw := "[%s]" %\
-                        regex_func_match.get_string(
+                    var args_raw := regex_func_match.get_string(
                         regex_func_match.names["args"]
                     ).strip_edges()
-                    var args = str_to_var(args_raw)
+                    var args = str_to_var("[%s]" % args_raw)
+
+                    if args == null:
+                        push_error("Error, null arguments: ", args_raw)
 
                     func_dict["args"] = args
                     output[body_pos]["func"].append(func_dict)
