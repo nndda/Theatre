@@ -1,6 +1,9 @@
 # Godot 4+ specific ignores
 .godot/
 
+# Imported translations (automatically generated from CSV files)
+*.translation
+
 # Temporary files
 *.tmp
 
