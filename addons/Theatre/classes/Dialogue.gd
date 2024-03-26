@@ -16,7 +16,7 @@ class Parser extends RefCounted:
     const REGEX_DLG_TAGS :=\
         r"\{\s*(\w+)\s*=\s*(.+?)\s*\}"
     const REGEX_FUNC_CALL :=\
-        r"(?<caller>\w+)\.(?<name>\w+)\((?<args>[^\)]*)\)"
+        r"(?<caller>\w+)\.(?<name>\w+)\((?<args>.*)\)$"
     const REGEX_PLACEHOLDER :=\
         r"\{(\w+?)\}"
     const REGEX_INDENT :=\
@@ -43,6 +43,11 @@ class Parser extends RefCounted:
             #   start, end
             #   15: 20
         },
+    }
+    const FUNC_TEMPLATE := {
+        "caller": "",
+        "name": "",
+        "args": [],
     }
 
     func _init(src : String = ""):
@@ -83,7 +88,7 @@ class Parser extends RefCounted:
                 var regex_func_match := regex_func.search(dlg_raw[i].dedent())
 
                 if regex_func_match != null:
-                    var func_dict := {}
+                    var func_dict := FUNC_TEMPLATE.duplicate(true)
                     for func_n : String in [
                         "caller", "name",
                     ]:
@@ -92,25 +97,13 @@ class Parser extends RefCounted:
                         )
 
                     # Function parameters/arguments
-                    var args = []
-                    for arg : String in regex_func_match.get_string(
-                            regex_func_match.names["args"]
-                    ).split(",", false):
-                        if arg.is_valid_float():
-                            args.append(float(arg))
-                        elif arg.is_valid_int():
-                            args.append(int(arg))
-                        elif arg.to_lower() == "true" or\
-                            arg.to_lower() == "false":
-                            args.append(arg.to_lower() == "true")
-                        else:
-                            for q in ["\"", "\'"]:
-                                if arg.begins_with(q) and\
-                                    arg.ends_with(q):
-                                    arg\
-                                    .trim_prefix(q)\
-                                    .trim_suffix(q)
-                                    args.append(arg)
+                    var args_raw := regex_func_match.get_string(
+                        regex_func_match.names["args"]
+                    ).strip_edges()
+                    var args = str_to_var("[%s]" % args_raw)
+
+                    if args == null:
+                        push_error("Error, null arguments: ", args_raw)
 
                     func_dict["args"] = args
                     output[body_pos]["func"].append(func_dict)
@@ -159,16 +152,6 @@ class Parser extends RefCounted:
             string = string.replacen("\n" + spc, "\n")
 
         return string
-
-    static func parse_func(string : String) -> Array:
-        var funcs : Array[Dictionary] = SETS_TEMPLATE["func"].duplicate(true)
-        const FUNC_TEMPLATE := {
-            "caller": "",
-            "name": "",
-            "args": "",
-        }
-
-        return funcs
 
     static func parse_tags(string : String) -> Dictionary:
         var output : Dictionary = {}
