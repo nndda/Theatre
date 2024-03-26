@@ -3,6 +3,8 @@ extends Object
 
 var allow_skip := true
 
+var allow_func := true
+
 var auto := false
 
 var auto_delay : float = 1.5
@@ -93,6 +95,7 @@ func _init(parameters : Dictionary):
 
         var constructor_property : PackedStringArray = [
             "allow_skip",
+            "allow_func",
             "auto",
             "auto_delay",
             "speed_scale",
@@ -149,19 +152,20 @@ func progress() -> void:
                 update_display()
 
                 # Calling functions
-                for f : Dictionary in current_dialogue_set["func"]:
-                    print("Calling function: \"%s\" on \"%s\"" % [
-                        f["name"], f["caller"]
-                    ])
-                    if !caller.has(f["caller"]):
-                        push_error("caller %s doesn't exists" % f["caller"])
-                    else:
-                        if !caller[f["caller"]].has_method(f["name"]):
-                            push_error("Function %s doesn't exists on %s" % [
-                                f["name"], f["caller"]]
-                            )
+                if allow_func:
+                    for f : Dictionary in current_dialogue_set["func"]:
+                        print("Calling function: \"%s\" on \"%s\"" % [
+                            f["name"], f["caller"]
+                        ])
+                        if !caller.has(f["caller"]):
+                            push_error("caller %s doesn't exists" % f["caller"])
                         else:
-                            caller[f["caller"]].callv(f["name"], f["args"])
+                            if !caller[f["caller"]].has_method(f["name"]):
+                                push_error("Function %s doesn't exists on %s" % [
+                                    f["name"], f["caller"]]
+                                )
+                            else:
+                                caller[f["caller"]].callv(f["name"], f["args"])
 
                 if dialogue_label != null:
                     dialogue_label.start_render()
