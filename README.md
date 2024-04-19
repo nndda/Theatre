@@ -2,8 +2,8 @@
 
 Text based linear dialogue system for Godot 4.
 
-> [!NOTE]
-> This project is currently in alpha stage and is subject to frequent changes and bugs.
+> [!IMPORTANT]
+> This project is currently in its alpha stage and is subject to frequent changes and bugs.
 
 # Features
 
@@ -20,16 +20,18 @@ Dia:
 
 Dia:
     "You can also do things like calling
-    functions, and variables."
+    functions, inserting variables, ..."
+
+# and adding comments!
 
 ```
 
 ## Dialogue tags
 
-Get more control on how your dialogue flow with `{delay}` and `{speed}`.
+Fine-tune your dialogue flow with `{delay}` and `{speed}`.
 ```
 Godette:
-    "Hello!{delay = 0.7} nice to meet"
+    "Hello!{delay = 0.7} nice to meet you"
 ```
 
 ## Function calls
