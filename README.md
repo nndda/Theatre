@@ -1,15 +1,11 @@
 # Theatre
 
-Text based linear dialogue system for Godot 4.
+<img src="addons/Theatre/assets/icons/Theatre.svg" alt="Theatre Logo" height="150" align="right">
 
-> [!IMPORTANT]
+Text-based linear dialogue system for Godot 4. Literally just a text file! Written in human-readable syntax and VCS-friendly. Edit it with your favourite editor or directly in Godot script editor while keeping your codes and story separate.
+
+> [!NOTE]
 > This project is currently in its alpha stage and is subject to frequent changes and bugs.
-
-# Features
-
-## Literally just a text file
-
-Human readable syntax and VCS friendly! edit it with your favourite editor, or directly in Godot script editor while keeping your codes and your story separate.
 ```
 Dia:
     "The syntax is designed to be human-readable.
@@ -23,8 +19,9 @@ Dia:
     functions, inserting variables, ..."
 
 # and adding comments!
-
 ```
+
+# Features
 
 ## Dialogue tags
 
