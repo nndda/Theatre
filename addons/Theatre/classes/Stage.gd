@@ -108,8 +108,6 @@ func _init(parameters : Dictionary):
                 else:
                     push_error("Error constructing Stage, `%s` does not exists" % property)
 
-    Theatre.locale_changed.connect(switch_lang)
-
 ## Emitted when [Dialogue] started ([member step] == 0)
 signal started
 ## Emitted when [Dialogue] finished ([member step] == [member step.size()])
