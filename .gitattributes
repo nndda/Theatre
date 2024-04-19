@@ -1,2 +1,13 @@
 # Normalize EOL for all files that Git considers text files.
 * text=auto eol=lf
+
+# Imported translations (automatically generated from CSV files).
+*.translation
+
+# Generated temporary files.
+*.tmp
+
+# Only include the addons folder when downloading from the Asset Library.
+/**        export-ignore
+/addons    !export-ignore
+/addons/** !export-ignore
