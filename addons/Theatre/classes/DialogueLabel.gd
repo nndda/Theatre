@@ -35,10 +35,18 @@ func start_render() -> void:
     speed_queue = current_stage.current_dialogue_set["tags"]["speeds"].keys()
     delay_queue = current_stage.current_dialogue_set["tags"]["delays"].keys()
 
-func rerender() -> void:
-    visible_characters = 0
+func clear_render() -> void:
+    delay_queue.clear()
+    speed_queue.clear()
+
     delay_timer.stop()
     characters_ticker.stop()
+
+    visible_ratio = 0
+    visible_characters = -1
+
+func rerender() -> void:
+    clear_render()
     start_render()
 
 func characters_ticker_timeout() -> void:
@@ -68,3 +76,6 @@ func characters_ticker_timeout() -> void:
         characters_ticker.stop()
         text_rendered.emit(text)
         characters_ticker.wait_time = characters_draw_tick_scaled
+
+    if current_stage.step == -1:
+        clear_render()
