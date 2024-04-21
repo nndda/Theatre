@@ -3,6 +3,8 @@ extends Object
 
 var allow_skip := true
 
+var allow_cancel := true
+
 var allow_func := true
 
 var auto := false
@@ -95,6 +97,7 @@ func _init(parameters : Dictionary):
 
         var constructor_property : PackedStringArray = [
             "allow_skip",
+            "allow_cancel",
             "allow_func",
             "auto",
             "auto_delay",
@@ -176,19 +179,24 @@ func progress() -> void:
 
 ## Stop Dialogue and resets everything
 func reset(keep_dialogue : bool = false) -> void:
-    print("Resetting Dialogue [%s]..." % current_dialogue.source_path)
-    resetted.emit(step,
-        current_dialogue.sets[step] if step != -1 else\
-        Dialogue.Parser.SETS_TEMPLATE
-    )
+    if !allow_cancel:
+        print("Resetting Dialogue is not allowed: [%s]" % current_dialogue.source_path)
+    else:
+        print("Resetting Dialogue [%s]..." % current_dialogue.source_path)
+        resetted.emit(step,
+            current_dialogue.sets[step] if step != -1 else\
+            Dialogue.Parser.SETS_TEMPLATE
+        )
 
-    if !keep_dialogue:
-        current_dialogue = null
-    step = -1
+        if !keep_dialogue:
+            current_dialogue = null
+        step = -1
 
-    if actor_label != null:
-        actor_label.text = ""
-    dialogue_label.text = ""
+        if actor_label != null:
+            actor_label.text = ""
+        dialogue_label.text = ""
+
+        dialogue_label.start_render()
 
 ## Start the [Dialogue] at step 0 or at defined preprogress parameter.
 ## If no parameter (or null) is passed, it will run the [member current_dialogue] if present
