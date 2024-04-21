@@ -15,10 +15,6 @@ run/main_scene="res://theatre_demo/intro_1.tscn"
 config/features=PackedStringArray("4.2")
 config/icon="res://addons/Theatre/assets/icons/Theatre.svg"
 
-[autoload]
-
-Theatre="*res://addons/Theatre/classes/Theatre.gd"
-
 [display]
 
 window/stretch/mode="canvas_items"

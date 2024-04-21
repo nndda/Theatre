@@ -40,7 +40,6 @@ class Config extends RefCounted:
         if err != OK:
             push_error("Error saving Theatre config: ", err)
 
-# BUG: theres a black rectangle on top left corner when Godot starts
 var plugin_submenu : PopupMenu = preload(
     "res://addons/Theatre/components/tool_submenu.tscn"
 ).instantiate()
@@ -60,9 +59,6 @@ func _enter_tree() -> void:
     plugin_submenu.id_pressed.connect(tool_submenu_id_pressed)
     add_tool_submenu_item("🎭 Theatre", plugin_submenu)
 
-    # Add Theatre singleton
-    add_autoload_singleton("Theatre", "res://addons/Theatre/classes/Theatre.gd")
-
 func _exit_tree() -> void:
     print("🎭 Disabling Theatre...")
     # Clear project settings
@@ -71,9 +67,6 @@ func _exit_tree() -> void:
     # Clear plugin submenu
     plugin_submenu.id_pressed.disconnect(tool_submenu_id_pressed)
     remove_tool_menu_item("🎭 Theatre")
-
-    # Remove Theatre singleton
-    remove_autoload_singleton("Theatre")
 
 func crawl(path : String = "res://") -> void:
     var dir := DirAccess.open(path)
@@ -98,9 +91,9 @@ func crawl(path : String = "res://") -> void:
                             print("Crawling " + new_dir + " for dialogue resources...")
                         crawl(new_dir)
             else:
-                if file_name.ends_with(".txt"):
+                if file_name.ends_with(".dlg.txt"):
                     var file := path + "/" + file_name
-                    var file_com := file.trim_suffix(".txt") + ".dlg.res"
+                    var file_com := file.trim_suffix(".txt") + ".res"
 
                     if FileAccess.file_exists(file_com):
                         var rem_err := DirAccess.remove_absolute(file_com)

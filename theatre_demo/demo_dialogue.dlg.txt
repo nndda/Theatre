@@ -1,0 +1,28 @@
+Dia:
+    "Welcome to the Theatre!{d = 0.5} Hi there!{d = 0.4}
+    this is a demo dialogue to demonstrate Theatre addon's core feature."
+
+:
+    "There are 5 main classes that makes part of Theatre plugin:{delay = 0.7}
+    Dialogue, {d = 0.7}
+    DialogueLabel, {d = 0.7}
+    Stage, {d = 0.7}
+    Theatre, {d = 0.7}
+    & TheatrePlugin."
+
+:
+    "Lets start with Dialogue:{d = 0.8} Its a resource, containing the writing of
+    your{s = 0.035}...{s}{d = 0.5} well,{d = 0.8} dialogue!{d = 1.0}
+    You write them in a plain text file,{d = 0.9}
+    the written dialogue then get parsed to a resource,{d = 0.9}
+    that you can then use in your project"
+
+:
+    "And {s = 0.9}um{s = 0.04}...{s} Thats it!{s = 0.035}...{s} for now."
+
+:
+    "We also have an official documentation page,{d = 0.85}
+    live at nndda.github.io/Theatre"
+
+:
+    "Stay tuned for the next updates!"

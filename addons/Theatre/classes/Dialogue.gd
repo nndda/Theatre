@@ -14,7 +14,7 @@ class Parser extends RefCounted:
     var output : Array[Dictionary]
 
     const REGEX_DLG_TAGS :=\
-        r"\{\s*(\w+)\s*=\s*(.+?)\s*\}"
+        r"\{\s*(?<tag>\w+)\s*(\=\s*(?<arg>.+?)\s*)*\}"
     const REGEX_FUNC_CALL :=\
         r"(?<caller>\w+)\.(?<name>\w+)\((?<args>.*)\)$"
     const REGEX_PLACEHOLDER :=\
@@ -73,10 +73,12 @@ class Parser extends RefCounted:
                     if dlg_raw.size() < i + 1:
                         assert(false, "Error: Dialogue name exists without a body")
 
-                    setsl["actor"] = n.trim_suffix(":")
+                    setsl["actor"] = n.strip_edges().trim_suffix(":")
 
                     if setsl["actor"] == "_":
                         setsl["actor"] = ""
+                    elif setsl["actor"] == "":
+                        setsl["actor"] = output[output.size() - 1]["actor"]
 
                     output.append(setsl)
                     body_pos = output.size() - 1
@@ -85,7 +87,7 @@ class Parser extends RefCounted:
                 # Function calls
                 var regex_func := RegEx.new()
                 regex_func.compile(REGEX_FUNC_CALL)
-                var regex_func_match := regex_func.search(dlg_raw[i].dedent())
+                var regex_func_match := regex_func.search(dlg_raw[i].strip_edges())
 
                 if regex_func_match != null:
                     var func_dict := FUNC_TEMPLATE.duplicate(true)
@@ -110,7 +112,7 @@ class Parser extends RefCounted:
 
                 # Dialogue text body
                 else:
-                    var dlg_body := dlg_raw[i].dedent() + " "
+                    var dlg_body := dlg_raw[i].strip_edges() + " "
 
                     output[body_pos]["line_raw"] += dlg_body
                     output[body_pos]["line"] += dlg_body
@@ -126,7 +128,7 @@ class Parser extends RefCounted:
 
     ## Check if [param string] is indented with tabs or spaces.
     func is_indented(string : String) -> bool:
-        return string.begins_with(" ") or string.begins_with("\t")
+        return string != string.lstrip(" \t")
 
     ## Check if [param string] is written in a valid Dialogue string format/syntax or not.
     static func is_valid_source(string : String) -> bool:
@@ -167,15 +169,17 @@ class Parser extends RefCounted:
             string = string.replace(b.strings[0], "")
 
             var tag_pos : int = b.get_start() - tag_pos_offset
-            var tag_key := b.strings[1].to_upper()
-            var tag_value := b.strings[2]
+            var tag_key := b.get_string("tag").to_upper()
+            var tag_value := b.get_string("arg")
 
             tag_pos_offset += b.strings[0].length()
 
             if ["DELAY", "WAIT", "D", "W"].has(tag_key):
                 tags["delays"][tag_pos] = float(tag_value)
             elif ["SPEED", "SPD", "S"].has(tag_key):
-                tags["speeds"][tag_pos] = float(tag_value)
+                tags["speeds"][tag_pos] = float(
+                    1.0 if tag_value.is_empty() else tag_value
+                )
             else:
                 push_warning("Unknown tags: ", b.strings[0])
 
@@ -239,10 +243,10 @@ static func load(dlg_src : String) -> Dialogue:
         # Find filename alias
         var dlg_compiled := dlg_src.trim_suffix(".txt")
 
-        if FileAccess.file_exists(dlg_compiled + ".dlg.res"):
-            dlg_compiled += ".dlg.res"
-        elif FileAccess.file_exists(dlg_compiled + ".dlg.tres"):
-            dlg_compiled += ".dlg.tres"
+        if FileAccess.file_exists(dlg_compiled + ".res"):
+            dlg_compiled += ".res"
+        elif FileAccess.file_exists(dlg_compiled + ".tres"):
+            dlg_compiled += ".tres"
 
         print("Getting Dialogue from file: ", dlg_compiled)
 
