@@ -73,10 +73,12 @@ class Parser extends RefCounted:
                     if dlg_raw.size() < i + 1:
                         assert(false, "Error: Dialogue name exists without a body")
 
-                    setsl["actor"] = n.trim_suffix(":")
+                    setsl["actor"] = n.strip_edges().trim_suffix(":")
 
                     if setsl["actor"] == "_":
                         setsl["actor"] = ""
+                    elif setsl["actor"] == "":
+                        setsl["actor"] = output[output.size() - 1]["actor"]
 
                     output.append(setsl)
                     body_pos = output.size() - 1
