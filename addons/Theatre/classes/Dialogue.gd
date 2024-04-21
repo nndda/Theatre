@@ -14,7 +14,7 @@ class Parser extends RefCounted:
     var output : Array[Dictionary]
 
     const REGEX_DLG_TAGS :=\
-        r"\{\s*(\w+)\s*=\s*(.+?)\s*\}"
+        r"\{\s*(?<tag>\w+)\s*(\=\s*(?<arg>.+?)\s*)*\}"
     const REGEX_FUNC_CALL :=\
         r"(?<caller>\w+)\.(?<name>\w+)\((?<args>.*)\)$"
     const REGEX_PLACEHOLDER :=\
@@ -167,15 +167,17 @@ class Parser extends RefCounted:
             string = string.replace(b.strings[0], "")
 
             var tag_pos : int = b.get_start() - tag_pos_offset
-            var tag_key := b.strings[1].to_upper()
-            var tag_value := b.strings[2]
+            var tag_key := b.get_string("tag").to_upper()
+            var tag_value := b.get_string("arg")
 
             tag_pos_offset += b.strings[0].length()
 
             if ["DELAY", "WAIT", "D", "W"].has(tag_key):
                 tags["delays"][tag_pos] = float(tag_value)
             elif ["SPEED", "SPD", "S"].has(tag_key):
-                tags["speeds"][tag_pos] = float(tag_value)
+                tags["speeds"][tag_pos] = float(
+                    1.0 if tag_value.is_empty() else tag_value
+                )
             else:
                 push_warning("Unknown tags: ", b.strings[0])
 
@@ -237,7 +239,7 @@ static func is_valid_filename(filename : String) -> bool:
 static func load(dlg_src : String) -> Dialogue:
     if is_valid_filename(dlg_src):
         # Find filename alias
-        var dlg_compiled := dlg_src.trim_suffix(".dlg.txt")
+        var dlg_compiled := dlg_src.trim_suffix(".txt")
 
         if FileAccess.file_exists(dlg_compiled + ".res"):
             dlg_compiled += ".res"
