@@ -128,7 +128,7 @@ class Parser extends RefCounted:
 
     ## Check if [param string] is indented with tabs or spaces.
     func is_indented(string : String) -> bool:
-        return string.begins_with(" ") or string.begins_with("\t")
+        return string != string.lstrip(" \t")
 
     ## Check if [param string] is written in a valid Dialogue string format/syntax or not.
     static func is_valid_source(string : String) -> bool:
