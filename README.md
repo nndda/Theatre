@@ -11,10 +11,10 @@ Dia:
     "The syntax is designed to be human-readable.
     Similar to languages like YAML."
 
-Dia:
+:
     "Although it's far more simplified and limited."
 
-Dia:
+:
     "You can also do things like calling
     functions, inserting variables, ..."
 
