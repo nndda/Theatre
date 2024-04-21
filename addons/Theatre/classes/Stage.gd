@@ -46,7 +46,7 @@ var actor_label : Label
 
 var caller : Dictionary = {}
 
-## [RichTextLabel] node that displays the dialogue body [member Dialogue.set_current.dlg]. This element is [b]required[/b] for the dialogue to run.
+## [DialogueLabel] node that displays the dialogue body [member Dialogue.set_current.dlg]. This is [b]required[/b] for the dialogue to run
 var dialogue_label : DialogueLabel
 
 ## Current progress of the Dialogue.
@@ -128,19 +128,23 @@ func get_current_set() -> Dictionary:
 func is_playing() -> bool:
     return step >= 0
 
-## Progress the [Dialogue] by 1 step. If [member progress_tween] is still running, [member progress_tween.stop()] and [member progress_tween_reset] will be called, and the [Dialogue] will not progressed.
+## Progress the [Dialogue] by 1 step.
 func progress() -> void:
-    if current_dialogue != null:
+    if current_dialogue == null:
+        push_warning("No Dialogue present")
+    else:
         # Skip dialogue
         if dialogue_label.visible_ratio < 1.0:
             if allow_skip:
-                dialogue_label.visible_characters = current_dialogue_set["line"].length()
+                dialogue_label.clear_render()
+                dialogue_label.visible_ratio = 1.0
 
         # Progress dialogue
         else:
             if step + 1 < current_dialogue_length:
+                dialogue_label.clear_render()
+
                 step += 1
-                dialogue_label.visible_characters = 0
                 current_dialogue_set = current_dialogue.sets[step]
                 body_text_length = current_dialogue_set["line"].length()
 
@@ -168,8 +172,7 @@ func progress() -> void:
                             else:
                                 caller[f["caller"]].callv(f["name"], f["args"])
 
-                if dialogue_label != null:
-                    dialogue_label.start_render()
+                dialogue_label.start_render()
 
                 progressed.emit(step, current_dialogue_set)
 
@@ -178,41 +181,46 @@ func progress() -> void:
                 finished.emit()
 
 ## Stop Dialogue and resets everything
-func reset(keep_dialogue : bool = false) -> void:
+func reset() -> void:
     if !allow_cancel:
-        print("Resetting Dialogue is not allowed: [%s]" % current_dialogue.source_path)
+        print("Resetting Dialogue is not allowed")
     else:
-        print("Resetting Dialogue [%s]..." % current_dialogue.source_path)
-        resetted.emit(step,
-            current_dialogue.sets[step] if step != -1 else\
-            Dialogue.Parser.SETS_TEMPLATE
-        )
+        if current_dialogue != null:
+            print("Resetting Dialogue [%s]..." % current_dialogue.source_path)
+            resetted.emit(step,
+                current_dialogue.sets[step] if step != -1 else\
+                Dialogue.Parser.SETS_TEMPLATE
+            )
 
-        if !keep_dialogue:
+            step = -1
+
+            if actor_label != null:
+                actor_label.text = ""
+
+            dialogue_label.clear_render()
+            dialogue_label.text = ""
+
             current_dialogue = null
-        step = -1
-
-        if actor_label != null:
-            actor_label.text = ""
-        dialogue_label.text = ""
-
-        dialogue_label.start_render()
 
 ## Start the [Dialogue] at step 0 or at defined preprogress parameter.
 ## If no parameter (or null) is passed, it will run the [member current_dialogue] if present
 func start(dialogue : Dialogue = null) -> void:
-    if dialogue != null:
-        current_dialogue = dialogue
-
-    if current_dialogue == null:
-        push_error("Cannot start the Stage: `current_dialogue` is null")
+    if is_playing():
+        push_warning("Theres already a running Dialogue!")
     else:
-        print("Starting Dialogue [%s]..." % current_dialogue.source_path)
-        current_dialogue_length = current_dialogue.sets.size()
+        if dialogue != null:
+            current_dialogue = dialogue
 
-        progress()
-        started.emit()
+        if current_dialogue == null:
+            push_error("Cannot start the Stage: `current_dialogue` is null")
+        else:
+            print("Starting Dialogue [%s]..." % current_dialogue.source_path)
+            current_dialogue_length = current_dialogue.sets.size()
 
+            progress()
+            started.emit()
+
+# TODO
 func switch_lang(lang : String = "") -> void:
     if current_dialogue == null:
         push_error("Failed switching lang: current_dialogue is null")
@@ -248,8 +256,7 @@ func switch_lang(lang : String = "") -> void:
                     if is_playing():
                         current_dialogue_set = current_dialogue.sets[step]
                         update_display()
-                        if dialogue_label != null:
-                            dialogue_label.rerender()
+                        dialogue_label.rerender()
 
 func add_caller(id : String, node : Node) -> void:
     caller[id] = node
