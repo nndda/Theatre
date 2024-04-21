@@ -237,12 +237,12 @@ static func is_valid_filename(filename : String) -> bool:
 static func load(dlg_src : String) -> Dialogue:
     if is_valid_filename(dlg_src):
         # Find filename alias
-        var dlg_compiled := dlg_src.trim_suffix(".txt")
+        var dlg_compiled := dlg_src.trim_suffix(".dlg.txt")
 
-        if FileAccess.file_exists(dlg_compiled + ".dlg.res"):
-            dlg_compiled += ".dlg.res"
-        elif FileAccess.file_exists(dlg_compiled + ".dlg.tres"):
-            dlg_compiled += ".dlg.tres"
+        if FileAccess.file_exists(dlg_compiled + ".res"):
+            dlg_compiled += ".res"
+        elif FileAccess.file_exists(dlg_compiled + ".tres"):
+            dlg_compiled += ".tres"
 
         print("Getting Dialogue from file: ", dlg_compiled)
 

@@ -91,9 +91,9 @@ func crawl(path : String = "res://") -> void:
                             print("Crawling " + new_dir + " for dialogue resources...")
                         crawl(new_dir)
             else:
-                if file_name.ends_with(".txt"):
+                if file_name.ends_with(".dlg.txt"):
                     var file := path + "/" + file_name
-                    var file_com := file.trim_suffix(".txt") + ".dlg.res"
+                    var file_com := file.trim_suffix(".txt") + ".res"
 
                     if FileAccess.file_exists(file_com):
                         var rem_err := DirAccess.remove_absolute(file_com)
