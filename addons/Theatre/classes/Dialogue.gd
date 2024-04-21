@@ -87,7 +87,7 @@ class Parser extends RefCounted:
                 # Function calls
                 var regex_func := RegEx.new()
                 regex_func.compile(REGEX_FUNC_CALL)
-                var regex_func_match := regex_func.search(dlg_raw[i].dedent())
+                var regex_func_match := regex_func.search(dlg_raw[i].strip_edges())
 
                 if regex_func_match != null:
                     var func_dict := FUNC_TEMPLATE.duplicate(true)
@@ -112,7 +112,7 @@ class Parser extends RefCounted:
 
                 # Dialogue text body
                 else:
-                    var dlg_body := dlg_raw[i].dedent() + " "
+                    var dlg_body := dlg_raw[i].strip_edges() + " "
 
                     output[body_pos]["line_raw"] += dlg_body
                     output[body_pos]["line"] += dlg_body
