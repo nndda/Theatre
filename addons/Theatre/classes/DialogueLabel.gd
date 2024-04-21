@@ -2,7 +2,6 @@ class_name DialogueLabel
 extends RichTextLabel
 
 var current_stage : Stage
-var offset_queue : PackedInt32Array = []
 var delay_queue : PackedInt32Array = []
 var speed_queue : PackedInt32Array = []
 
@@ -35,7 +34,6 @@ func start_render() -> void:
 
     speed_queue = current_stage.current_dialogue_set["tags"]["speeds"].keys()
     delay_queue = current_stage.current_dialogue_set["tags"]["delays"].keys()
-    offset_queue = current_stage.current_dialogue_set["offsets"].keys()
 
 func rerender() -> void:
     visible_characters = 0
