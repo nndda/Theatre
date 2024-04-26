@@ -52,8 +52,8 @@ Dia:
 
 """)
 
-# alternatively, write it in a *.txt file, and load it
-var epic_dialogue = Dialogue.load("res://epic_dialogue.txt")
+# alternatively, write it in a *.dlg.txt file, and load it
+var epic_dialogue = Dialogue.load("res://epic_dialogue.dlg.txt")
 ```
 
 Set the Stage! define the `Label` & `DialogueLabel` node to display your Dialogue
