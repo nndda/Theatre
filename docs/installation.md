@@ -1,3 +1,8 @@
+---
+hide:
+  - navigation
+---
+
 # Installation
 
 ## Installing the plugin
@@ -29,5 +34,5 @@ Make sure that Theatre is enabled at `Project > Project Settings... > Plugins`.
 You should see the following on your console output
 
 ```
-🎭 Theatre v0.0.1-alpha.3 by nnda
+🎭 Theatre v0.3.6-alpha by nnda
 ```

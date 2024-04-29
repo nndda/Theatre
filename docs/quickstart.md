@@ -1,3 +1,8 @@
+---
+hide:
+  - navigation
+---
+
 # Quick Start
 
 You've installed the plugin. You had the characters, plot, and the worldbuilding of your story ready, or maybe not, thats ok too.
@@ -24,9 +29,13 @@ Actor name:
 # You can also comments using (#) symbol
 ```
 
-In this example, we'll save the file as `res://intro.txt`. Now that the `Dialogue` is ready, lets set up the `Stage`.
+In this example, we'll save the file as `res://intro.dlg.txt`. Now that the `Dialogue` is ready, lets set up the `Stage`.
 
 [More on writing the Dialogue here.](../dialogue/writing)
+
+!!! note
+
+    Dialogue resource are saved with the file extension `*.dlg.txt`
 
 ## Setting up the Stage
 
@@ -85,7 +94,7 @@ func _input(event):
         stage.progress()
 ```
 
-Now, everytime the `'ui_accept'` key is pressed, the Dialogue should progress.
+Now, everytime `'ui_accept'` key is pressed, the Dialogue should progress.
 
 ## Additional stuff
 
@@ -93,7 +102,7 @@ Now, everytime the `'ui_accept'` key is pressed, the Dialogue should progress.
 
 You might want to only show the UI when theres a Dialogue running, and hide it when the Dialogue ends.
 
-`Stage` class also fitted with signals such as `started`, `finished`, and `progressed` that are pretty self-explanatory.
+`Stage` class is also equipped with signals such as `started`, `finished`, and `progressed` that are pretty self-explanatory.
 
 We'll connect these signals in `_ready()` before starting the Dialogue. And just call the method `show` and `hide` on the parents UI Node `$PanelContainer`:
 

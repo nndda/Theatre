@@ -35,12 +35,17 @@ theme:
       example: octicons/beaker-16
       quote: octicons/quote-16
   features:
+    - navigation.tabs
+    - navigation.expand
+    - navigation.path
     - content.code.copy
+    - content.tooltips
 
 markdown_extensions:
   - md_in_html
   - def_list
   - admonition
+  - tables
   - pymdownx.highlight:
       use_pygments: true
       anchor_linenums: true
@@ -51,6 +56,7 @@ markdown_extensions:
   - pymdownx.snippets
   - pymdownx.superfences
   - attr_list
+  - abbr
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
