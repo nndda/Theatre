@@ -26,14 +26,14 @@ Actor name:
 Actor name:
     The quotation marks is also entirely optional
 
-# You can also comments using (#) symbol
+# You can also comment using (#) symbol
 ```
 
 In this example, we'll save the file as `res://intro.dlg.txt`. Now that the `Dialogue` is ready, lets set up the `Stage`.
 
 [More on writing the Dialogue here.](../dialogue/writing)
 
-!!! note
+!!! important
 
     Dialogue resource are saved with the file extension `*.dlg.txt`
 
@@ -60,8 +60,8 @@ Reference the `Label` and `DialogueLabel` node we made before as the parameter, 
 
 ```gdscript
 @onready var stage = Stage.new({
-    "actor_label": $PanelContainer/Label,
-    "dialogue_label": $PanelContainer/DialogueLabel
+    'actor_label': $PanelContainer/Label,
+    'dialogue_label': $PanelContainer/DialogueLabel
 })
 ```
 
@@ -70,7 +70,7 @@ Reference the `Label` and `DialogueLabel` node we made before as the parameter, 
 Now, lets create another variable to store the Dialogue. Use `Dialogue.load()` and pass the absolute path of the text file as the parameter:
 
 ```gdscript
-var intro = Dialogue.load("res://intro.txt")
+var intro = Dialogue.load('res://intro.txt')
 ```
 
 After that, you can start it with `Stage.start()` method:
@@ -90,7 +90,7 @@ The `Stage.progress()` does exactly what it says. You have to trigger the progre
 
 ```gdscript
 func _input(event):
-    if event.is_action_pressed("ui_accept"):
+    if event.is_action_pressed('ui_accept'):
         stage.progress()
 ```
 
@@ -118,25 +118,25 @@ func _ready():
     stage.start(intro)
 ```
 
-In this example, we only used the `show` and `hide` method. You can use `AnimationPlayer` or `Tween` for more fancy transition.
+In this example, we only used `show` and `hide` method for simplicity. You can use `AnimationPlayer` or `Tween` for more fancy transition.
 
 ## Summary
 
 And, thats it!
 
-heres the finalized script of the scene:
+Here is the finalized script of the scene:
 ```gdscript
 extends Node2D
 
 @onready var stage = Stage.new({
-    "actor_label" : $PanelContainer/Label,
-    "dialogue_label" : $PanelContainer/DialogueLabel
+    'actor_label' : $PanelContainer/Label,
+    'dialogue_label' : $PanelContainer/DialogueLabel
 })
 
-var intro = Dialogue.load("res://intro.txt")
+var intro = Dialogue.load('res://intro.txt')
 
 func _input(event):
-    if event.is_action_pressed("ui_accept"):
+    if event.is_action_pressed('ui_accept'):
         stage.progress()
 
 func _ready():
