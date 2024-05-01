@@ -1,30 +1,61 @@
 site_name: Theatre documentations
 
-repo_url: https://github.com/nndda/godot-theatre/
+repo_url: https://github.com/nndda/Theatre
+edit_uri: edit/docs/docs/
 
 nav:
   - "index.md"
   - "installation.md"
   - "quickstart.md"
   - "Dialogue":
-    - "dialogue/writing.md"
-    - "dialogue/constructing.md"
-    - "dialogue/methods.md"
+    - "Tutorials":
+      - "classes/dialogue/tutorials/writing.md"
+      - "classes/dialogue/tutorials/constructing.md"
+    - "Class references":
+      - "classes/dialogue/references/properties.md"
+      - "classes/dialogue/references/methods.md"
   - "Stage":
-    - "stage/setting-up.md"
+    - "Tutorials":
+      - "classes/stage/tutorials/setting-up.md"
+    - "Class references":
+      - "classes/stage/references/properties.md"
+      - "classes/stage/references/signals.md"
+      - "classes/stage/references/methods.md"
 
 theme:
   name: material
-  palette:
-    scheme: slate
-    primary: black
-    accent: pink
+  logo: assets/icons/Theatre.svg
+  favicon: assets/icons/Theatre.svg
+
+  palette: 
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: pink
+      toggle:
+        icon: material/weather-night
+        name: Dark mode
+
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: light
+      primary: white
+      accent: pink
+      toggle:
+        icon: material/weather-sunny
+        name: Light mode
 
   icon:
+    repo: fontawesome/brands/github-alt
+    edit: material/pencil
+    view: material/eye
+
     admonition:
       note: octicons/tag-16
       abstract: octicons/checklist-16
       info: octicons/info-16
+      important: octicons/info-16
       tip: octicons/squirrel-16
       success: octicons/check-16
       question: octicons/question-16
@@ -34,10 +65,13 @@ theme:
       bug: octicons/bug-16
       example: octicons/beaker-16
       quote: octicons/quote-16
+
   features:
     - navigation.tabs
     - navigation.expand
     - navigation.path
+    - navigation.footer
+    - content.action.edit
     - content.code.copy
     - content.tooltips
 
@@ -60,3 +94,20 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+extra:
+  social:
+    - icon: simple/mastodon
+      link: https://mastodon.art/@nnda
+    - icon: simple/godotengine
+      link: https://godotengine.org/asset-library/asset/2332
+    - icon: simple/github
+      link: https://github.com/nndda/Theatre
+    - icon: simple/itchdotio
+      link: https://nnda.itch.io/theatre
+
+extra_css:
+  - assets/stylesheets/home.css
+  - assets/stylesheets/extra.css
+
+copyright: Copyright &copy; 2024 nnda
