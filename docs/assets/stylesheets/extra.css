@@ -1,0 +1,14 @@
+.class-reference-heading {
+  font-family: monospace;
+  font-weight: bold;
+}
+
+[data-md-color-media="(prefers-color-scheme: light)"] .main-logo,
+[data-md-color-media="(prefers-color-scheme: light)"] .md-header__button.md-logo {
+  filter: invert() brightness(1.25) contrast(60%);
+}
+
+.main-logo {
+  display: block;
+  margin: auto !important;
+}
