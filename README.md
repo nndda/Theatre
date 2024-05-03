@@ -1,3 +1,7 @@
 # Documentations
 
-docs
+Official Theatre documentation branch.
+
+```
+mkdocs serve
+```
