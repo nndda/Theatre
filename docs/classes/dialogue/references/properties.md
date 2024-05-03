@@ -3,7 +3,7 @@
 !!! note
     This page might not cover every single properties in the `Dialogue` class
 
-### source_path {.class-reference-heading}
+### source_path { .var .return .string }
 
 :   Return the source of the compiled Dialogue.
     ```gdscript
