@@ -9,15 +9,15 @@ hide:
 
 ### via Godot asset library
 
-1. Go to `AssetLib` scene tab
+1. Go to the `AssetLib` scene tab.
 
-2. Search for `"Theatre"`
+2. Search for `"Theatre"`.
 
     ![Image title](./assets/images/installation_assetlib_theatre.png){ width="320" }
 
-3. Click `Download`, and wait for the download to finish
+3. Click `Download`, and wait for the download to finish.
 
-4. Make sure the `Ignore asset root` is checked, and then click `Install`
+4. Make sure `Ignore asset root` is checked, and then click `Install`.
 
 ### via official releases
 
@@ -26,19 +26,19 @@ hide:
     - [:simple-github: GitHub](https://github.com/nndda/Theatre/releases)
     - [:simple-itchdotio: itch.io](https://nnda.itch.io/theatre)
 
-2. Go to `AssetLib` scene tab.
+2. Go to the `AssetLib` scene tab.
 
 3. Click `Import...` on the top right corner.
 
-4. And select the downloaded zip file.
+4. Select the downloaded zip file.
 
-5. Make sure the `Ignore asset root` is checked, and then click `Install`
+5. Make sure `Ignore asset root` is checked, and then click `Install`.
 
 ## Enabling the plugin
 
 Make sure that Theatre is enabled at `Project > Project Settings... > Plugins`.
 
-You should see the following on your console output
+You should see the following on your console output.
 
 ```
 🎭 Theatre v0.3.6-alpha by nnda

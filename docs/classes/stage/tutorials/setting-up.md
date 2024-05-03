@@ -9,7 +9,7 @@ Create a stage object in your script's global scope with `@onready` keyword.
 ```gdscript
 @onready stage = Stage.new({
     'dialogue_label': $DialogueLabel
-}) 
+})
 ```
 
 Stage takes `Dictionary` as the constuctor parameter. Here's the overview of what options you can set:
@@ -35,7 +35,7 @@ Stage takes `Dictionary` as the constuctor parameter. Here's the overview of wha
 
 ### Progressing
 
-Before starting your dialogue you need to set how to progress your dialogue with `Stage.progress()`.
+Before starting your dialogue you need to set how to progress your dialogue with [`Stage.progress()`](../references/methods.md#progress).
 
 One common way is to progress with input event: eg. a press of a button, or a mouse click.
 
@@ -47,7 +47,7 @@ func _input(event):
 
 ### Starting
 
-You can then use `Stage.start()` and pass the Dialogue as the parameter.
+You can then use [`Stage.start()`](../references/methods.md#start) and pass the Dialogue as the parameter.
 
 ```gdscript
 var dlg = Dialogue.load('res://convo.dlg.txt')
