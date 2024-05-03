@@ -1,6 +1,7 @@
 site_name: Theatre documentations
 
 repo_url: https://github.com/nndda/Theatre
+repo_name: nndda/Theatre
 edit_uri: edit/docs/docs/
 
 nav:
@@ -8,8 +9,9 @@ nav:
   - "installation.md"
   - "quickstart.md"
   - "Dialogue":
+    - "classes/dialogue/index.md"
+    - "classes/dialogue/syntax.md"
     - "Tutorials":
-      - "classes/dialogue/tutorials/writing.md"
       - "classes/dialogue/tutorials/constructing.md"
     - "Class references":
       - "classes/dialogue/references/properties.md"
@@ -40,7 +42,7 @@ theme:
     # Palette toggle for light mode
     - media: "(prefers-color-scheme: light)"
       scheme: light
-      primary: white
+      primary: black
       accent: pink
       toggle:
         icon: material/weather-sunny
@@ -53,25 +55,25 @@ theme:
 
     admonition:
       note: octicons/tag-16
-      abstract: octicons/checklist-16
       info: octicons/info-16
       important: octicons/info-16
       tip: octicons/squirrel-16
-      success: octicons/check-16
       question: octicons/question-16
       warning: octicons/alert-16
       failure: octicons/x-circle-16
       danger: octicons/zap-16
       bug: octicons/bug-16
       example: octicons/beaker-16
-      quote: octicons/quote-16
 
   features:
     - navigation.tabs
     - navigation.expand
     - navigation.path
     - navigation.footer
+    - navigation.indexes 
+
     - content.action.edit
+    - content.action.view
     - content.code.copy
     - content.tooltips
 
@@ -89,6 +91,7 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences
+  - pymdownx.details
   - attr_list
   - abbr
   - pymdownx.emoji:
@@ -107,7 +110,11 @@ extra:
       link: https://nnda.itch.io/theatre
 
 extra_css:
-  - assets/stylesheets/home.css
   - assets/stylesheets/extra.css
+  - assets/stylesheets/syntax.css
+  - assets/stylesheets/themes.css
+
+extra_javascript:
+  - assets/scripts/heading-type.js
 
 copyright: Copyright &copy; 2024 nnda
