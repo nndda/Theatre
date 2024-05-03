@@ -261,33 +261,19 @@ static func load(dlg_src : String) -> Dialogue:
         print("Parsing Dialogue from raw string: ", get_stack())
         return Dialogue.new(dlg_src)
 
-#static func print_set(input : Dictionary) -> void:
-    #print(
-        #"\n", input["actor"],
-        #"\n", input["line_raw"],
-    #)
-    #if !input["delays"].is_empty():
-        #"    delays at:"
-        #for d : int in input["delays"].keys():
-            #print("position %i, for %f seconds" % d, input["delays"][d])
-#
-    #for f in input["func"].keys():
-        #pass
-
-func to_json(path : String) -> Error:
-    var file := FileAccess.open(path, FileAccess.WRITE)
-    file.store_string(
-        JSON.stringify(sets, "  ")
-    )
-    file.close()
-    return file.get_error()
-
 func get_word_count() -> int:
     var output : int = 0
     var text : String
     for n in sets:
-        for chr in ":;.,{}":
+        for chr in ":;.,{}-":
             text = n["line_raw"].replace(chr, " ")
         output += text.split(" ", false).size()
     return output
 
+func to_json(path : String) -> Error:
+    var file := FileAccess.open(path, FileAccess.WRITE)
+    file.store_string(
+        JSON.stringify(sets, "  ", true, true)
+    )
+    file.close()
+    return file.get_error()
