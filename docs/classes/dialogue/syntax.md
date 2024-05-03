@@ -1,8 +1,8 @@
-# Writing your dialogue
+# Dialogue syntax
 
-This page cover the syntax of Dialogue, and its features.
+This page covers the syntax of `Dialogue` and its features.
 
-Dialogue text file needs to be saved as `*.dlg.txt`. Dialogue text/string needs to have atleast one actor's name with `:` at the end, and the dialogue body indented:
+Dialogue text file needs to be saved as `*.dlg.txt`. Dialogue text/string needs to have at least one actor's name with `:` at the end, and the dialogue body indented:
 ```
 Actor's name:
     Dialogue body
@@ -23,11 +23,11 @@ Ritsu:
     ```
     "You can break newline many times, as long as the dialogue body is indented!"
     ```
-    You can insert newline by using [`{n}` dialogue variable.](#built-in-variables)
+    You can insert newlines by using [`{n}` dialogue variable.](#built-in-variables)
 
 ## Actor's name
 
-When writing lots of dialogue lines of the same actor, typing the same actor name for each line can be quite tedious.
+When writing many dialogue lines of the same actor, typing the same actor's name for each line can be quite tedious.
 
 You can leave the following actor's name blank, leaving `:` alone. It will use the last declared actor's name.
 
@@ -35,7 +35,7 @@ You can leave the following actor's name blank, leaving `:` alone. It will use t
 
 ```
 Dia:
-    "Im honestly running out of
+    "I'm honestly running out of
     ideas for the dialogue
     text example"
 
@@ -50,7 +50,7 @@ Dia:
 
 ```
 Dia:
-    "Im honestly running out of
+    "I'm honestly running out of
     ideas for the dialogue
     text example"
 
@@ -65,28 +65,28 @@ Dia:
 
 </div>
 
-If you want to leave the actor's name blank, you can use single underscore (`_`).
+Leave the actor's name blank, by using a single underscore (`_`).
 
 ```
 _:
-    I am a nameless actor
+    I am a nameless narrator.
 ```
 
 ## Comments
 
-Write comments by placing `#` at the beginning of a new line.
+Write comments by placing `#` at the start of a new line.
 ```
 Ritsu:
-    "Hi everyone!"
+    "This is a dialogue!"
 
-# this is a comment
+# and this is a comment
 ```
 
 !!! warning
-    Comments can only be placed on a new line. With the `#` character placed at the beginning of the line. You can't put comments after actor's name or dialogue body.
+    Comments can only be placed on a new line. With the `#` character placed at the beginning of the line. You can't put comments after the actor's name or dialogue body.
     ```
     Ritsu:
-        "Hello, world!" # this is not allowed
+        "This right here 👉" # this is not allowed
         # and this will not count as a comment
     ```
 
@@ -102,15 +102,15 @@ Ritsu:
     "Hello {player_name}!"
 ```
 
-You can define the variable using [`Stage.set_variable`]("/").
+Define the variable using [`Stage.set_variable`]("../../stage/references/methods#set_variable").
 
 ```gdscript
-your_stage.add_variable(
-    "player_name", "John"
+your_stage.set_variable(
+    'player_name', 'John'
 )
 ```
 
-You can also define multiple variables using [`Stage.merge_variables`]("/") with a `Dictionary`.
+You can also define multiple variables using [`Stage.merge_variables`]("../../stage/references/methods#merge_variables") with a `Dictionary`.
 
 ```gdscript
 your_stage.merge_variables({
@@ -153,7 +153,7 @@ There are several built-in tags to fine-tune the Dialogue flows. Tags can have s
 
 ### :material-code-braces: speed
 
-:   Change the text progress' speed at its position by `s` times. Revert back to normal speed (`s = 1`) when the Dialogue finished.
+:   Change the text progress' speed at its position by `s` times. Revert back to normal speed (`s = 1`) when the Dialogue line is finished.
     ```
     { speed/s = s }
     ```
@@ -171,18 +171,13 @@ There are several built-in tags to fine-tune the Dialogue flows. Tags can have s
 
 Before calling the functions within the dialogue, you need to set the `caller`: a Node from which the function will be called.
 
-You can do that using `Stage.add_caller`. The second parameter must be a `Node` or inherits `Node`.
+You can do that using [`Stage.add_caller`]("../../stage/references/methods#add_caller"). The second argument must be a `Node` or anything that inherits `Node`.
 
 ```gdscript
 your_stage.add_caller('player', $Player)
 ```
 
-After that you can call the functions with the following syntax:
-```
-caller.function_name()
-```
-
-
+After that, you can call any functions within the caller; in this case `$Player`:
 ```
 {player_name}:
     "Thanks, that feels so much better"
@@ -195,5 +190,7 @@ A `caller` will be removed when its node is freed. You can also delete them manu
 your_stage.remove_caller('player')
 ```
 
+### Passing arguments
+
 !!! warning
-    Currently
+    Use caution when passing arguments when calling a function in a Dialogue.
