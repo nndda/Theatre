@@ -31,7 +31,7 @@ Actor name:
 
 In this example, we'll save the file as `res://intro.dlg.txt`. Now that the `Dialogue` is ready, lets set up the `Stage`.
 
-[More on writing the Dialogue here.](../dialogue/writing)
+[More on writing Dialogue here.](../classes/dialogue/syntax)
 
 !!! important
 
@@ -56,7 +56,7 @@ Attach a script to your scene's root. And create a `Stage` variable with `@onrea
 @onready var stage = Stage.new()
 ```
 
-Reference the `Label` and `DialogueLabel` node we made before as the parameter, written inside a dictionary:
+Reference the `Label` and `DialogueLabel` node we made before as the arguments, written inside a dictionary:
 
 ```gdscript
 @onready var stage = Stage.new({
@@ -149,3 +149,7 @@ func _ready():
 
     stage.start(intro)
 ```
+
+## Next step
+
+More about writing you `Dialogue` on [Dialogue syntax](../classes/dialogue/syntax) page.
