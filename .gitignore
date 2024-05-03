@@ -1,1 +1,10 @@
 site/
+
+# Theatre's files
+.godot/
+addon/
+theatre_demo/
+
+# Temporary files
+*.tmp
+
