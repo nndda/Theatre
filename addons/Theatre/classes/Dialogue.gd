@@ -270,6 +270,13 @@ func get_word_count() -> int:
         output += text.split(" ", false).size()
     return output
 
+func humanize(variables : Dictionary = {}) -> String:
+    var output := ""
+    for n in sets:
+        output += n.actor +\
+            ":\n  " + n.line + "\n\n"
+    return output.format(variables)
+
 func to_json(path : String) -> Error:
     var file := FileAccess.open(path, FileAccess.WRITE)
     file.store_string(
