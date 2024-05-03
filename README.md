@@ -48,7 +48,10 @@ Write your epic Dialogue!
 var epic_dialogue = Dialogue.new("""
 
 Dia:
-   'Hello, world!'
+   'But this is not the recommended
+    way to write a dialogue'
+:
+    'Use the method below instead'
 
 """)
 
