@@ -262,12 +262,24 @@ static func load(dlg_src : String) -> Dialogue:
         print("Parsing Dialogue from raw string: ", get_stack())
         return Dialogue.new(dlg_src)
 
-func get_word_count() -> int:
+func get_actors() -> PackedStringArray:
+    var output : PackedStringArray = []
+    for n in sets:
+        if !output.has(n.actor):
+            output.append(n.actor)
+    return output
+
+func get_length() -> int:
+    return sets.size()
+
+func get_word_count(variables : Dictionary = {}) -> int:
     var output : int = 0
     var text : String
     for n in sets:
         for chr in ":;.,{}-":
-            text = n["line_raw"].replace(chr, " ")
+            text = n["line_raw"]\
+                .format(variables)\
+                .replace(chr, " ")
         output += text.split(" ", false).size()
     return output
 
