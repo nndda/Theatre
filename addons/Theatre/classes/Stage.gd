@@ -265,6 +265,12 @@ func add_caller(id : String, node : Node) -> void:
 func remove_caller(id : String) -> void:
     caller.erase(id)
 
+func set_variable(name : String, value) -> void:
+    variables[name] = value
+
+func merge_variables(values : Dictionary) -> void:
+    variables.merge(values, true)
+
 func update_display() -> void:
     if actor_label != null:
         actor_label.text = current_dialogue_set["actor"].format(variables)
