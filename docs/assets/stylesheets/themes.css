@@ -1,0 +1,9 @@
+[data-md-color-scheme="slate"] {
+  --md-typeset-a-color: var(--md-accent-fg-color) !important;
+  --md-code-bg-color: #201e24;
+  --md-default-bg-color: #19171c !important;
+}
+
+.md-tabs, .md-header {
+  background-color: #141217 !important;
+}

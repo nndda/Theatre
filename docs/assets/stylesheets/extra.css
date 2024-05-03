@@ -1,6 +1,21 @@
-.class-reference-heading {
+.var, .func {
   font-family: monospace;
   font-weight: bold;
+}
+
+.var > a,
+.func > a {
+  margin-right: .5em;
+}
+
+.var > .keyword,
+.func > .keyword {
+  font-weight: bold;
+}
+
+.func > .params {
+  font-size: .9em;
+  opacity: .9;
 }
 
 [data-md-color-media="(prefers-color-scheme: light)"] .main-logo,
