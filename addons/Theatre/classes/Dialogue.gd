@@ -236,6 +236,7 @@ static func is_valid_filename(filename : String) -> bool:
     return (
         (filename.begins_with("res://") or filename.begins_with("user://"))
         and filename.get_file().is_valid_filename()
+        and filename.ends_with(".dlg.txt")
     )
 
 static func load(dlg_src : String) -> Dialogue:
