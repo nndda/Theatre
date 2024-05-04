@@ -13,16 +13,18 @@ nav:
     - "classes/dialogue/syntax.md"
     - "Tutorials":
       - "classes/dialogue/tutorials/constructing.md"
-    - "Class references":
-      - "classes/dialogue/references/properties.md"
-      - "classes/dialogue/references/methods.md"
+    - "Class reference":
+      - "classes/dialogue/reference/properties.md"
+      - "classes/dialogue/reference/methods.md"
   - "Stage":
     - "Tutorials":
       - "classes/stage/tutorials/setting-up.md"
-    - "Class references":
-      - "classes/stage/references/properties.md"
-      - "classes/stage/references/signals.md"
-      - "classes/stage/references/methods.md"
+    - "Class reference":
+      - "classes/stage/reference/properties.md"
+      - "classes/stage/reference/signals.md"
+      - "classes/stage/reference/methods.md"
+  - "DialogueLabel":
+    - "Class reference"
 
 theme:
   name: material
