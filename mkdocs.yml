@@ -9,20 +9,20 @@ nav:
   - "installation.md"
   - "quickstart.md"
   - "Dialogue":
-    - "classes/dialogue/index.md"
-    - "classes/dialogue/syntax.md"
+    - "class/dialogue/index.md"
+    - "class/dialogue/syntax.md"
     - "Tutorials":
-      - "classes/dialogue/tutorials/constructing.md"
+      - "class/dialogue/tutorials/constructing.md"
     - "Class reference":
-      - "classes/dialogue/reference/properties.md"
-      - "classes/dialogue/reference/methods.md"
+      - "class/dialogue/reference/properties.md"
+      - "class/dialogue/reference/methods.md"
   - "Stage":
     - "Tutorials":
-      - "classes/stage/tutorials/setting-up.md"
+      - "class/stage/tutorials/setting-up.md"
     - "Class reference":
-      - "classes/stage/reference/properties.md"
-      - "classes/stage/reference/signals.md"
-      - "classes/stage/reference/methods.md"
+      - "class/stage/reference/properties.md"
+      - "class/stage/reference/signals.md"
+      - "class/stage/reference/methods.md"
   - "DialogueLabel":
     - "Class reference"
 
