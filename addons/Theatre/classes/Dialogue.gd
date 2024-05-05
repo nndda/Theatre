@@ -15,6 +15,8 @@ class Parser extends RefCounted:
 
     const REGEX_DLG_TAGS :=\
         r"\{\s*(?<tag>\w+)\s*(\=\s*(?<arg>.+?)\s*)*\}"
+    const REGEX_BBCODE_TAGS :=\
+        r"[\[\/\!]*?[^\[\]]*?\]"
     const REGEX_FUNC_CALL :=\
         r"(?<caller>\w+)\.(?<name>\w+)\((?<args>.*)\)$"
     const REGEX_PLACEHOLDER :=\
@@ -112,17 +114,33 @@ class Parser extends RefCounted:
                 else:
                     var dlg_body := dlg_raw[i].strip_edges() + " "
 
+                    # Append Dialogue body
                     output[body_pos]["line_raw"] += dlg_body
                     output[body_pos]["line"] += dlg_body
 
         for n in output.size():
+            var regex_bbcode := RegEx.new()
+            regex_bbcode.compile(REGEX_BBCODE_TAGS)
+            var regex_bbcode_match := regex_bbcode.search_all(output[n]["line_raw"])
+
             # Implement built-in tags
-            var parsed_tags := parse_tags(output[n]["line_raw"])
+            var parsed_tags := parse_tags(
+                # Stripped BBCode tags
+                regex_bbcode.sub(output[n]["line_raw"], "", true)
+            )
 
             for tag : String in SETS_TEMPLATE["tags"].keys():
                 output[n]["tags"][tag].merge(parsed_tags["tags"][tag])
 
-            output[n]["line"] = parsed_tags["string"]
+            var regex_tags := RegEx.new()
+            regex_tags.compile(REGEX_DLG_TAGS)
+            var regex_tags_match := regex_tags.search_all(output[n]["line_raw"])
+
+            var body : String = output[n]["line_raw"]
+            for tag in regex_tags_match:
+                body = body.replace(tag.strings[0], "")
+
+            output[n]["line"] = body
 
     ## Check if [param string] is indented with tabs or spaces.
     func is_indented(string : String) -> bool:
