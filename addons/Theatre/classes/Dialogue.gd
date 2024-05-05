@@ -52,7 +52,6 @@ class Parser extends RefCounted:
 
     func _init(src : String = ""):
         output = []
-        const FUNC_IDENTIFIER := "_FUNC:"
 
         var dlg_raw : PackedStringArray = []
 
@@ -66,24 +65,23 @@ class Parser extends RefCounted:
         for i in dlg_raw.size():
             var n := dlg_raw[i]
 
-            if n.begins_with(FUNC_IDENTIFIER) or !is_indented(n):
+            if !is_indented(n):
                 var setsl := SETS_TEMPLATE.duplicate(true)
 
-                if !is_indented(n):
-                    if dlg_raw.size() < i + 1:
-                        assert(false, "Error: Dialogue name exists without a body")
+                if dlg_raw.size() < i + 1:
+                    assert(false, "Error: Dialogue name exists without a body")
 
-                    setsl["actor"] = n.strip_edges().trim_suffix(":")
+                setsl["actor"] = n.strip_edges().trim_suffix(":")
 
-                    if setsl["actor"] == "_":
-                        setsl["actor"] = ""
-                    elif setsl["actor"] == "":
-                        setsl["actor"] = output[output.size() - 1]["actor"]
+                if setsl["actor"] == "_":
+                    setsl["actor"] = ""
+                elif setsl["actor"] == "":
+                    setsl["actor"] = output[output.size() - 1]["actor"]
 
-                    output.append(setsl)
-                    body_pos = output.size() - 1
+                output.append(setsl)
+                body_pos = output.size() - 1
 
-            elif is_indented(n):
+            else:
                 # Function calls
                 var regex_func := RegEx.new()
                 regex_func.compile(REGEX_FUNC_CALL)
