@@ -64,6 +64,11 @@ func _enter_tree() -> void:
     # Initialize project settings
     Config.init_configs()
 
+    # Initialize plugin submenu
+    plugin_submenu.id_pressed.connect(tool_submenu_id_pressed)
+    add_tool_submenu_item("🎭 Theatre", plugin_submenu)
+
+func _ready() -> void:
     # Initialize update check
     http_update_req = HTTPRequest.new()
     http_update_req.timeout = 3.0
@@ -72,10 +77,6 @@ func _enter_tree() -> void:
 
     if ProjectSettings.get_setting(Config.GENERAL_AUTO_UPDATE, true):
         update_check()
-
-    # Initialize plugin submenu
-    plugin_submenu.id_pressed.connect(tool_submenu_id_pressed)
-    add_tool_submenu_item("🎭 Theatre", plugin_submenu)
 
 func _exit_tree() -> void:
     print("🎭 Disabling Theatre...")
