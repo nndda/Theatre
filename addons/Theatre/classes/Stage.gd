@@ -129,12 +129,12 @@ func is_playing() -> bool:
     return step >= 0
 
 ## Progress the [Dialogue] by 1 step.
-func progress() -> void:
+func progress(skip_render : bool = false) -> void:
     if current_dialogue == null:
         push_warning("No Dialogue present")
     else:
         # Skip dialogue
-        if dialogue_label.visible_ratio < 1.0:
+        if dialogue_label.visible_ratio < 1.0 and !skip_render:
             if allow_skip:
                 dialogue_label.clear_render()
                 dialogue_label.visible_ratio = 1.0
@@ -167,13 +167,12 @@ func progress() -> void:
                         else:
                             if !caller[f["caller"]].has_method(f["name"]):
                                 push_error("Function %s doesn't exists on %s" % [
-                                    f["name"], f["caller"]]
-                                )
+                                    f["name"], f["caller"]
+                                ])
                             else:
                                 caller[f["caller"]].callv(f["name"], f["args"])
 
                 dialogue_label.start_render()
-
                 progressed.emit(step, current_dialogue_set)
 
             elif step + 1 >= current_dialogue_length:
