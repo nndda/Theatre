@@ -50,6 +50,7 @@ class Parser extends RefCounted:
         "caller": "",
         "name": "",
         "args": [],
+        "ln_num": 0,
     }
 
     func _init(src : String = ""):
@@ -58,6 +59,7 @@ class Parser extends RefCounted:
 
         var body_pos : int = 0
         for i in dlg_raw.size():
+            var ln_num = i + 1
             var n := dlg_raw[i]
             var is_valid_line := !n.begins_with("#") and !n.is_empty()
 
@@ -98,8 +100,12 @@ class Parser extends RefCounted:
                     ).strip_edges()
                     var args = str_to_var("[%s]" % args_raw)
 
+                    func_dict["ln_num"] = ln_num
+
                     if args == null:
-                        push_error("Error, null arguments: ", args_raw)
+                        printerr("Error: null arguments on function %s.%s(%s) on line %d" % [
+                            func_dict["caller"], func_dict["name"], args_raw, ln_num
+                        ])
 
                     func_dict["args"] = args
                     output[body_pos]["func"].append(func_dict)

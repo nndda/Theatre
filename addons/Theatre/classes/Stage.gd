@@ -163,13 +163,15 @@ func progress(skip_render : bool = false) -> void:
                             f["name"], f["caller"]
                         ])
                         if !caller.has(f["caller"]):
-                            push_error("Caller '%s' on Dialogue '%s' doesn't exists" % [
-                                f["caller"], current_dialogue.source_path
+                            printerr("Error @%s:%d - caller '%s' doesn't exists" % [
+                                current_dialogue.source_path, f["ln_num"],
+                                f["caller"],
                             ])
                         else:
                             if !caller[f["caller"]].has_method(f["name"]):
-                                push_error("Function '%s.%s()' on Dialogue '%s' doesn't exists" % [
-                                    f["name"], f["caller"], current_dialogue.source_path
+                                printerr("Error @%s:%d - function '%s.%s()' doesn't exists" % [
+                                    current_dialogue.source_path, f["ln_num"],
+                                    f["name"], f["caller"]
                                 ])
                             else:
                                 caller[f["caller"]].callv(f["name"], f["args"])
