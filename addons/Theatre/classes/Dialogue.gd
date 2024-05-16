@@ -54,20 +54,14 @@ class Parser extends RefCounted:
 
     func _init(src : String = ""):
         output = []
-
-        var dlg_raw : PackedStringArray = []
-
-        # Filter out comments, and create PackedStringArray
-        # of every non-empty line in the source
-        for n in src.split("\n", false):
-            if !n.begins_with("#"):
-                dlg_raw.append(n)
+        var dlg_raw : PackedStringArray = src.split("\n")
 
         var body_pos : int = 0
         for i in dlg_raw.size():
             var n := dlg_raw[i]
+            var is_valid_line := !n.begins_with("#") and !n.is_empty()
 
-            if !is_indented(n):
+            if !is_indented(n) and is_valid_line:
                 var setsl := SETS_TEMPLATE.duplicate(true)
 
                 if dlg_raw.size() < i + 1:
@@ -83,7 +77,7 @@ class Parser extends RefCounted:
                 output.append(setsl)
                 body_pos = output.size() - 1
 
-            else:
+            elif is_valid_line:
                 # Function calls
                 var regex_func := RegEx.new()
                 regex_func.compile(REGEX_FUNC_CALL)
@@ -98,7 +92,7 @@ class Parser extends RefCounted:
                             regex_func_match.names[func_n]
                         )
 
-                    # Function parameters/arguments
+                    # Function arguments
                     var args_raw := regex_func_match.get_string(
                         regex_func_match.names["args"]
                     ).strip_edges()
