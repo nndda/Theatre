@@ -227,13 +227,13 @@ func _init(dlg_src : String = ""):
     var parser : Parser
 
     if is_valid_filename(dlg_src):
-        print("Parsing Dialogue from file: ", dlg_src)
+        print("Parsing Dialogue from file: %s..." % dlg_src)
         if FileAccess.file_exists(dlg_src):
             source_path = dlg_src
             parser = Parser.new(FileAccess.get_file_as_string(dlg_src))
             sets = parser.output
         else:
-            push_error("Unable to create Dialogue resource: %s does not exists" % dlg_src)
+            push_error("Unable to create Dialogue resource: '%s' does not exists" % dlg_src)
 
     elif (
         # TODO: maybe this one check not needed
@@ -265,7 +265,7 @@ static func load(dlg_src : String) -> Dialogue:
         elif FileAccess.file_exists(dlg_compiled + ".tres"):
             dlg_compiled += ".tres"
 
-        print("Getting Dialogue from file: ", dlg_compiled)
+        print("Getting Dialogue from file: %s..." % dlg_compiled)
 
         if FileAccess.file_exists(dlg_compiled):
             var dlg := load(dlg_compiled)

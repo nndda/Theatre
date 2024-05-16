@@ -79,7 +79,7 @@ func _init(parameters : Dictionary):
         if parameters.has("actor_label"):
             assert(
                 parameters["actor_label"] is Label,
-                "Object of type %s is used. Only use `Label` as \"actor_label\""\
+                "Object of type '%s' is used. Only use `Label` as 'actor_label'"
                 % type_string(typeof(parameters["actor_label"]))
             )
             if parameters["actor_label"] is Label:
@@ -88,7 +88,7 @@ func _init(parameters : Dictionary):
         if parameters.has("dialogue_label"):
             assert(
                 parameters["dialogue_label"] is DialogueLabel,
-                "Object of type %s is used. Only use `DialogueLabel` as \"dialogue_label\""
+                "Object of type '%s' is used. Only use `DialogueLabel` as 'dialogue_label'"
                 % type_string(typeof(parameters["dialogue_label"]))
             )
             if parameters["dialogue_label"] is DialogueLabel:
@@ -131,7 +131,7 @@ func is_playing() -> bool:
 ## Progress the [Dialogue] by 1 step.
 func progress(skip_render : bool = false) -> void:
     if current_dialogue == null:
-        push_warning("No Dialogue present")
+        push_warning("Failed to progress Stage: no Dialogue present")
     else:
         # Skip dialogue
         if dialogue_label.visible_ratio < 1.0 and !skip_render:
@@ -159,15 +159,17 @@ func progress(skip_render : bool = false) -> void:
                 # Calling functions
                 if allow_func:
                     for f : Dictionary in current_dialogue_set["func"]:
-                        print("Calling function: \"%s\" on \"%s\"" % [
+                        print("Calling function: %s.%s()" % [
                             f["name"], f["caller"]
                         ])
                         if !caller.has(f["caller"]):
-                            push_error("caller %s doesn't exists" % f["caller"])
+                            push_error("Caller '%s' on Dialogue '%s' doesn't exists" % [
+                                f["caller"], current_dialogue.source_path
+                            ])
                         else:
                             if !caller[f["caller"]].has_method(f["name"]):
-                                push_error("Function %s doesn't exists on %s" % [
-                                    f["name"], f["caller"]
+                                push_error("Function '%s.%s()' on Dialogue '%s' doesn't exists" % [
+                                    f["name"], f["caller"], current_dialogue.source_path
                                 ])
                             else:
                                 caller[f["caller"]].callv(f["name"], f["args"])
@@ -185,7 +187,7 @@ func reset() -> void:
         print("Resetting Dialogue is not allowed")
     else:
         if current_dialogue != null:
-            print("Resetting Dialogue [%s]..." % current_dialogue.source_path)
+            print("Resetting Dialogue: %s..." % current_dialogue.source_path)
             resetted.emit(step,
                 current_dialogue.sets[step] if step != -1 else\
                 Dialogue.Parser.SETS_TEMPLATE
@@ -213,7 +215,7 @@ func start(dialogue : Dialogue = null) -> void:
         if current_dialogue == null:
             push_error("Cannot start the Stage: `current_dialogue` is null")
         else:
-            print("Starting Dialogue [%s]..." % current_dialogue.source_path)
+            print("Starting Dialogue: %s..." % current_dialogue.source_path)
             current_dialogue_length = current_dialogue.sets.size()
 
             progress()
