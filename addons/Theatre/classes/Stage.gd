@@ -154,6 +154,19 @@ func progress(skip_render : bool = false) -> void:
                         % [body_text_length, body_text_limit]
                     )
 
+                if OS.is_debug_build():
+                    var unused_vars := ""
+
+                    for i in current_dialogue_set["vars"]:
+                        if !(i in variables.keys()):
+                            unused_vars += i + ", "
+
+                    if !unused_vars.is_empty():
+                        push_warning("Warning: @%s:%d - unused variables: %s" % [
+                            current_dialogue.source_path, current_dialogue_set["line_num"],
+                            unused_vars
+                        ])
+
                 update_display()
 
                 # Calling functions
