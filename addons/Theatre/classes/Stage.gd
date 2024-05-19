@@ -154,6 +154,20 @@ func progress(skip_render : bool = false) -> void:
                         % [body_text_length, body_text_limit]
                     )
 
+                if OS.is_debug_build():
+                    var unused_vars := ""
+                    var def_vars = variables.keys()
+
+                    for i in current_dialogue_set["vars"]:
+                        if !(i in def_vars):
+                            unused_vars += i + ", "
+
+                    if !unused_vars.is_empty():
+                        push_warning("Warning: @%s:%d - unused variables: %s" % [
+                            current_dialogue.source_path, current_dialogue_set["line_num"],
+                            unused_vars
+                        ])
+
                 update_display()
 
                 # Calling functions
@@ -163,13 +177,15 @@ func progress(skip_render : bool = false) -> void:
                             f["name"], f["caller"]
                         ])
                         if !caller.has(f["caller"]):
-                            push_error("Caller '%s' on Dialogue '%s' doesn't exists" % [
-                                f["caller"], current_dialogue.source_path
+                            printerr("Error @%s:%d - caller '%s' doesn't exists" % [
+                                current_dialogue.source_path, f["ln_num"],
+                                f["caller"],
                             ])
                         else:
                             if !caller[f["caller"]].has_method(f["name"]):
-                                push_error("Function '%s.%s()' on Dialogue '%s' doesn't exists" % [
-                                    f["name"], f["caller"], current_dialogue.source_path
+                                printerr("Error @%s:%d - function '%s.%s()' doesn't exists" % [
+                                    current_dialogue.source_path, f["ln_num"],
+                                    f["name"], f["caller"]
                                 ])
                             else:
                                 caller[f["caller"]].callv(f["name"], f["args"])

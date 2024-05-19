@@ -30,6 +30,7 @@ class Parser extends RefCounted:
         "actor": "",
         "line": "",
         "line_raw": "",
+        "line_num": -1,
         "tags": {
             "delays": {
                 #   pos,    delay(s)
@@ -45,45 +46,55 @@ class Parser extends RefCounted:
             #   start, end
             #   15: 20
         },
+        "vars": [],
     }
     const FUNC_TEMPLATE := {
         "caller": "",
         "name": "",
         "args": [],
+        "ln_num": 0,
     }
+
+    const TAG_DELAY_ALIASES : PackedStringArray = [
+        "DELAY", "WAIT", "D", "W"
+    ]
+    const TAG_SPEED_ALIASES : PackedStringArray = [
+        "SPEED", "SPD", "S"
+    ]
 
     func _init(src : String = ""):
         output = []
-
-        var dlg_raw : PackedStringArray = []
-
-        # Filter out comments, and create PackedStringArray
-        # of every non-empty line in the source
-        for n in src.split("\n", false):
-            if !n.begins_with("#"):
-                dlg_raw.append(n)
+        var dlg_raw : PackedStringArray = src.split("\n")
 
         var body_pos : int = 0
-        for i in dlg_raw.size():
-            var n := dlg_raw[i]
+        var dlg_raw_size = dlg_raw.size()
 
-            if !is_indented(n):
+        for i in dlg_raw_size:
+            var ln_num = i + 1
+            var n := dlg_raw[i]
+            var is_valid_line := !n.begins_with("#") and !n.is_empty()
+
+            if !is_indented(n) and is_valid_line:
                 var setsl := SETS_TEMPLATE.duplicate(true)
 
-                if dlg_raw.size() < i + 1:
-                    assert(false, "Error: Dialogue name exists without a body")
+                if dlg_raw_size < i + 1:
+                    printerr("Error: actor's name exists without a dialogue body")
 
                 setsl["actor"] = n.strip_edges().trim_suffix(":")
+                setsl["line_num"] = ln_num
 
                 if setsl["actor"] == "_":
                     setsl["actor"] = ""
                 elif setsl["actor"] == "":
-                    setsl["actor"] = output[output.size() - 1]["actor"]
+                    if output.size() - 1 < 0:
+                        printerr("Warning: missing initial actor's name on line %d" % ln_num)
+                    else:
+                        setsl["actor"] = output[output.size() - 1]["actor"]
 
                 output.append(setsl)
                 body_pos = output.size() - 1
 
-            else:
+            elif is_valid_line:
                 # Function calls
                 var regex_func := RegEx.new()
                 regex_func.compile(REGEX_FUNC_CALL)
@@ -98,14 +109,18 @@ class Parser extends RefCounted:
                             regex_func_match.names[func_n]
                         )
 
-                    # Function parameters/arguments
+                    # Function arguments
                     var args_raw := regex_func_match.get_string(
                         regex_func_match.names["args"]
                     ).strip_edges()
                     var args = str_to_var("[%s]" % args_raw)
 
+                    func_dict["ln_num"] = ln_num
+
                     if args == null:
-                        push_error("Error, null arguments: ", args_raw)
+                        printerr("Error: null arguments on function %s.%s(%s) on line %d" % [
+                            func_dict["caller"], func_dict["name"], args_raw, ln_num
+                        ])
 
                     func_dict["args"] = args
                     output[body_pos]["func"].append(func_dict)
@@ -119,26 +134,36 @@ class Parser extends RefCounted:
                     output[body_pos]["line"] += dlg_body
 
         for n in output.size():
-            var regex_bbcode := RegEx.new()
-            regex_bbcode.compile(REGEX_BBCODE_TAGS)
-            var regex_bbcode_match := regex_bbcode.search_all(output[n]["line_raw"])
+            var body : String = ""
 
-            # Implement built-in tags
-            var parsed_tags := parse_tags(
-                # Stripped BBCode tags
-                regex_bbcode.sub(output[n]["line_raw"], "", true)
-            )
+            if output[n]["line_raw"].is_empty():
+                printerr("Warning: empty dialogue body for '%s' on line %d" % [
+                    output[n]["actor"], output[n]["line_num"]
+                ])
 
-            for tag : String in SETS_TEMPLATE["tags"].keys():
-                output[n]["tags"][tag].merge(parsed_tags["tags"][tag])
+            else:
+                var regex_bbcode := RegEx.new()
+                regex_bbcode.compile(REGEX_BBCODE_TAGS)
+                var regex_bbcode_match := regex_bbcode.search_all(output[n]["line_raw"])
 
-            var regex_tags := RegEx.new()
-            regex_tags.compile(REGEX_DLG_TAGS)
-            var regex_tags_match := regex_tags.search_all(output[n]["line_raw"])
+                # Implement built-in tags
+                var parsed_tags := parse_tags(
+                    # Stripped BBCode tags
+                    regex_bbcode.sub(output[n]["line_raw"], "", true)
+                )
 
-            var body : String = output[n]["line_raw"]
-            for tag in regex_tags_match:
-                body = body.replace(tag.strings[0], "")
+                for tag : String in SETS_TEMPLATE["tags"].keys():
+                    output[n]["tags"][tag].merge(parsed_tags["tags"][tag])
+
+                var regex_tags := RegEx.new()
+                regex_tags.compile(REGEX_DLG_TAGS)
+                var regex_tags_match := regex_tags.search_all(output[n]["line_raw"])
+
+                body = output[n]["line_raw"]
+                for tag in regex_tags_match:
+                    body = body.replace(tag.strings[0], "")
+
+                output[n]["vars"] = parsed_tags["variables"]
 
             output[n]["line"] = body
 
@@ -173,7 +198,13 @@ class Parser extends RefCounted:
 
     static func parse_tags(string : String) -> Dictionary:
         var output : Dictionary = {}
+        var vars : PackedStringArray = []
         var tags : Dictionary = SETS_TEMPLATE["tags"].duplicate(true)
+
+        var built_in_tags : PackedStringArray = (
+            TAG_DELAY_ALIASES + TAG_SPEED_ALIASES +
+            PackedStringArray(["N", "RB", "LB"])
+        )
 
         var regex_tags := RegEx.new()
         regex_tags.compile(REGEX_DLG_TAGS)
@@ -186,21 +217,24 @@ class Parser extends RefCounted:
 
             var tag_pos : int = b.get_start() - tag_pos_offset
             var tag_key := b.get_string("tag").to_upper()
+            var tag_key_l := b.get_string("tag")
             var tag_value := b.get_string("arg")
 
             tag_pos_offset += b.strings[0].length()
 
-            if ["DELAY", "WAIT", "D", "W"].has(tag_key):
+            if TAG_DELAY_ALIASES.has(tag_key):
                 tags["delays"][tag_pos] = float(tag_value)
-            elif ["SPEED", "SPD", "S"].has(tag_key):
+            elif TAG_SPEED_ALIASES.has(tag_key):
                 tags["speeds"][tag_pos] = float(
                     1.0 if tag_value.is_empty() else tag_value
                 )
-            else:
-                push_warning("Unknown tags: ", b.strings[0])
+
+            if !built_in_tags.has(tag_key) and !(tag_key_l in vars):
+                vars.append(tag_key_l)
 
         output["tags"] = tags
         output["string"] = string
+        output["variables"] = vars
 
         return output
 
@@ -215,6 +249,7 @@ class Parser extends RefCounted:
 
         dlg.sets[pos]["tags"] = parse_tags(dlg_str)["tags"]
         dlg.sets[pos]["line"] = parse_tags(dlg_str)["string"]
+        dlg.sets[pos]["vars"] = parse_tags(dlg_str)["variables"]
 
 #static var default_lang := "en"
 
