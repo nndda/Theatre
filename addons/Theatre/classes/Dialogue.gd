@@ -46,6 +46,7 @@ class Parser extends RefCounted:
             #   start, end
             #   15: 20
         },
+        "vars": [],
     }
     const FUNC_TEMPLATE := {
         "caller": "",
@@ -53,6 +54,13 @@ class Parser extends RefCounted:
         "args": [],
         "ln_num": 0,
     }
+
+    const TAG_DELAY_ALIASES : PackedStringArray = [
+        "DELAY", "WAIT", "D", "W"
+    ]
+    const TAG_SPEED_ALIASES : PackedStringArray = [
+        "SPEED", "SPD", "S"
+    ]
 
     func _init(src : String = ""):
         output = []
@@ -152,6 +160,8 @@ class Parser extends RefCounted:
                 for tag in regex_tags_match:
                     body = body.replace(tag.strings[0], "")
 
+                output[n]["vars"] = parsed_tags["variables"]
+
             output[n]["line"] = body
 
     ## Check if [param string] is indented with tabs or spaces.
@@ -185,7 +195,13 @@ class Parser extends RefCounted:
 
     static func parse_tags(string : String) -> Dictionary:
         var output : Dictionary = {}
+        var vars : PackedStringArray = []
         var tags : Dictionary = SETS_TEMPLATE["tags"].duplicate(true)
+
+        var built_in_tags : PackedStringArray = (
+            TAG_DELAY_ALIASES + TAG_SPEED_ALIASES +
+            PackedStringArray(["N", "RB", "LB"])
+        )
 
         var regex_tags := RegEx.new()
         regex_tags.compile(REGEX_DLG_TAGS)
@@ -198,19 +214,24 @@ class Parser extends RefCounted:
 
             var tag_pos : int = b.get_start() - tag_pos_offset
             var tag_key := b.get_string("tag").to_upper()
+            var tag_key_l := b.get_string("tag")
             var tag_value := b.get_string("arg")
 
             tag_pos_offset += b.strings[0].length()
 
-            if ["DELAY", "WAIT", "D", "W"].has(tag_key):
+            if TAG_DELAY_ALIASES.has(tag_key):
                 tags["delays"][tag_pos] = float(tag_value)
-            elif ["SPEED", "SPD", "S"].has(tag_key):
+            elif TAG_SPEED_ALIASES.has(tag_key):
                 tags["speeds"][tag_pos] = float(
                     1.0 if tag_value.is_empty() else tag_value
                 )
 
+            if !built_in_tags.has(tag_key) and !(tag_key_l in vars):
+                vars.append(tag_key_l)
+
         output["tags"] = tags
         output["string"] = string
+        output["variables"] = vars
 
         return output
 
@@ -225,6 +246,7 @@ class Parser extends RefCounted:
 
         dlg.sets[pos]["tags"] = parse_tags(dlg_str)["tags"]
         dlg.sets[pos]["line"] = parse_tags(dlg_str)["string"]
+        dlg.sets[pos]["vars"] = parse_tags(dlg_str)["variables"]
 
 #static var default_lang := "en"
 
