@@ -74,7 +74,7 @@ class Parser extends RefCounted:
             var n := dlg_raw[i]
             var is_valid_line := !n.begins_with("#") and !n.is_empty()
 
-            if !is_indented(n) and is_valid_line:
+            if is_valid_line and !is_indented(n) and n.strip_edges().ends_with(":"):
                 var setsl := SETS_TEMPLATE.duplicate(true)
 
                 if dlg_raw_size < i + 1:
