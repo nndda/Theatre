@@ -59,7 +59,9 @@ class Parser extends RefCounted:
         var dlg_raw : PackedStringArray = src.split("\n")
 
         var body_pos : int = 0
-        for i in dlg_raw.size():
+        var dlg_raw_size = dlg_raw.size()
+
+        for i in dlg_raw_size:
             var ln_num = i + 1
             var n := dlg_raw[i]
             var is_valid_line := !n.begins_with("#") and !n.is_empty()
@@ -67,7 +69,7 @@ class Parser extends RefCounted:
             if !is_indented(n) and is_valid_line:
                 var setsl := SETS_TEMPLATE.duplicate(true)
 
-                if dlg_raw.size() < i + 1:
+                if dlg_raw_size < i + 1:
                     assert(false, "Error: Dialogue name exists without a body")
 
                 setsl["actor"] = n.strip_edges().trim_suffix(":")
@@ -121,27 +123,35 @@ class Parser extends RefCounted:
                     output[body_pos]["line"] += dlg_body
 
         for n in output.size():
-            var regex_bbcode := RegEx.new()
-            regex_bbcode.compile(REGEX_BBCODE_TAGS)
-            var regex_bbcode_match := regex_bbcode.search_all(output[n]["line_raw"])
+            var body : String = ""
 
-            # Implement built-in tags
-            var parsed_tags := parse_tags(
-                # Stripped BBCode tags
-                regex_bbcode.sub(output[n]["line_raw"], "", true),
-                output[n]["line_num"]
-            )
+            if output[n]["line_raw"].is_empty():
+                printerr("Warning: empty dialogue body for '%s' on line %d" % [
+                    output[n]["actor"], output[n]["line_num"]
+                ])
 
-            for tag : String in SETS_TEMPLATE["tags"].keys():
-                output[n]["tags"][tag].merge(parsed_tags["tags"][tag])
+            else:
+                var regex_bbcode := RegEx.new()
+                regex_bbcode.compile(REGEX_BBCODE_TAGS)
+                var regex_bbcode_match := regex_bbcode.search_all(output[n]["line_raw"])
 
-            var regex_tags := RegEx.new()
-            regex_tags.compile(REGEX_DLG_TAGS)
-            var regex_tags_match := regex_tags.search_all(output[n]["line_raw"])
+                # Implement built-in tags
+                var parsed_tags := parse_tags(
+                    # Stripped BBCode tags
+                    regex_bbcode.sub(output[n]["line_raw"], "", true),
+                    output[n]["line_num"]
+                )
 
-            var body : String = output[n]["line_raw"]
-            for tag in regex_tags_match:
-                body = body.replace(tag.strings[0], "")
+                for tag : String in SETS_TEMPLATE["tags"].keys():
+                    output[n]["tags"][tag].merge(parsed_tags["tags"][tag])
+
+                var regex_tags := RegEx.new()
+                regex_tags.compile(REGEX_DLG_TAGS)
+                var regex_tags_match := regex_tags.search_all(output[n]["line_raw"])
+
+                body = output[n]["line_raw"]
+                for tag in regex_tags_match:
+                    body = body.replace(tag.strings[0], "")
 
             output[n]["line"] = body
 
