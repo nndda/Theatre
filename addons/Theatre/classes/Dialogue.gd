@@ -128,7 +128,8 @@ class Parser extends RefCounted:
             # Implement built-in tags
             var parsed_tags := parse_tags(
                 # Stripped BBCode tags
-                regex_bbcode.sub(output[n]["line_raw"], "", true)
+                regex_bbcode.sub(output[n]["line_raw"], "", true),
+                output[n]["line_num"]
             )
 
             for tag : String in SETS_TEMPLATE["tags"].keys():
@@ -173,7 +174,7 @@ class Parser extends RefCounted:
 
         return string
 
-    static func parse_tags(string : String) -> Dictionary:
+    static func parse_tags(string : String, line_num : int = -1) -> Dictionary:
         var output : Dictionary = {}
         var tags : Dictionary = SETS_TEMPLATE["tags"].duplicate(true)
 
@@ -199,7 +200,10 @@ class Parser extends RefCounted:
                     1.0 if tag_value.is_empty() else tag_value
                 )
             else:
-                push_warning("Unknown tags: ", b.strings[0])
+                printerr("Error: unknown tag '%s'" % b.strings[0] + (
+                    "" if line_num == -1 else
+                    " on line %d" % line_num
+                ))
 
         output["tags"] = tags
         output["string"] = string
@@ -215,8 +219,8 @@ class Parser extends RefCounted:
         for n in ["delays", "speeds"]:
             dlg.sets[pos]["tags"][n].clear()
 
-        dlg.sets[pos]["tags"] = parse_tags(dlg_str)["tags"]
-        dlg.sets[pos]["line"] = parse_tags(dlg_str)["string"]
+        dlg.sets[pos]["tags"] = parse_tags(dlg_str, dlg.sets[pos]["line_num"])["tags"]
+        dlg.sets[pos]["line"] = parse_tags(dlg_str, dlg.sets[pos]["line_num"])["string"]
 
 #static var default_lang := "en"
 
