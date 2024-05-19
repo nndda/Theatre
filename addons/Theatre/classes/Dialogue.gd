@@ -78,7 +78,7 @@ class Parser extends RefCounted:
                 var setsl := SETS_TEMPLATE.duplicate(true)
 
                 if dlg_raw_size < i + 1:
-                    assert(false, "Error: Dialogue name exists without a body")
+                    printerr("Error: actor's name exists without a dialogue body")
 
                 setsl["actor"] = n.strip_edges().trim_suffix(":")
                 setsl["line_num"] = ln_num
@@ -86,7 +86,10 @@ class Parser extends RefCounted:
                 if setsl["actor"] == "_":
                     setsl["actor"] = ""
                 elif setsl["actor"] == "":
-                    setsl["actor"] = output[output.size() - 1]["actor"]
+                    if output.size() - 1 < 0:
+                        printerr("Warning: missing initial actor's name on line %d" % ln_num)
+                    else:
+                        setsl["actor"] = output[output.size() - 1]["actor"]
 
                 output.append(setsl)
                 body_pos = output.size() - 1
