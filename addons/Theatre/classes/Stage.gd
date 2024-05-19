@@ -156,9 +156,10 @@ func progress(skip_render : bool = false) -> void:
 
                 if OS.is_debug_build():
                     var unused_vars := ""
+                    var def_vars = variables.keys()
 
                     for i in current_dialogue_set["vars"]:
-                        if !(i in variables.keys()):
+                        if !(i in def_vars):
                             unused_vars += i + ", "
 
                     if !unused_vars.is_empty():
