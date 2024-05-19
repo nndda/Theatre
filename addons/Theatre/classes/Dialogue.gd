@@ -30,6 +30,7 @@ class Parser extends RefCounted:
         "actor": "",
         "line": "",
         "line_raw": "",
+        "line_num": -1,
         "tags": {
             "delays": {
                 #   pos,    delay(s)
@@ -70,6 +71,7 @@ class Parser extends RefCounted:
                     assert(false, "Error: Dialogue name exists without a body")
 
                 setsl["actor"] = n.strip_edges().trim_suffix(":")
+                setsl["line_num"] = ln_num
 
                 if setsl["actor"] == "_":
                     setsl["actor"] = ""
