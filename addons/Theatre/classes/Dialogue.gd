@@ -70,7 +70,7 @@ class Parser extends RefCounted:
         var dlg_raw_size = dlg_raw.size()
 
         for i in dlg_raw_size:
-            var ln_num = i + 1
+            var ln_num : int = i + 1
             var n := dlg_raw[i]
             var is_valid_line := !n.begins_with("#") and !n.is_empty()
 
