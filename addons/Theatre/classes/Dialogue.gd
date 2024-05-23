@@ -62,6 +62,14 @@ class Parser extends RefCounted:
         "SPEED", "SPD", "S"
     ]
 
+    const VARS_BUILT_IN_KEYS : PackedStringArray = ["n"]
+
+    const BUILT_IN_TAGS : PackedStringArray = (
+        TAG_DELAY_ALIASES +
+        TAG_SPEED_ALIASES +
+        VARS_BUILT_IN_KEYS
+    )
+
     func _init(src : String = ""):
         output = []
         var dlg_raw : PackedStringArray = src.split("\n")
@@ -201,11 +209,6 @@ class Parser extends RefCounted:
         var vars : PackedStringArray = []
         var tags : Dictionary = SETS_TEMPLATE["tags"].duplicate(true)
 
-        var built_in_tags : PackedStringArray = (
-            TAG_DELAY_ALIASES + TAG_SPEED_ALIASES +
-            PackedStringArray(["N", "RB", "LB"])
-        )
-
         var regex_tags := RegEx.new()
         regex_tags.compile(REGEX_DLG_TAGS)
         var regex_tags_match := regex_tags.search_all(string)
@@ -213,14 +216,12 @@ class Parser extends RefCounted:
         var tag_pos_offset : int = 0
 
         for b in regex_tags_match:
-            string = string.replace(b.strings[0], "")
+            var string_match := b.strings[0]
 
             var tag_pos : int = b.get_start() - tag_pos_offset
             var tag_key := b.get_string("tag").to_upper()
             var tag_key_l := b.get_string("tag")
             var tag_value := b.get_string("arg")
-
-            tag_pos_offset += b.strings[0].length()
 
             if TAG_DELAY_ALIASES.has(tag_key):
                 tags["delays"][tag_pos] = float(tag_value)
@@ -229,8 +230,13 @@ class Parser extends RefCounted:
                     1.0 if tag_value.is_empty() else tag_value
                 )
 
-            if !built_in_tags.has(tag_key) and !(tag_key_l in vars):
+            if !BUILT_IN_TAGS.has(tag_key) and !(tag_key_l in vars):
                 vars.append(tag_key_l)
+
+            if !(tag_key_l in VARS_BUILT_IN_KEYS):
+                string = string.replace(string_match, "")
+
+            tag_pos_offset += string_match.length()
 
         output["tags"] = tags
         output["string"] = string
@@ -247,9 +253,11 @@ class Parser extends RefCounted:
         for n in ["delays", "speeds"]:
             dlg.sets[pos]["tags"][n].clear()
 
-        dlg.sets[pos]["tags"] = parse_tags(dlg_str)["tags"]
-        dlg.sets[pos]["line"] = parse_tags(dlg_str)["string"]
-        dlg.sets[pos]["vars"] = parse_tags(dlg_str)["variables"]
+        var parsed_tags := parse_tags(dlg_str)
+
+        dlg.sets[pos]["tags"] = parsed_tags["tags"]
+        dlg.sets[pos]["line"] = parsed_tags["string"]
+        dlg.sets[pos]["vars"] = parsed_tags["variables"]
 
 #static var default_lang := "en"
 
