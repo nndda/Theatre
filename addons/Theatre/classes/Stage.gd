@@ -55,6 +55,7 @@ var step : int = -1
 var variables : Dictionary = {}:
     set(new_var):
         variables = new_var
+
         if is_playing():
             update_display()
 
@@ -66,6 +67,10 @@ var variables : Dictionary = {}:
             )
     get:
         return variables
+
+static var variables_built_in : Dictionary = {
+    "n" : "\n",
+}
 
 ## [Stage] needs to be initialized in _ready() or with @onready when passing the parameters required.
 ## [codeblock]
@@ -94,6 +99,9 @@ func _init(parameters : Dictionary):
             if parameters["dialogue_label"] is DialogueLabel:
                 dialogue_label = parameters["dialogue_label"]
                 dialogue_label.current_stage = self
+
+        variables_built_in.make_read_only()
+        merge_variables(variables_built_in)
 
         var constructor_property : PackedStringArray = [
             "allow_skip",
@@ -156,7 +164,7 @@ func progress(skip_render : bool = false) -> void:
 
                 if OS.is_debug_build():
                     var unused_vars := ""
-                    var def_vars = variables.keys()
+                    var def_vars := PackedStringArray(variables.keys())
 
                     for i in current_dialogue_set["vars"]:
                         if !(i in def_vars):
