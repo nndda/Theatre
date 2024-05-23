@@ -76,6 +76,7 @@ func _ready() -> void:
     add_child(http_update_req)
 
     if ProjectSettings.get_setting(Config.GENERAL_AUTO_UPDATE, true):
+        await get_tree().create_timer(2.5).timeout
         update_check()
 
 func _exit_tree() -> void:
@@ -189,8 +190,8 @@ func _update_response(
             if data["tag_name"] == current_ver:
                 print("  Using the latest version: %s" % current_ver)
             else:
-                print_rich("  New updates available: %s -> %s" % [current_ver,
+                print("  New updates available: %s -> %s" % [current_ver,
                     "[url=%s]%s[/url]" % [
                         data["html_url"],
                         data["tag_name"]]
-                    ])
+                ])
