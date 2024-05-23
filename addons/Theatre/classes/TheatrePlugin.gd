@@ -113,14 +113,17 @@ func crawl(path : String = "res://") -> void:
                             print("Crawling " + new_dir + " for dialogue resources...")
                         crawl(new_dir)
             else:
-                if file_name.ends_with(".dlg.txt"):
+                if file_name.ends_with(".dlg.tres") or\
+                    file_name.ends_with(".dlg.res"):
+                    var rem_err := dir.remove(file_name)
+                    if rem_err != OK:
+                        printerr("Error removing Dialogue resource: ", error_string(rem_err))
+
+                    EditorInterface.get_resource_filesystem().scan()
+
+                elif file_name.ends_with(".dlg.txt"):
                     var file := path + "/" + file_name
                     var file_com := file.trim_suffix(".txt") + ".res"
-
-                    if FileAccess.file_exists(file_com):
-                        var rem_err := DirAccess.remove_absolute(file_com)
-                        if rem_err != OK:
-                            push_error("Error removing Dialogue resource: ", rem_err)
 
                     var sav_err := ResourceSaver.save(
                         Dialogue.new(file), file_com,
@@ -128,6 +131,7 @@ func crawl(path : String = "res://") -> void:
                     )
                     if sav_err != OK:
                         push_error("Error saving Dialogue resource: ", sav_err)
+
                     EditorInterface.get_resource_filesystem().scan()
 
             file_name = dir.get_next()
