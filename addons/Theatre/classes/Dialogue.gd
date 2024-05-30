@@ -16,7 +16,8 @@ class Parser extends RefCounted:
     const REGEX_DLG_TAGS :=\
         r"\{\s*(?<tag>\w+)\s*(\=\s*(?<arg>.+?)\s*)*\}"
     const REGEX_BBCODE_TAGS :=\
-        r"[\[\/\!]*?[^\[\]]*?\]"
+        r"(\[(?<tag>\w+).*\])(?<content>.*)(\[\/\2\])"
+        #r"[\[\/\!]*?[^\[\]]*?\]"
     const REGEX_FUNC_CALL :=\
         r"(?<caller>\w+)\.(?<name>\w+)\((?<args>.*)\)$"
     const REGEX_PLACEHOLDER :=\
@@ -150,15 +151,7 @@ class Parser extends RefCounted:
                 ])
 
             else:
-                var regex_bbcode := RegEx.new()
-                regex_bbcode.compile(REGEX_BBCODE_TAGS)
-                var regex_bbcode_match := regex_bbcode.search_all(output[n]["line_raw"])
-
-                # Implement built-in tags
-                var parsed_tags := parse_tags(
-                    # Stripped BBCode tags
-                    regex_bbcode.sub(output[n]["line_raw"], "", true)
-                )
+                var parsed_tags := parse_tags(output[n]["line_raw"])
 
                 for tag : String in SETS_TEMPLATE["tags"].keys():
                     output[n]["tags"][tag].merge(parsed_tags["tags"][tag])
@@ -204,6 +197,7 @@ class Parser extends RefCounted:
 
         return string
 
+    # 😭😭😭
     static func parse_tags(string : String) -> Dictionary:
         var output : Dictionary = {}
         var vars : PackedStringArray = []
@@ -211,6 +205,25 @@ class Parser extends RefCounted:
 
         var regex_tags := RegEx.new()
         regex_tags.compile(REGEX_DLG_TAGS)
+
+        # BBCode ===============================================================
+        var bb_data : Dictionary = {}
+        # Strip all Dialogue tags to process BBCode tags
+        var stripped_tags := regex_tags.sub(string, "", true)
+
+        var regex_bbcode := RegEx.new()
+        regex_bbcode.compile(REGEX_BBCODE_TAGS)
+        var regex_bbcode_match := regex_bbcode.search_all(stripped_tags)
+
+        # Strip and log BBCode tags
+        for bb in regex_bbcode_match:
+            bb_data[bb.get_start()] = {
+                "content" : bb.strings[0],
+                "length" : bb.get_string("content").length(),
+            }
+            string = string.replace(bb.strings[0], bb.get_string("content"))
+
+        # Dialogue tags ========================================================
         var regex_tags_match := regex_tags.search_all(string)
 
         var tag_pos_offset : int = 0
@@ -237,6 +250,11 @@ class Parser extends RefCounted:
                 string = string.replace(string_match, "")
 
             tag_pos_offset += string_match.length()
+
+        for bb in bb_data:
+            string = string\
+                .erase(bb, bb_data[bb]["length"])\
+                .insert(bb, bb_data[bb]["content"])
 
         output["tags"] = tags
         output["string"] = string
