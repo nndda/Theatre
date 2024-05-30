@@ -16,8 +16,7 @@ class Parser extends RefCounted:
     const REGEX_DLG_TAGS :=\
         r"\{\s*(?<tag>\w+)\s*(\=\s*(?<arg>.+?)\s*)*\}"
     const REGEX_BBCODE_TAGS :=\
-        r"(\[(?<tag>\w+).*\])(?<content>.*)(\[\/\2\])"
-        #r"[\[\/\!]*?[^\[\]]*?\]"
+        r"(?<tag>[\[\/]+?\w+)[^\[\]]*?\]"
     const REGEX_FUNC_CALL :=\
         r"(?<caller>\w+)\.(?<name>\w+)\((?<args>.*)\)$"
     const REGEX_PLACEHOLDER :=\
@@ -215,13 +214,32 @@ class Parser extends RefCounted:
         regex_bbcode.compile(REGEX_BBCODE_TAGS)
         var regex_bbcode_match := regex_bbcode.search_all(stripped_tags)
 
+        var bbcode_pos_offset : int = 0
+
         # Strip and log BBCode tags
         for bb in regex_bbcode_match:
-            bb_data[bb.get_start()] = {
+            var bb_start : int = bb.get_start() - bbcode_pos_offset
+            var bb_end : int = bb.get_end() - bbcode_pos_offset
+
+            bb_data[bb_start] = {
                 "content" : bb.strings[0],
-                "length" : bb.get_string("content").length(),
+                "img" : false,
             }
-            string = string.replace(bb.strings[0], bb.get_string("content"))
+
+            string = string.replace(bb.strings[0], "")
+
+            if bb.get_string("tag") == "[img":
+                bb_data[bb_start]["img"] = true
+                bb_data[bb_start]["img-pos"] = bb_end
+                bb_data[bb_start]["img-res"] = string.substr(
+                    bb_start, string.find("[/img]", bb_start) - bb_start
+                )
+
+                string = string\
+                    .erase(bb_start, bb_data[bb_start]["img-res"].length())\
+                    .insert(bb_start, "i")
+
+                #bbcode_pos_offset += bb_data[bb_start]["img-res"].length()
 
         # Dialogue tags ========================================================
         var regex_tags_match := regex_tags.search_all(string)
@@ -252,9 +270,14 @@ class Parser extends RefCounted:
             tag_pos_offset += string_match.length()
 
         for bb in bb_data:
-            string = string\
-                .erase(bb, bb_data[bb]["length"])\
-                .insert(bb, bb_data[bb]["content"])
+            string = string.insert(bb, bb_data[bb]["content"])
+
+            if bb_data[bb]["img"]:
+                string = string.erase(bb_data[bb]["img-pos"], 1)
+                string = string.insert(
+                    bb_data[bb]["img-pos"],
+                    bb_data[bb]["img-res"],
+                )
 
         output["tags"] = tags
         output["string"] = string
