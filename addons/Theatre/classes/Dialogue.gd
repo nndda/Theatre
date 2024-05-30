@@ -324,7 +324,10 @@ func _init(dlg_src : String = ""):
         dlg_src.get_slice_count("\n") >= 2 and
         Parser.is_valid_source(dlg_src)
         ):
-        print("Parsing Dialogue from raw string: ", get_stack())
+        var stack : Dictionary = get_stack()[-1]
+        print("Parsing Dialogue from raw string: %s:%d" % [
+            stack["source"], stack["line"]
+        ])
         parser = Parser.new(dlg_src)
         sets = parser.output
 
