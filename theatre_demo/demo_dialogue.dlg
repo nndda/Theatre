@@ -21,8 +21,9 @@ Dia:
     "And {s = 0.9}um{s = 0.04}...{s} Thats it!{s = 0.035}...{s} for now."
 
 :
-    "We also have an official documentation page,{d = 0.85}
-    live at nndda.github.io/Theatre"
+    "Most of the classes functionalities are documented directly in the class.{d = 0.8}
+    In the editor,{d = 0.8} You can press F1 and look for Theatre's classes, if You
+    needs more info."
 
 :
     "Stay tuned for the next updates!"

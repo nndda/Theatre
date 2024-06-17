@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://grescgxuicdy"]
+
+[ext_resource type="PackedScene" uid="uid://ctrohnpqthbtr" path="res://theatre_demo/demo_scene.tscn" id="1_j6ddt"]
+[ext_resource type="Script" path="res://theatre_demo/1_intro.gd" id="2_besqp"]
+
+[node name="1_intro" instance=ExtResource("1_j6ddt")]
+script = ExtResource("2_besqp")
+
+[node name="Stage" parent="." index="0" node_paths=PackedStringArray("actor_label", "dialogue_label")]
+actor_label = NodePath("../DialogueContainer/MarginContainer/VBoxContainer/Label")
+dialogue_label = NodePath("../DialogueContainer/MarginContainer/VBoxContainer/DialogueLabel")

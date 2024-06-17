@@ -1,6 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://ctrohnpqthbtr"]
+[gd_scene load_steps=4 format=3 uid="uid://ctrohnpqthbtr"]
 
 [ext_resource type="Script" path="res://addons/Theatre/classes/DialogueLabel.gd" id="1_kg1di"]
+[ext_resource type="Script" path="res://addons/Theatre/classes/Stage.gd" id="1_le2th"]
+[ext_resource type="Script" path="res://theatre_demo/demo_script.gd" id="3_lo6tw"]
 
 [node name="DemoScene" type="Control"]
 layout_mode = 3
@@ -9,6 +11,11 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="Stage" type="Node" parent="." node_paths=PackedStringArray("actor_label", "dialogue_label")]
+script = ExtResource("1_le2th")
+actor_label = NodePath("../DialogueContainer/MarginContainer/VBoxContainer/Label")
+dialogue_label = NodePath("../DialogueContainer/MarginContainer/VBoxContainer/DialogueLabel")
 
 [node name="DialogueContainer" type="PanelContainer" parent="."]
 layout_mode = 1
@@ -32,15 +39,24 @@ theme_override_constants/margin_bottom = 8
 [node name="VBoxContainer" type="VBoxContainer" parent="DialogueContainer/MarginContainer"]
 layout_mode = 2
 
-[node name="Name" type="Label" parent="DialogueContainer/MarginContainer/VBoxContainer"]
+[node name="Label" type="Label" parent="DialogueContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "Name"
 
-[node name="Body" type="RichTextLabel" parent="DialogueContainer/MarginContainer/VBoxContainer"]
+[node name="DialogueLabel" type="RichTextLabel" parent="DialogueContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
+size_flags_vertical = 3
 script = ExtResource("1_kg1di")
 
+[node name="ProgressBar" type="ProgressBar" parent="DialogueContainer/MarginContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+max_value = 1.0
+step = 0.005
+show_percentage = false
+
 [node name="StartButton" type="Button" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -65,3 +81,8 @@ theme_override_constants/margin_top = 24
 [node name="Guide" type="RichTextLabel" parent="MarginContainer"]
 layout_mode = 2
 text = "Press [Space] to progress"
+
+[node name="Node" type="Node" parent="."]
+script = ExtResource("3_lo6tw")
+
+[connection signal="character_drawn" from="DialogueContainer/MarginContainer/VBoxContainer/DialogueLabel" to="Node" method="update_bar"]
