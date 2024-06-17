@@ -1,0 +1,64 @@
+[gd_scene load_steps=4 format=3 uid="uid://c7sx4nn7nbs5t"]
+
+[ext_resource type="Script" path="res://theatre_demo/preview/preview.gd" id="1_86xvy"]
+[ext_resource type="Script" path="res://addons/Theatre/classes/Stage.gd" id="2_wv2tv"]
+[ext_resource type="Script" path="res://addons/Theatre/classes/DialogueLabel.gd" id="3_fq1xf"]
+
+[node name="Preview" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_86xvy")
+
+[node name="Stage" type="Node" parent="." node_paths=PackedStringArray("actor_label", "dialogue_label")]
+script = ExtResource("2_wv2tv")
+actor_label = NodePath("../PanelContainer/CenterContainer/VBoxContainer/Label")
+dialogue_label = NodePath("../PanelContainer/CenterContainer/VBoxContainer/DialogueLabel")
+variables = {
+"gd_ver": 4
+}
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CenterContainer" type="CenterContainer" parent="PanelContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/CenterContainer"]
+custom_minimum_size = Vector2(340, 240)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="PanelContainer/CenterContainer/VBoxContainer"]
+layout_mode = 2
+text = "Actor's label"
+
+[node name="HSeparator" type="HSeparator" parent="PanelContainer/CenterContainer/VBoxContainer"]
+modulate = Color(1, 1, 1, 0.552941)
+layout_mode = 2
+theme_override_constants/separation = 3
+
+[node name="DialogueLabel" type="RichTextLabel" parent="PanelContainer/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/line_separation = 4
+text = "..."
+fit_content = true
+script = ExtResource("3_fq1xf")
+
+[node name="Container" type="Container" parent="PanelContainer/CenterContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ProgressBar" type="ProgressBar" parent="PanelContainer/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 5)
+layout_mode = 2
+max_value = 1.0
+value = 0.1
+show_percentage = false
