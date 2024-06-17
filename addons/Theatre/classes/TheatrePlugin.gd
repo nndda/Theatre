@@ -1,6 +1,7 @@
 @icon("res://addons/Theatre/assets/icons/Theatre.svg")
 @tool
-class_name TheatrePlugin extends EditorPlugin
+extends EditorPlugin
+class_name TheatrePlugin
 
 class Config extends RefCounted:
     const GENERAL_AUTO_UPDATE := "theatre/general/updates/check_updates_automatically"
@@ -46,6 +47,9 @@ class Config extends RefCounted:
 
 var http_update_req : HTTPRequest
 
+var editor_settings := EditorInterface.get_editor_settings()
+var editor_resource_filesystem := EditorInterface.get_resource_filesystem()
+
 var plugin_submenu : PopupMenu = preload(
     "res://addons/Theatre/components/tool_submenu.tscn"
 ).instantiate()
@@ -53,6 +57,7 @@ var plugin_submenu : PopupMenu = preload(
 func _build() -> bool:
     print("💬 Compiling Dialogue resources...")
     crawl()
+    print()
     return true
 
 func _enter_tree() -> void:
@@ -64,20 +69,28 @@ func _enter_tree() -> void:
     # Initialize project settings
     Config.init_configs()
 
+    # Add `.dlg` text file extension
+    var text_files_ext : String = editor_settings\
+        .get_setting("docks/filesystem/textfile_extensions")
+    if !text_files_ext.contains("dlg"):
+        editor_settings.set_setting("docks/filesystem/textfile_extensions",
+            text_files_ext + ",dlg"
+        )
+
     # Initialize plugin submenu
     plugin_submenu.id_pressed.connect(tool_submenu_id_pressed)
     add_tool_submenu_item("🎭 Theatre", plugin_submenu)
 
-func _ready() -> void:
+#func _ready() -> void:
     # Initialize update check
-    http_update_req = HTTPRequest.new()
-    http_update_req.timeout = 3.0
-    http_update_req.request_completed.connect(_update_response)
-    add_child(http_update_req)
+    #http_update_req = HTTPRequest.new()
+    #http_update_req.timeout = 3.0
+    #http_update_req.request_completed.connect(_update_response)
+    #add_child(http_update_req)
 
-    if ProjectSettings.get_setting(Config.GENERAL_AUTO_UPDATE, true):
-        await get_tree().create_timer(2.5).timeout
-        update_check()
+    #if ProjectSettings.get_setting(Config.GENERAL_AUTO_UPDATE, true):
+        #await get_tree().create_timer(2.5).timeout
+        #update_check()
 
 func _exit_tree() -> void:
     print("🎭 Disabling Theatre...")
@@ -85,7 +98,7 @@ func _exit_tree() -> void:
     Config.remove_configs()
 
     # Clear update check
-    http_update_req.queue_free()
+    #http_update_req.queue_free()
 
     # Clear plugin submenu
     plugin_submenu.id_pressed.disconnect(tool_submenu_id_pressed)
@@ -114,17 +127,21 @@ func crawl(path : String = "res://") -> void:
                             print("Crawling " + new_dir + " for dialogue resources...")
                         crawl(new_dir)
             else:
-                if file_name.ends_with(".dlg.tres") or\
-                    file_name.ends_with(".dlg.res"):
-                    var rem_err := dir.remove(file_name)
-                    if rem_err != OK:
-                        printerr("Error removing Dialogue resource: ", error_string(rem_err))
-
-                    EditorInterface.get_resource_filesystem().scan()
-
-                elif file_name.ends_with(".dlg.txt"):
+                if file_name.ends_with(".dlg.txt") or\
+                    file_name.ends_with(".dlg"):
                     var file := path + "/" + file_name
-                    var file_com := file.trim_suffix(".txt") + ".res"
+                    var file_com : String
+
+                    if file_name.ends_with(".dlg.txt"):
+                        file_com = file.trim_suffix(".txt") + ".res"
+                    elif file_name.ends_with(".dlg"):
+                        file_com = file + ".res"
+
+                    if file_name.ends_with(".dlg.tres") or\
+                        file_name.ends_with(".dlg.res"):
+                        var rem_err := dir.remove(file_name)
+                        if rem_err != OK:
+                            printerr("Error removing Dialogue resource: ", error_string(rem_err))
 
                     var sav_err := ResourceSaver.save(
                         Dialogue.new(file), file_com,
@@ -133,7 +150,7 @@ func crawl(path : String = "res://") -> void:
                     if sav_err != OK:
                         push_error("Error saving Dialogue resource: ", sav_err)
 
-                    EditorInterface.get_resource_filesystem().scan()
+                    editor_resource_filesystem.scan()
 
             file_name = dir.get_next()
 
@@ -177,13 +194,13 @@ func _update_response(
     body : PackedByteArray,
     ) -> void:
     if response_code != 200:
-        push_error("  Error getting updates: %d" % response_code)
+        print("  Error getting updates: %d" % response_code)
     else:
         var json := JSON.new()
         var err := json.parse(body.get_string_from_utf8())
 
         if err != OK:
-            push_error("  Error getting updates data: %s" % error_string(err))
+            print("  Error getting updates data: %s" % error_string(err))
         else:
             var data : Dictionary = json.get_data() as Dictionary
             var current_ver := get_plugin_version()
@@ -193,5 +210,6 @@ func _update_response(
                 print("  New updates available: %s -> %s" % [current_ver,
                     "[url=%s]%s[/url]" % [
                         data["html_url"],
-                        data["tag_name"]]
+                        data["tag_name"],
+                    ]
                 ])
