@@ -5,6 +5,8 @@ var output : Array[Dictionary]
 
 const REGEX_DLG_TAGS :=\
     r"\{\s*(?<tag>\w+)\s*(\=\s*(?<arg>.+?)\s*)*\}"
+const REGEX_DLG_TAGS_NEWLINE :=\
+    r"^\s*(?<tag>\w+)\=((?<arg>.+))*$"
 const REGEX_BBCODE_TAGS :=\
     r"(?<tag>[\[\/]+?\w+)[^\[\]]*?\]"
 const REGEX_FUNC_CALL :=\
@@ -69,14 +71,20 @@ func _init(src : String = ""):
 
     var body_pos : int = 0
     var dlg_raw_size : int = dlg_raw.size()
+    var newline_stack : int = 0
 
+    # Per raw string line
     for i in dlg_raw_size:
         var ln_num : int = i + 1
         var n := dlg_raw[i]
         var is_valid_line := !n.begins_with("#") and !n.is_empty()
 
+        var current_processed_string : String = ""
+
         if is_valid_line and !is_indented(n) and n.strip_edges().ends_with(":"):
+            #region NOTE: Create new Dialogue line -------------------------------------------------
             var setsl := SETS_TEMPLATE.duplicate(true)
+            newline_stack = 0
 
             if dlg_raw_size < i + 1:
                 printerr("Error: actor's name exists without a dialogue body")
@@ -94,13 +102,24 @@ func _init(src : String = ""):
 
             output.append(setsl)
             body_pos = output.size() - 1
+            #endregion
+
+        elif n.strip_edges().is_empty():
+            newline_stack += 1
 
         elif is_valid_line:
-            # Function calls
-            var regex_func := RegEx.new()
-            regex_func.compile(REGEX_FUNC_CALL)
-            var regex_func_match := regex_func.search(dlg_raw[i].strip_edges())
+            current_processed_string = dlg_raw[i].strip_edges()
 
+            var regex_func := RegEx.new(); regex_func.compile(REGEX_FUNC_CALL);\
+                var regex_func_match := regex_func.search(current_processed_string)
+
+            var regex_tags_newline := RegEx.new(); regex_tags_newline.compile(REGEX_DLG_TAGS_NEWLINE);\
+                var regex_tags_newline_match := regex_tags_newline.search(current_processed_string)
+
+            var regex_bbcode := RegEx.new(); regex_bbcode.compile(REGEX_BBCODE_TAGS);\
+                var regex_bbcode_match := regex_bbcode.search(current_processed_string)
+
+            #region NOTE: Function calls -----------------------------------------------------------
             if regex_func_match != null:
                 var func_dict := FUNC_TEMPLATE.duplicate(true)
                 for func_n : String in [
@@ -128,15 +147,32 @@ func _init(src : String = ""):
 
                 func_dict["args"] = args.execute() as Array
                 output[body_pos]["func"].append(func_dict)
+            #endregion
+
+            #region NOTE: Newline Dialogue tags ----------------------------------------------------
+            elif is_regex_full_string(regex_tags_newline_match):
+                output[body_pos]["line_raw"] += "{%s}" % current_processed_string
+                output[body_pos]["line"] += "{%s}" % current_processed_string
+            #endregion
+
+            #region NOTE: Newline BBCode tags ------------------------------------------------------
+            elif is_regex_full_string(regex_bbcode_match):
+                output[body_pos]["line_raw"] += current_processed_string
+                output[body_pos]["line"] += current_processed_string
+            #endregion
 
             # Dialogue text body
             else:
-                var dlg_body := dlg_raw[i].strip_edges() + " "
+                if newline_stack > 0:
+                    newline_stack += 1
+                var dlg_body := "\n".repeat(newline_stack) + current_processed_string + " "
+                newline_stack = 0
 
                 # Append Dialogue body
                 output[body_pos]["line_raw"] += dlg_body
                 output[body_pos]["line"] += dlg_body
 
+    # Per dialogue line
     for n in output.size():
         var body : String = ""
 
@@ -204,6 +240,8 @@ static func parse_tags(string : String) -> Dictionary:
 
     var regex_tags := RegEx.new()
     regex_tags.compile(REGEX_DLG_TAGS)
+    #var regex_tags_newline := RegEx.new()
+    #regex_tags_newline.compile(REGEX_DLG_TAGS_NEWLINE)
 
     # BBCode ===============================================================
     var bb_data : Dictionary = {}
@@ -317,3 +355,9 @@ static func update_tags_position(dlg : Dialogue, pos : int, vars : Dictionary) -
     dlg._sets[pos]["vars"] = parsed_tags["variables"]
     dlg._sets[pos]["func_pos"] = parsed_tags["func_pos"]
     dlg._sets[pos]["func_idx"] = parsed_tags["func_idx"]
+
+static func is_regex_full_string(regex_match : RegExMatch) -> bool:
+    if regex_match == null:
+        return false
+    return regex_match.get_start() == 0 and\
+        regex_match.get_end() == regex_match.subject.length()
