@@ -14,7 +14,7 @@ Text-based linear dialogue system for Godot 4. Literally just a text file! Writt
 <tr>
 <td>
 
-<img src="https://github.com/nndda/Theatre/assets/96333146/58d7c400-9aac-4ba3-971c-57d7b28cb7e3" width="340">
+<img src="https://github.com/nndda/Theatre/assets/96333146/58d7c400-9aac-4ba3-971c-57d7b28cb7e3">
 
 </td>
 <td>
@@ -28,7 +28,9 @@ Dia:
         d=0.3
     developed for Godot {gd_ver}
         d=0.8
-    [fx3](well,{d = 0.8} 4.3 specifically)[/fx3]."
+    [fx3]
+        (well,{d = 0.8} 4.3 specifically)
+    [/fx3]."
 
 
     ＼(^ ▽ ^)
