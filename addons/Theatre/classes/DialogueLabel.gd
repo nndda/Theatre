@@ -1,4 +1,5 @@
 @icon("res://addons/Theatre/assets/icons/classes/message.svg")
+@tool
 class_name DialogueLabel
 extends RichTextLabel
 
@@ -6,6 +7,7 @@ extends RichTextLabel
 ##
 ## A [RichTextLabel] inherited node that are built for displaying and rendering [Dialogue] lines.
 ## [DialogueLabel] has a partial support for BBCode tags, as for now, the [code][img][/code] tag are not supported.
+## [member RichTextLabel.bbcode_enabled] will always be [code]true[/code].
 
 ## Each string character will be drawn every [param characters_draw_tick] seconds
 @export var characters_draw_tick : float = .015
@@ -37,21 +39,27 @@ func set_stage(stage : Stage) -> void:
             _current_stage.skipped.disconnect(_on_stage_skipped)
         _current_stage = null
 
+func _validate_property(property: Dictionary) -> void:
+    if property["name"] == "bbcode_enabled":
+        bbcode_enabled = true
+        property["usage"] = PROPERTY_USAGE_NO_EDITOR
+
 func _enter_tree() -> void:
-    text = ""
-    bbcode_enabled = true
+    if !Engine.is_editor_hint():
+        text = ""
+        bbcode_enabled = true
 
-    _delay_timer.autostart = false
-    _delay_timer.one_shot = true
-    _delay_timer.timeout.connect(_delay_timer_timeout)
-    #call_deferred(&"add_child", _delay_timer)
-    add_child(_delay_timer)
+        _delay_timer.autostart = false
+        _delay_timer.one_shot = true
+        _delay_timer.timeout.connect(_delay_timer_timeout)
+        #call_deferred(&"add_child", _delay_timer)
+        add_child(_delay_timer)
 
-    _characters_ticker.autostart = false
-    _characters_ticker.one_shot = false
-    _characters_ticker.timeout.connect(_characters_ticker_timeout)
-    #call_deferred(&"add_child", _characters_ticker)
-    add_child(_characters_ticker)
+        _characters_ticker.autostart = false
+        _characters_ticker.one_shot = false
+        _characters_ticker.timeout.connect(_characters_ticker_timeout)
+        #call_deferred(&"add_child", _characters_ticker)
+        add_child(_characters_ticker)
 #endregion
 
 #region NOTE: Signals ------------------------------------------------------------------------------
@@ -162,6 +170,7 @@ func _on_stage_skipped() -> void:
 #endregion
 
 func _exit_tree() -> void:
-    _delay_queue.clear()
-    _speed_queue.clear()
-    _func_queue.clear()
+    if !Engine.is_editor_hint():
+        _delay_queue.clear()
+        _speed_queue.clear()
+        _func_queue.clear()
