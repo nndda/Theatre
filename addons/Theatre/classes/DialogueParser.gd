@@ -236,6 +236,7 @@ static func is_valid_source(string : String) -> bool:
     regex = null
     return res == null
 
+# BUG
 ## Normalize indentation of the Dialogue raw string.
 static func normalize_indentation(string : String) -> String:
     var regex := RegEx.new()

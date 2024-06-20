@@ -49,7 +49,6 @@ func _init(dlg_src : String = ""):
         else:
             _source_path = dlg_src
             parser = DialogueParser.new(FileAccess.get_file_as_string(dlg_src))
-            #parser = _Parser.new(FileAccess.get_file_as_string(dlg_src))
             _sets = parser.output
             _update_used_variables()
             _update_used_function_calls()
@@ -59,8 +58,10 @@ func _init(dlg_src : String = ""):
         print("Parsing Dialogue from raw string: %s:%d" % [
             stack["source"], stack["line"]
         ])
-        parser = DialogueParser.new(dlg_src)
-        #parser = _parse.new(dlg_src)
+        parser = DialogueParser.new(
+            # BUG
+            DialogueParser.normalize_indentation(dlg_src)
+        )
         _sets = parser.output
         _update_used_variables()
         _update_used_function_calls()
