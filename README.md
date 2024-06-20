@@ -14,7 +14,7 @@ Text-based linear dialogue system for Godot 4. Literally just a text file! Writt
 <tr>
 <td>
 
-<img src="https://github.com/nndda/Theatre/assets/96333146/58d7c400-9aac-4ba3-971c-57d7b28cb7e3">
+<img src="https://github.com/nndda/Theatre/assets/96333146/58d7c400-9aac-4ba3-971c-57d7b28cb7e3" width="340">
 
 </td>
 <td>
