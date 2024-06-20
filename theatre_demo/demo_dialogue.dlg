@@ -3,12 +3,10 @@ Dia:
     this is a demo dialogue to demonstrate Theatre addon's core feature."
 
 :
-    "There are 5 main classes that makes part of Theatre plugin:{delay = 0.7}
+    "There are 3 main classes that makes part of Theatre plugin:{delay = 0.7}
     Dialogue, {d = 0.7}
     DialogueLabel, {d = 0.7}
-    Stage, {d = 0.7}
-    Theatre, {d = 0.7}
-    & TheatrePlugin."
+    & Stage"
 
 :
     "Lets start with Dialogue:{d = 0.8} Its a resource, containing the writing of

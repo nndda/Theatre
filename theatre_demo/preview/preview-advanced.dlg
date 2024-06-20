@@ -1,16 +1,12 @@
 Dia:
-    "Welcome!
-        d=0.8
-    to the
+    "Welcome! {d=0.8}to the
     [fx1]Theatre[/fx1]!
         d=0.9
     a text-based dialogue system
         d=0.3
     developed for Godot {gd_ver}
         d=0.8
-    [fx3]
-        (well,{d = 0.8} 4.3 specifically)
-    [/fx3]."
+    [fx3](well,{d = 0.8} 4.3 specifically)[/fx3]."
 
 
     ＼(^ ▽ ^)
