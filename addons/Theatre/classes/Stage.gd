@@ -56,7 +56,7 @@ extends Node
             current_dialogue = new_dlg
             if !variables.is_empty() and new_dlg != null:
                 for n in current_dialogue._sets.size():
-                    Dialogue._Parser.update_tags_position(
+                    DialogueParser.update_tags_position(
                         current_dialogue, n, variables
                     )
         else:
@@ -89,7 +89,7 @@ func _update_variables_dialogue() -> void:
     if current_dialogue != null:
         var stepn := clampi(_step, 0, current_dialogue._sets.size())
         # NOTE, BUG: NOT COMPATIBLE WHEN CHANGING VARIABLE REAL-TIME
-        Dialogue._Parser.update_tags_position(
+        DialogueParser.update_tags_position(
             current_dialogue, stepn, variables
         )
 
@@ -448,7 +448,7 @@ func _reset_progress(keep_dialogue : bool = false) -> void:
         cancelled.emit()
         cancelled_at.emit(_step,
             current_dialogue._sets[_step] if _step != -1 else\
-            Dialogue._Parser.SETS_TEMPLATE
+            DialogueParser.SETS_TEMPLATE
         )
 
     _step = -1
