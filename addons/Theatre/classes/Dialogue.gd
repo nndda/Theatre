@@ -1,293 +1,211 @@
+@icon("res://addons/Theatre/assets/icons/classes/feather-pointed.svg")
 class_name Dialogue
 extends Resource
 
-# TODO: handle errors and non-Dialogue text files
-# TODO: localization support
+## Compiled [Dialogue] resource.
+##
+## This is the resource that have been parsed and processed from the written [Dialogue].
+## Load it from the text file with [method Dialogue.load], or write it directly in script using [method Dialogue.new]
+## [codeblock]
+## var dlg = Dialogue.load("res://your_dialogue.dlg")
+##
+## var dlg = Dialogue.new("""
+##
+## Godette:
+##      "Hello world!"
+##
+## """)
+## [/codeblock]
 
-# low priority
-# TODO: something to flag that the dialogue have been played or not. Maybe something that utilize `user://` savedata
-
-## A Dialogue resource, saved as sets of instruction on how the Dialogue flow.
-
-## Parser class for processing the raw string used for the dialogue.
-class Parser extends RefCounted:
-    var output : Array[Dictionary]
-
-    const REGEX_DLG_TAGS :=\
-        r"\{\s*(?<tag>\w+)\s*(\=\s*(?<arg>.+?)\s*)*\}"
-    const REGEX_FUNC_CALL :=\
-        r"(?<caller>\w+)\.(?<name>\w+)\((?<args>.*)\)$"
-    const REGEX_PLACEHOLDER :=\
-        r"\{(\w+?)\}"
-    const REGEX_INDENT :=\
-        r"(?<=\n{1})\s+"
-    const REGEX_VALID_DLG :=\
-        r"\n+\w+\:\n+\s+\w+"
-
-    const SETS_TEMPLATE := {
-        "actor": "",
-        "line": "",
-        "line_raw": "",
-        "tags": {
-            "delays": {
-                #   pos,    delay(s)
-                #   15,     5
-            },
-            "speeds": {
-                #   pos,    scale(f)
-                #   15:     1.2
-            },
-        },
-        "func": [],
-        "offsets": {
-            #   start, end
-            #   15: 20
-        },
-    }
-    const FUNC_TEMPLATE := {
-        "caller": "",
-        "name": "",
-        "args": [],
-    }
-
-    func _init(src : String = ""):
-        output = []
-        const FUNC_IDENTIFIER := "_FUNC:"
-
-        var dlg_raw : PackedStringArray = []
-
-        # Filter out comments, and create PackedStringArray
-        # of every non-empty line in the source
-        for n in src.split("\n", false):
-            if !n.begins_with("#"):
-                dlg_raw.append(n)
-
-        var body_pos : int = 0
-        for i in dlg_raw.size():
-            var n := dlg_raw[i]
-
-            if n.begins_with(FUNC_IDENTIFIER) or !is_indented(n):
-                var setsl := SETS_TEMPLATE.duplicate(true)
-
-                if !is_indented(n):
-                    if dlg_raw.size() < i + 1:
-                        assert(false, "Error: Dialogue name exists without a body")
-
-                    setsl["actor"] = n.strip_edges().trim_suffix(":")
-
-                    if setsl["actor"] == "_":
-                        setsl["actor"] = ""
-                    elif setsl["actor"] == "":
-                        setsl["actor"] = output[output.size() - 1]["actor"]
-
-                    output.append(setsl)
-                    body_pos = output.size() - 1
-
-            elif is_indented(n):
-                # Function calls
-                var regex_func := RegEx.new()
-                regex_func.compile(REGEX_FUNC_CALL)
-                var regex_func_match := regex_func.search(dlg_raw[i].strip_edges())
-
-                if regex_func_match != null:
-                    var func_dict := FUNC_TEMPLATE.duplicate(true)
-                    for func_n : String in [
-                        "caller", "name",
-                    ]:
-                        func_dict[func_n] = regex_func_match.get_string(
-                            regex_func_match.names[func_n]
-                        )
-
-                    # Function parameters/arguments
-                    var args_raw := regex_func_match.get_string(
-                        regex_func_match.names["args"]
-                    ).strip_edges()
-                    var args = str_to_var("[%s]" % args_raw)
-
-                    if args == null:
-                        push_error("Error, null arguments: ", args_raw)
-
-                    func_dict["args"] = args
-                    output[body_pos]["func"].append(func_dict)
-
-                # Dialogue text body
-                else:
-                    var dlg_body := dlg_raw[i].strip_edges() + " "
-
-                    output[body_pos]["line_raw"] += dlg_body
-                    output[body_pos]["line"] += dlg_body
-
-        for n in output.size():
-            # Implement built-in tags
-            var parsed_tags := parse_tags(output[n]["line_raw"])
-
-            for tag : String in SETS_TEMPLATE["tags"].keys():
-                output[n]["tags"][tag].merge(parsed_tags["tags"][tag])
-
-            output[n]["line"] = parsed_tags["string"]
-
-    ## Check if [param string] is indented with tabs or spaces.
-    func is_indented(string : String) -> bool:
-        return string != string.lstrip(" \t")
-
-    ## Check if [param string] is written in a valid Dialogue string format/syntax or not.
-    static func is_valid_source(string : String) -> bool:
-        var regex := RegEx.new()
-        regex.compile(REGEX_VALID_DLG)
-        return regex.search(string) == null
-
-    ## Normalize indentation of the Dialogue raw string.
-    func normalize_indentation(string : String) -> String:
-        var regex := RegEx.new()
-        var indents : Array[int] = []
-
-        regex.compile(REGEX_INDENT)
-        for n in regex.search_all(string):
-            var len := n.get_string(1).length()
-            if !indents.has(len):
-                indents.append(n.get_string(1).length())
-
-        if indents.max() > 0:
-            var spc := ""
-            for n in indents.min():
-                spc += " "
-            string = string.replacen("\n" + spc, "\n")
-
-        return string
-
-    static func parse_tags(string : String) -> Dictionary:
-        var output : Dictionary = {}
-        var tags : Dictionary = SETS_TEMPLATE["tags"].duplicate(true)
-
-        var regex_tags := RegEx.new()
-        regex_tags.compile(REGEX_DLG_TAGS)
-        var regex_tags_match := regex_tags.search_all(string)
-
-        var tag_pos_offset : int = 0
-
-        for b in regex_tags_match:
-            string = string.replace(b.strings[0], "")
-
-            var tag_pos : int = b.get_start() - tag_pos_offset
-            var tag_key := b.get_string("tag").to_upper()
-            var tag_value := b.get_string("arg")
-
-            tag_pos_offset += b.strings[0].length()
-
-            if ["DELAY", "WAIT", "D", "W"].has(tag_key):
-                tags["delays"][tag_pos] = float(tag_value)
-            elif ["SPEED", "SPD", "S"].has(tag_key):
-                tags["speeds"][tag_pos] = float(
-                    1.0 if tag_value.is_empty() else tag_value
-                )
-            else:
-                push_warning("Unknown tags: ", b.strings[0])
-
-        output["tags"] = tags
-        output["string"] = string
-
-        return output
-
-    # Temporary solution when using variables and tags at the same time
-    # Might not be performant when dealing with real-time variables
-    ## Format Dialogue body at [param pos] position with [member Stage.variables], and update the positions of the built-in tags.
-    ## Return the formatted string.
-    static func update_tags_position(dlg : Dialogue, pos : int, vars : Dictionary) -> void:
-        var dlg_str : String = dlg.sets[pos]["line_raw"].format(vars)
-        for n in ["delays", "speeds"]:
-            dlg.sets[pos]["tags"][n].clear()
-
-        dlg.sets[pos]["tags"] = parse_tags(dlg_str)["tags"]
-        dlg.sets[pos]["line"] = parse_tags(dlg_str)["string"]
-
+#region NOTE: Stored variables ---------------------------------------------------------------------
 #static var default_lang := "en"
 
-@export var sets : Array[Dictionary] = []
+@export_storage var _sets : Array[Dictionary] = []
+@export_storage var _source_path : String
 
-@export var source_path : String = ""
+@export_storage var _used_variables : PackedStringArray = []
+@export_storage var _used_function_calls : Dictionary = {}
+#endregion
 
-func _init(dlg_src : String = ""):
-    sets = []
-    var parser : Parser
-
-    if is_valid_filename(dlg_src):
-        print("Parsing Dialogue from file: ", dlg_src)
-        if FileAccess.file_exists(dlg_src):
-            source_path = dlg_src
-            parser = Parser.new(FileAccess.get_file_as_string(dlg_src))
-            sets = parser.output
-        else:
-            push_error("Unable to create Dialogue resource: %s does not exists" % dlg_src)
-
-    elif (
-        # TODO: maybe this one check not needed
-        dlg_src.get_slice_count("\n") >= 2 and
-        Parser.is_valid_source(dlg_src)
-        ):
-        print("Parsing Dialogue from raw string: ", get_stack())
-        parser = Parser.new(dlg_src)
-        sets = parser.output
-
-    # BUG? Loading Dialogue with @GDScript load() also trigger this
-    #else:
-        #push_error("Unable to create Dialogue resource: unkbown source:", dlg_src)
-
+#region NOTE: Loader/constructor -------------------------------------------------------------------
+## Returns [code]true[/code] if [param filename] use a valid written [Dialogue] file name ([code]*.dlg.txt[/code] or [code]*.dlg[/code]).
 static func is_valid_filename(filename : String) -> bool:
     return (
-        (filename.begins_with("res://") or filename.begins_with("user://"))
+        (filename.ends_with(".dlg.txt") or filename.ends_with(".dlg"))
         and filename.get_file().is_valid_filename()
     )
 
-static func load(dlg_src : String) -> Dialogue:
+func _init(dlg_src : String = ""):
+    _sets = []
+    _used_variables = []
+    var parser : DialogueParser
+
     if is_valid_filename(dlg_src):
+        print("Parsing Dialogue from file: %s..." % dlg_src)
+
+        if !FileAccess.file_exists(dlg_src):
+            push_error("Unable to create Dialogue resource: '%s' does not exists" % dlg_src)
+
+        else:
+            _source_path = dlg_src
+            parser = DialogueParser.new(FileAccess.get_file_as_string(dlg_src))
+            _sets = parser.output
+            _update_used_variables()
+            _update_used_function_calls()
+
+    elif DialogueParser.is_valid_source(dlg_src) and dlg_src.split("\n", false).size() >= 2:
+        var stack : Dictionary = get_stack()[-1]
+        print("Parsing Dialogue from raw string: %s:%d" % [
+            stack["source"], stack["line"]
+        ])
+        parser = DialogueParser.new(
+            # BUG
+            DialogueParser.normalize_indentation(dlg_src)
+        )
+        _sets = parser.output
+        _update_used_variables()
+        _update_used_function_calls()
+
+        _source_path = "%s:%d" % [stack["source"], stack["line"]]
+
+## Load written [Dialogue] file from [param path]. Use [method Dialogue.new] instead to create a written [Dialogue] directly in the script.
+static func load(path : String) -> Dialogue:
+    if !is_valid_filename(path):
+        printerr("Error loading Dialogue: '%s' is not a valid path/filename\n" % path,
+            Theatre.Debug.format_stack(get_stack())
+        )
+        return null
+    else:
         # Find filename alias
-        var dlg_compiled := dlg_src.trim_suffix(".txt")
+        var dlg_compiled := path
+
+        if path.ends_with(".txt"):
+            dlg_compiled = path.trim_suffix(".txt")
 
         if FileAccess.file_exists(dlg_compiled + ".res"):
             dlg_compiled += ".res"
         elif FileAccess.file_exists(dlg_compiled + ".tres"):
             dlg_compiled += ".tres"
 
-        print("Getting Dialogue from file: ", dlg_compiled)
+        print("Getting Dialogue from file: %s..." % dlg_compiled)
 
         if FileAccess.file_exists(dlg_compiled):
             var dlg := load(dlg_compiled)
             return dlg as Dialogue
         else:
-            push_warning("Compiled Dialogue %s does'nt exists. Creating new dialogue" % dlg_compiled)
-            return Dialogue.new(dlg_src)
+            push_warning("Compiled Dialogue '%s' doesn't exists. Creating new dialogue\n" % path)
+            return Dialogue.new(path)
+#endregion
 
-    else:
-        print("Parsing Dialogue from raw string: ", get_stack())
-        return Dialogue.new(dlg_src)
+#region NOTE: Utilities ----------------------------------------------------------------------------
+## Return all actors present in the compiled [Dialogue]. Optionally pass [param variables] to
+## insert variables used in the actor's name, otherwise it will return it as is (e.g. [code]{player_name}[/code])
+func get_actors(variables : Dictionary = {}) -> PackedStringArray:
+    var output : PackedStringArray = []
+    for n in _sets:
+        var actor : String = n.actor.format(variables)
+        if !output.has(actor):
+            output.append(actor)
+    return output
 
-#static func print_set(input : Dictionary) -> void:
-    #print(
-        #"\n", input["actor"],
-        #"\n", input["line_raw"],
-    #)
-    #if !input["delays"].is_empty():
-        #"    delays at:"
-        #for d : int in input["delays"].keys():
-            #print("position %i, for %f seconds" % d, input["delays"][d])
-#
-    #for f in input["func"].keys():
-        #pass
+## Return line count in the compiled [Dialogue].
+func get_length() -> int:
+    return _sets.size()
 
-func to_json(path : String) -> Error:
-    var file := FileAccess.open(path, FileAccess.WRITE)
-    file.store_string(
-        JSON.stringify(sets, "  ")
-    )
-    file.close()
-    return file.get_error()
+## Returns the path of written [Dialogue] source. If the [Dialogue] is created in a script using
+## [method Dialogue.new], it will returns the script's path and the line number from where the [Dialogue] is created
+## (e.g. [code]res://your_script.gd:26[/code]).
+func get_source_path() -> String:
+    return _source_path
 
-func get_word_count() -> int:
+## Returns word count in the compiled [Dialogue]. Optionally pass [param variables] to insert
+## variables used by the [Dialogue], otherwise it will count any variable placeholder as 1 word.
+func get_word_count(variables : Dictionary = {}) -> int:
     var output : int = 0
     var text : String
-    for n in sets:
-        for chr in ":;.,{}":
-            text = n["line_raw"].replace(chr, " ")
+    for n in _sets:
+        for chr in ":;.,{}-":
+            text = n["line_raw"]\
+                .format(variables)\
+                .format(Stage._VARIABLES_BUILT_IN)\
+                .replace(chr, " ")
         output += text.split(" ", false).size()
     return output
 
+func get_character_count(variables : Dictionary = {}) -> int:
+    #var output : int = 0
+    #var text : String
+    #for n in _sets:
+        #for chr in ":;.,{}-":
+            #text = n["line_raw"]\
+                #.format(variables)\
+                #.format(Stage._VARIABLES_BUILT_IN)\
+                #.replace(chr, " ")
+        #output += text.length()
+    return humanize(variables).length()
+    
+
+func get_function_calls() -> Dictionary:
+    return _used_function_calls
+
+func _update_used_function_calls() -> void:
+    for n : Dictionary in _sets:
+        for m : Dictionary in n["func"]:
+            if !_used_function_calls.has(m["caller"]):
+                _used_function_calls[m["caller"]] = {}
+
+            _used_function_calls[m["caller"]][m["ln_num"]] = {
+                "name": m["name"],
+                "args": m["args"],
+            }
+
+## Gets all variables used in the written [Dialogue].
+func get_variables() -> PackedStringArray:
+    return _used_variables
+
+func _update_used_variables() -> void:
+    for n : Dictionary in _sets:
+        for m : String in n["vars"]:
+            if not m in _used_variables:
+                _used_variables.append(m)
+
+## Returns the human-readable string of the compiled [Dialogue]. This will return the [Dialogue]
+## without the Dialogue tags and/or BBCode tags. Optionally, insert the variables used by passing it to [param variables].
+func humanize(variables : Dictionary = {}) -> String:
+    return _strip(variables)
+
+func _strip(
+    variables : Dictionary = {},
+    exclude_actors : bool = false,
+    exclude_newline : bool = false
+    ) -> String:
+    var output := ""
+    var newline : String = "" if exclude_newline else "\n"
+
+    for n in _sets:
+        if !exclude_actors:
+            output += n.actor + ":" + newline
+
+        output += "    " + n.line + newline + newline
+
+    # Strip BBCode tags
+    var regex_bbcode := RegEx.new()
+    regex_bbcode.compile(DialogueParser.REGEX_BBCODE_TAGS)
+    var regex_bbcode_match := regex_bbcode.search_all(output)
+    for bb in regex_bbcode_match:
+        output = output.replace(bb.strings[0], "")
+
+    return output.format(variables)
+
+## Save the compiled [Dialogue] data as a JSON file to the specified [param path]. Returns [member OK] if successful.
+func to_json(path : String) -> Error:
+    var file := FileAccess.open(path, FileAccess.WRITE)
+    if FileAccess.get_open_error() == OK:
+        file.store_string(
+            JSON.stringify(_sets, "  ", true, true)
+        )
+    else:
+        return FileAccess.get_open_error()
+    file.close()
+    return file.get_error()
+#endregion

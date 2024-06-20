@@ -4,8 +4,9 @@
 
 [node name="TheatreToolSubmenu" type="PopupMenu"]
 title = "🎭 Theatre"
-size = Vector2i(305, 116)
-item_count = 4
+size = Vector2i(305, 124)
+visible = true
+item_count = 6
 item_0/text = "💬 Compile Dialogue text resources"
 item_0/id = 1
 item_1/text = "Exclude/include folders"
@@ -15,4 +16,9 @@ item_2/id = 1024
 item_2/separator = true
 item_3/text = "Initialize .gitignore"
 item_3/id = 10
+item_4/text = ""
+item_4/id = 4
+item_4/separator = true
+item_5/text = "Check for updates"
+item_5/id = 5
 script = ExtResource("1_g2vws")

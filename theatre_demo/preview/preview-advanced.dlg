@@ -1,0 +1,82 @@
+Dia:
+    "Welcome! {d=0.8}to the
+    [fx1]Theatre[/fx1]!
+        d=0.9
+    a text-based dialogue system
+        d=0.3
+    developed for Godot {gd_ver}
+        d=0.8
+    [fx3](well,{d = 0.8} 4.3 specifically)[/fx3]."
+
+
+    ＼(^ ▽ ^)
+
+:
+    "The written
+    [color=#77dfdf]
+        Dialogue
+    [/color]
+    syntax
+        d=0.25
+    is designed
+    to be human-readable.
+        d=0.76
+    Similar to other data format
+        d=0.45
+    like YAML.
+        d=0.76
+        s=0.45
+    Although,
+        d=0.5
+    it's far more simplified
+        d=0.4
+        s=0.25
+    and limited."
+
+
+    (｡T ω T｡)
+
+:
+        s=1.1
+    "But!
+        d=0.9
+        s=1.0
+    You can also do things
+        d=0.25
+    like
+    [color=#ffffaa]
+        [u]calling functions[/u]
+    [/color]
+        d=0.4
+    and
+    [color=#ffffaa]
+        [u]inserting variables[/u]
+    [/color]!
+        d=0.65
+    And that is not
+        d=0.1
+    the only feature Theatre has to offer!"
+
+
+    <(￣︶￣)>
+
+:
+    "There's also
+        s=0.23
+    [fx2]
+        [color=#ffffaa]
+            ✨Dialogue tags✨
+        [/color]
+    [/fx2]
+        s=1.0
+        d=1.05
+    , which is one of the big part of the Theatre plugin.
+        d=1.0
+    Dialogue tags allow you to fine tune your dialogue flow.
+        d=0.7
+    You can use BBCode tags
+        d=0.25
+    alongside Dialogue tags too!"
+
+
+    (≧ ω ≦)
