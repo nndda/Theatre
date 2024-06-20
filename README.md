@@ -140,3 +140,9 @@ And finally, start the Stage
 ```gdscript
     stage.start(epic_dialogue)
 ```
+
+## License
+
+- Theatre are licensed under [MIT](LICENSE)
+- The [Theatre logo](/addons/Theatre/assets/icons/Theatre.svg) is licensed under [CC-BY 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+- Icons used for Theatre classes by [@fontawesome](https://fontawesome.com) licensed under [CC-BY 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
