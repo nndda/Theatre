@@ -73,6 +73,18 @@ func _init(src : String = ""):
     var dlg_raw_size : int = dlg_raw.size()
     var newline_stack : int = 0
 
+    var regex_func := RegEx.new();\
+        regex_func.compile(REGEX_FUNC_CALL);\
+        var regex_func_match : RegExMatch
+
+    var regex_tags_newline := RegEx.new();\
+        regex_tags_newline.compile(REGEX_DLG_TAGS_NEWLINE);\
+        var regex_tags_newline_match : RegExMatch
+
+    var regex_bbcode := RegEx.new();\
+        regex_bbcode.compile(REGEX_BBCODE_TAGS);\
+        var regex_bbcode_match : RegExMatch
+
     # Per raw string line
     for i in dlg_raw_size:
         var ln_num : int = i + 1
@@ -110,14 +122,9 @@ func _init(src : String = ""):
         elif is_valid_line:
             current_processed_string = dlg_raw[i].strip_edges()
 
-            var regex_func := RegEx.new(); regex_func.compile(REGEX_FUNC_CALL);\
-                var regex_func_match := regex_func.search(current_processed_string)
-
-            var regex_tags_newline := RegEx.new(); regex_tags_newline.compile(REGEX_DLG_TAGS_NEWLINE);\
-                var regex_tags_newline_match := regex_tags_newline.search(current_processed_string)
-
-            var regex_bbcode := RegEx.new(); regex_bbcode.compile(REGEX_BBCODE_TAGS);\
-                var regex_bbcode_match := regex_bbcode.search(current_processed_string)
+            regex_func_match = regex_func.search(current_processed_string)
+            regex_tags_newline_match = regex_tags_newline.search(current_processed_string)
+            regex_bbcode_match = regex_bbcode.search(current_processed_string)
 
             #region NOTE: Function calls -----------------------------------------------------------
             if regex_func_match != null:
@@ -201,6 +208,20 @@ func _init(src : String = ""):
 
         output[n]["line"] = body
 
+    regex_func.clear()
+    regex_tags_newline.clear()
+    regex_bbcode.clear()
+
+    regex_func = null
+    regex_tags_newline = null
+    regex_bbcode = null
+
+    regex_func_match = null
+    regex_tags_newline_match = null
+    regex_bbcode_match = null
+
+    dlg_raw.clear()
+
 ## Check if [param string] is indented with tabs or spaces.
 func is_indented(string : String) -> bool:
     return string != string.lstrip(" \t")
@@ -209,14 +230,19 @@ func is_indented(string : String) -> bool:
 static func is_valid_source(string : String) -> bool:
     var regex := RegEx.new()
     regex.compile(REGEX_VALID_DLG)
-    return regex.search(string) == null
+    var res := regex.search(string)
+
+    regex.clear()
+    regex = null
+    return res == null
 
 ## Normalize indentation of the Dialogue raw string.
-func normalize_indentation(string : String) -> String:
+static func normalize_indentation(string : String) -> String:
     var regex := RegEx.new()
     var indents : Array[int] = []
 
     regex.compile(REGEX_INDENT)
+
     for n in regex.search_all(string):
         var len := n.get_string(1).length()
         if !indents.has(len):
@@ -227,6 +253,10 @@ func normalize_indentation(string : String) -> String:
         for n in indents.min():
             spc += " "
         string = string.replacen("\n" + spc, "\n")
+
+    regex.clear()
+    regex = null
+    indents.clear()
 
     return string
 
@@ -240,8 +270,6 @@ static func parse_tags(string : String) -> Dictionary:
 
     var regex_tags := RegEx.new()
     regex_tags.compile(REGEX_DLG_TAGS)
-    #var regex_tags_newline := RegEx.new()
-    #regex_tags_newline.compile(REGEX_DLG_TAGS_NEWLINE)
 
     # BBCode ===============================================================
     var bb_data : Dictionary = {}
@@ -336,6 +364,19 @@ static func parse_tags(string : String) -> Dictionary:
     output["func_pos"] = func_pos
     output["func_idx"] = func_idx
     output["variables"] = vars
+
+    #region CLEANUP
+    regex_tags.clear()
+    regex_tags = null
+    regex_tags_match.clear()
+
+    regex_bbcode.clear()
+    regex_bbcode = null
+    regex_bbcode_match.clear()
+
+    regex_int_func.clear()
+    regex_int_func = null
+    #endregion
 
     return output
 
