@@ -7,11 +7,11 @@ extends Control
 
 # Write your Dialogue, save it to a *.dlg file
 # and load it with Dialogue.load()
-var epic_dialogue = Dialogue.load('res://theatre_demo/demo_dialogue.dlg')
+var epic_dialogue = Dialogue.load('res://theatre_demo/base/demo_dialogue.dlg')
 
-# Make sure you have:
+
+# In your scene, make sure you have:
 # Label, and DialogueLabel node
-# in your scene.
 
 # Add Stage node to your scene,
 # and reference it in a variable.
@@ -21,11 +21,11 @@ var epic_dialogue = Dialogue.load('res://theatre_demo/demo_dialogue.dlg')
 # and view the inspector.
 
 # Assign the Label node to 'actor_label' property
-# and assign the DialogueLabel node to 'dialogue_label' property.
+# and the DialogueLabel node to 'dialogue_label' property.
 
 
 # Set up a way to progress your Dialogue,
-# here we will be using input event.
+# here, we will be using input event.
 func _input(event):
     # Enter / Space key
     if event.is_action_pressed('ui_accept'):
@@ -34,7 +34,6 @@ func _input(event):
 
 # Now, everytime 'ui_accept' key is pressed,
 # the dialogue should progress.
-
 
 func _ready() -> void:
     # After that, you can then trigger
