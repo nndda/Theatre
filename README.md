@@ -101,7 +101,7 @@ var epic_dialogue = Dialogue.load("res://epic_dialogue.dlg")
 
 Set the Stage! Create a `Stage` node, and reference the `Label` & `DialogueLabel` node to display your Dialogue. Adjust and configure your `Stage` via the inspector. Alternatively, you can also set them in script:
 
-<table align="center">>
+<table align="center">
 <tr align="center">
 <td>
     <b> Inspector </b>
@@ -151,5 +151,5 @@ And finally, start the Stage
 ## License
 
 - Theatre is licensed under [MIT](LICENSE).
-- [Theatre logo](/addons/Theatre/assets/icons/Theatre.svg), created by [nnda](https://github.com/nndda), is licensed under [CC-BY 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
-- [Class icons](addons/Theatre/assets/icons/classes), from [@fontawesome](https://fontawesome.com), are licensed under [CC-BY 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+- [Theatre logo](/addons/Theatre/assets/icons/Theatre.svg), created by [nnda](https://github.com/nndda), is licensed under [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+- [Class icons](addons/Theatre/assets/icons/classes), from [@fontawesome](https://fontawesome.com), are licensed under [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/).
