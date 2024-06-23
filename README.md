@@ -2,14 +2,19 @@
 
 <img src="/addons/Theatre/assets/icons/Theatre.svg" height="160" align="right">
 
-Text-based linear dialogue system for Godot 4. Literally just a text file! Written in human-readable syntax and VCS-friendly. Edit it with your favourite editor or directly in Godot script editor while keeping your codes and story separate.
+Text-based linear dialogue system for Godot 4.3. Literally just a text file! Written in human-readable syntax and VCS-friendly. Edit it with your favourite editor or directly in Godot script editor while keeping your codes and story separate.
 
-> [!NOTE]
+> [!IMPORTANT]
 > This project is currently in its alpha stage and is subject to frequent and breaking changes, and bugs.
 
 <table align="center">
-<tr>
-<td> Rendered </td> <td> Written </td>
+<tr align="center">
+<td>
+    <b> Rendered </b>
+</td>
+<td>
+    <b> Written </b>
+</td>
 </tr>
 <tr>
 <td>
@@ -96,13 +101,13 @@ var epic_dialogue = Dialogue.load("res://epic_dialogue.dlg")
 
 Set the Stage! Create a `Stage` node, and reference the `Label` & `DialogueLabel` node to display your Dialogue. Adjust and configure your `Stage` via the inspector. Alternatively, you can also set them in script:
 
-<table>
-<tr>
+<table align="center">>
+<tr align="center">
 <td>
-    Inspector
+    <b> Inspector </b>
 </td>
 <td>
-    GDScript
+    <b> GDScript </b>
 </td>
 </tr>
 
@@ -145,6 +150,6 @@ And finally, start the Stage
 
 ## License
 
-- Theatre are licensed under [MIT](LICENSE)
-- The [Theatre logo](/addons/Theatre/assets/icons/Theatre.svg) is licensed under [CC-BY 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
-- Icons used for Theatre classes by [@fontawesome](https://fontawesome.com) licensed under [CC-BY 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+- Theatre is licensed under [MIT](LICENSE).
+- [Theatre logo](/addons/Theatre/assets/icons/Theatre.svg), created by [nnda](https://github.com/nndda), is licensed under [CC-BY 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+- [Class icons](addons/Theatre/assets/icons/classes), from [@fontawesome](https://fontawesome.com), are licensed under [CC-BY 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
