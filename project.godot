@@ -19,6 +19,12 @@ config/icon="res://addons/Theatre/assets/icons/Theatre.svg"
 [display]
 
 window/stretch/mode="canvas_items"
+window/vsync/vsync_mode=0
+
+[editor]
+
+movie_writer/disable_vsync=true
+movie_writer/fps=25
 
 [editor_plugins]
 
