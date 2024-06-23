@@ -19,7 +19,7 @@ script = ExtResource("4_6f1ve")
 [sub_resource type="RichTextEffect" id="RichTextEffect_bysel"]
 script = ExtResource("5_low7t")
 
-[node name="Preview" type="Control"]
+[node name="Preview" type="Control" node_paths=PackedStringArray("stage", "progress_bar")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -27,6 +27,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_86xvy")
+stage = NodePath("Stage")
+progress_bar = NodePath("PanelContainer/CenterContainer/VBoxContainer/ProgressBar")
 
 [node name="Stage" type="Node" parent="." node_paths=PackedStringArray("actor_label", "dialogue_label")]
 script = ExtResource("2_wv2tv")
