@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://addons/Theatre/classes/DialogueLabel.gd" id="1_kg1di"]
 [ext_resource type="Script" path="res://addons/Theatre/classes/Stage.gd" id="1_le2th"]
-[ext_resource type="Script" path="res://theatre_demo/demo_script.gd" id="3_lo6tw"]
+[ext_resource type="Script" path="res://theatre_demo/base/demo_script.gd" id="3_lo6tw"]
 
 [node name="DemoScene" type="Control"]
 layout_mode = 3
@@ -46,6 +46,7 @@ text = "Name"
 [node name="DialogueLabel" type="RichTextLabel" parent="DialogueContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+bbcode_enabled = true
 script = ExtResource("1_kg1di")
 
 [node name="ProgressBar" type="ProgressBar" parent="DialogueContainer/MarginContainer/VBoxContainer"]
