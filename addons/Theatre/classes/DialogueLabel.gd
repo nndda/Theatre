@@ -46,6 +46,9 @@ func _validate_property(property: Dictionary) -> void:
 
 func _enter_tree() -> void:
     if !Engine.is_editor_hint():
+        _delay_timer = Timer.new()
+        _characters_ticker = Timer.new()
+
         text = ""
         bbcode_enabled = true
 
@@ -77,8 +80,8 @@ var _delay_queue : PackedInt64Array = []
 var _speed_queue : PackedInt64Array = []
 var _func_queue : PackedInt64Array = []
 
-var _delay_timer := Timer.new()
-var _characters_ticker := Timer.new()
+var _delay_timer : Timer
+var _characters_ticker : Timer
 
 ## Start the rendering of the current [Dialogue] line text.
 func start_render() -> void:
