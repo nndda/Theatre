@@ -2,19 +2,27 @@
 
 <img src="/addons/Theatre/assets/icons/Theatre.svg" height="160" align="right">
 
-Text-based linear dialogue system for Godot 4. Literally just a text file! Written in human-readable syntax and VCS-friendly. Edit it with your favourite editor or directly in Godot script editor while keeping your codes and story separate.
+Text-based linear dialogue system for Godot 4.3.
+- ✍️ Literally just a text file! Written in human-readable syntax & VCS-friendly.
+- ✨ Focused on presentation and delivery of your story.
+- 📝 100% written in GDScript.
 
-> [!NOTE]
+> [!IMPORTANT]
 > This project is currently in its alpha stage and is subject to frequent and breaking changes, and bugs.
 
 <table align="center">
-<tr>
-<td> Rendered </td> <td> Written </td>
+<tr align="center">
+<td>
+    <b> Rendered </b>
+</td>
+<td>
+    <b> Written </b>
+</td>
 </tr>
 <tr>
 <td>
 
-<img src="https://github.com/nndda/Theatre/assets/96333146/58d7c400-9aac-4ba3-971c-57d7b28cb7e3">
+<img src="https://github.com/nndda/Theatre/assets/96333146/58d7c400-9aac-4ba3-971c-57d7b28cb7e3" width="364">
 
 </td>
 <td>
@@ -65,6 +73,12 @@ Connect your story to the game with function calls.
 
     Player.heal(20)
 ```
+```
+Ritsu:
+    "Smile for the camera!"
+
+    Portrait.change('res://ritsu_smile.png')
+```
 
 Call functions only at specific points in the Dialogue.
 ```
@@ -96,32 +110,32 @@ var epic_dialogue = Dialogue.load("res://epic_dialogue.dlg")
 
 Set the Stage! Create a `Stage` node, and reference the `Label` & `DialogueLabel` node to display your Dialogue. Adjust and configure your `Stage` via the inspector. Alternatively, you can also set them in script:
 
-<table>
-<tr>
+<table align="center">
+<tr align="center">
 <td>
-    Inspector
+    <b> Inspector </b>
 </td>
 <td>
-    GDScript
+    <b> GDScript </b>
 </td>
 </tr>
 
 <tr>
 <td>
 
-![stage-inspector](https://github.com/nndda/Theatre/assets/96333146/69d7b946-2444-4247-8cdf-394332466c99)
+<img src="https://github.com/nndda/Theatre/assets/96333146/69d7b946-2444-4247-8cdf-394332466c99" width="260">
 
 </td>
 <td>
 
 ```gdscript
-@onready var stage : Stage = $Stage
+@onready var your_stage : Stage = $Stage
 
 func _ready():
-    stage.allow_skip = true
-    stage.allow_cancel = true
-    stage.allow_func = true
-    stage.speed_scale = 1.0
+    your_stage.allow_skip = true
+    your_stage.allow_cancel = true
+    your_stage.allow_func = true
+    your_stage.speed_scale = 1.0
 ```
 
 </td>
@@ -129,22 +143,23 @@ func _ready():
 
 </table>
 
-Progress your Dialogue with `Stage.progress()`.
+Reference the `Stage` node in the script, and set up a way to progress your Dialogue with `Stage.progress()`.
 
 ```gdscript
 func _input(event):
     if event.is_action_pressed("ui_accept"):
-        stage.progress()
+        your_stage.progress()
 ```
 
 And finally, start the Stage
 
 ```gdscript
-    stage.start(epic_dialogue)
+func _ready():
+    your_stage.start(epic_dialogue)
 ```
 
 ## License
 
-- Theatre are licensed under [MIT](LICENSE)
-- The [Theatre logo](/addons/Theatre/assets/icons/Theatre.svg) is licensed under [CC-BY 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
-- Icons used for Theatre classes by [@fontawesome](https://fontawesome.com) licensed under [CC-BY 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+- Theatre is licensed under [MIT](LICENSE).
+- [Theatre logo](/addons/Theatre/assets/icons/Theatre.svg), created by [nnda](https://github.com/nndda), is licensed under [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+- [Class icons](addons/Theatre/assets/icons/classes), from [@fontawesome](https://fontawesome.com), are licensed under [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/).
