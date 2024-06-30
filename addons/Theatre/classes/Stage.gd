@@ -32,6 +32,8 @@ extends Node
 
 #@export var insert_actor := false
 
+static var speed_scale_global : float = 1.0
+
 ## The speed scale of the [member dialogue_label] text rendering.
 @export_range(0.01, 3.0, 0.01) var speed_scale : float = 1.0:
     set(s):

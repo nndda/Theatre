@@ -88,7 +88,7 @@ func start_render() -> void:
     _delay_timer.one_shot = true
 
     _characters_draw_tick_scaled = characters_draw_tick /\
-        Theatre.speed_scale / _current_stage.speed_scale
+        _current_stage.speed_scale_global / _current_stage.speed_scale
     _characters_ticker.start(_characters_draw_tick_scaled)
 
     _delay_queue = _current_stage._current_dialogue_set["tags"]["delays"].keys()
@@ -140,7 +140,7 @@ func _characters_ticker_timeout() -> void:
     if !_speed_queue.is_empty():
         if _speed_queue[0] == visible_characters:
             _characters_ticker.wait_time = _characters_draw_tick_scaled /\
-                Theatre.speed_scale /\
+                _current_stage.speed_scale_global /\
                 _current_stage._current_dialogue_set["tags"]["speeds"][_speed_queue[0]]
             _characters_ticker.start()
             _speed_queue.remove_at(0)
