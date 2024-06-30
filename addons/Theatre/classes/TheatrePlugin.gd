@@ -81,6 +81,9 @@ func _enter_tree() -> void:
     plugin_submenu.id_pressed.connect(tool_submenu_id_pressed)
     add_tool_submenu_item("🎭 Theatre", plugin_submenu)
 
+    # Initiate Theatre singleton
+    add_autoload_singleton("Theatre", "res://addons/Theatre/classes/Theatre.gd")
+
 #func _ready() -> void:
     # Initialize update check
     #http_update_req = HTTPRequest.new()
@@ -103,6 +106,9 @@ func _exit_tree() -> void:
     # Clear plugin submenu
     plugin_submenu.id_pressed.disconnect(tool_submenu_id_pressed)
     remove_tool_menu_item("🎭 Theatre")
+
+    # Clear Theatre singleton
+    remove_autoload_singleton("Theatre")
 
 func crawl(path : String = "res://", clean_only : bool = false) -> void:
     var dir := DirAccess.open(path)
