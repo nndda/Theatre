@@ -140,6 +140,8 @@ func clear_variables() -> void:
 #endregion
 
 #region NOTE: Function calls related ---------------------------------------------------------------
+@export var caller_nodes : Array[Node] = []
+
 static var _caller_built_in : Dictionary = {}
 var _caller_all : Dictionary = {}
 
@@ -494,6 +496,11 @@ func _enter_tree() -> void:
     if !variables.is_empty():
         _update_variables_dialogue()
 
+    await get_tree().current_scene.ready
+    for node in caller_nodes:
+        if node != null:
+            add_caller("%s" % node.name, node)
+
 func _exit_tree() -> void:
     if dialogue_label._current_stage == self:
         dialogue_label._current_stage = null
@@ -502,5 +509,6 @@ func _exit_tree() -> void:
     dialogue_label = null
     current_dialogue = null
 
+    caller_nodes.clear()
     clear_variables()
     clear_callers()
