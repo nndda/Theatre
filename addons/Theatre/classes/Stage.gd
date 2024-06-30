@@ -140,6 +140,12 @@ func clear_variables() -> void:
 #endregion
 
 #region NOTE: Function calls related ---------------------------------------------------------------
+static var _caller_built_in : Dictionary = {}
+var _caller_all : Dictionary = {}
+
+func _update_caller() -> void:
+    _caller_all = _caller.merged(_caller_built_in, true)
+
 ## Return user-defined callers that will be used in the written [Dialogue].
 func get_callers() -> Dictionary:
     return _caller
@@ -152,6 +158,7 @@ func add_caller(id : String, object : Object) -> void:
     _caller[id] = object
     if object is Node:
         object.tree_exited.connect(remove_caller.bind(id))
+    _update_caller()
 
 ## Remove function caller used in the written [Dialogue].
 ## [br][br]
@@ -167,6 +174,7 @@ func remove_caller(id : String) -> void:
                     remove_caller.bind(id)
                 )
         _caller.erase(id)
+    _update_caller()
 
 ## Remove all function callers.
 ## [br][br]
@@ -180,6 +188,7 @@ func clear_callers() -> void:
                     remove_caller.bind(id)
                 )
     _caller.clear()
+    _update_caller()
 
 func _call_functions(func_data : Dictionary) -> void:
     if allow_func:
@@ -187,19 +196,19 @@ func _call_functions(func_data : Dictionary) -> void:
         print("Calling function: %s.%s()" % [
             f["caller"], f["name"],
         ])
-        if !_caller.has(f["caller"]):
-            printerr("Error @%s:%d - _caller '%s' doesn't exists" % [
+        if !_caller_all.has(f["caller"]):
+            printerr("Error @%s:%d - caller '%s' doesn't exists" % [
                 current_dialogue.source_path, f["ln_num"],
                 f["caller"],
             ])
         else:
-            if !_caller[f["caller"]].has_method(f["name"]):
+            if !_caller_all[f["caller"]].has_method(f["name"]):
                 printerr("Error @%s:%d - function '%s.%s()' doesn't exists" % [
                     current_dialogue.source_path, f["ln_num"],
                     f["name"], f["caller"]
                 ])
             else:
-                _caller[f["caller"]].callv(f["name"], f["args"])
+                _caller_all[f["caller"]].callv(f["name"], f["args"])
 
 func _execute_functions() -> void:
     if allow_func:
@@ -477,6 +486,8 @@ func _update_display() -> void:
 #endregion
 
 func _enter_tree() -> void:
+    _update_caller()
+
     if dialogue_label != null:
         dialogue_label._current_stage = self
 
