@@ -1,5 +1,5 @@
 @icon("res://addons/Theatre/assets/icons/Theatre.svg")
-extends Object
+extends Node
 
 class Debug extends RefCounted:
     static func format_stack(stack_arr : Array[Dictionary], indent : String = "  ") -> String:
