@@ -382,6 +382,8 @@ func restart() -> void:
         _reset_progress(true)
         start()
 
+var _at_end := false
+
 ## Progress the [Dialogue].
 ## Calling [method progress] with [param skip_render] set to [code]false[/code] while the
 ## [member dialogue_label] is still rendering the text, will force it to finish the rendering instead of progressing. [signal skipped] will also be emitted.
@@ -397,7 +399,7 @@ func progress(skip_render : bool = false) -> void:
     elif dialogue_label == null:
         push_error("Failed to progress Stage: no DialogueLabel")
     else:
-        var at_end := _step + 1 >= _current_dialogue_length
+        _at_end = _step + 1 >= _current_dialogue_length
 
         # TODO: optimize this conditional trees
         #if dialogue_label.visible_ratio < 1.0:
@@ -407,12 +409,12 @@ func progress(skip_render : bool = false) -> void:
                     _progress_skip()
             else:
                 if allow_skip:
-                    if at_end:
+                    if _at_end:
                         _reset_progress()
                     else:
                         _progress_forward()
         else:
-            if at_end:
+            if _at_end:
                 _reset_progress()
             else:
                 _progress_forward()
