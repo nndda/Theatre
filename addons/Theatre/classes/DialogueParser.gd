@@ -63,7 +63,6 @@ const BUILT_IN_TAGS : PackedStringArray = (
     TAG_SPEED_ALIASES +
     VARS_BUILT_IN_KEYS
 )
-#endregion
 
 func _init(src : String = ""):
     output = []
