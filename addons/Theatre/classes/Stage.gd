@@ -192,12 +192,8 @@ func clear_callers() -> void:
     _caller.clear()
     _update_caller()
 
-func _call_functions(func_data : Dictionary) -> void:
+func _call_functions(f : Dictionary) -> void:
     if allow_func:
-        var f := func_data
-        print("Calling function: %s.%s()" % [
-            f["caller"], f["name"],
-        ])
         if !_caller_all.has(f["caller"]):
             printerr("Error @%s:%d - caller '%s' doesn't exists" % [
                 current_dialogue.source_path, f["ln_num"],
@@ -296,7 +292,7 @@ func get_invalid_functions() -> Dictionary:
 
         else:
             for m in used_funcs[n]:
-                if !(_caller[n] as Object).has_method(&"%s" % used_funcs[n][m]["name"]):
+                if !(_caller[n] as Object).has_method(used_funcs[n][m]["name"]):
                     if !output.has("no_method"):
                         output["no_method"] = []
 

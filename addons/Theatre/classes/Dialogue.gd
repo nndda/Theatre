@@ -18,8 +18,6 @@ extends Resource
 ## [/codeblock]
 
 #region NOTE: Stored variables ---------------------------------------------------------------------
-#static var default_lang := "en"
-
 @export_storage var _sets : Array[Dictionary] = []
 @export_storage var _source_path : String
 
@@ -133,17 +131,7 @@ func get_word_count(variables : Dictionary = {}) -> int:
     return output
 
 func get_character_count(variables : Dictionary = {}) -> int:
-    #var output : int = 0
-    #var text : String
-    #for n in _sets:
-        #for chr in ":;.,{}-":
-            #text = n["line_raw"]\
-                #.format(variables)\
-                #.format(Stage._VARIABLES_BUILT_IN)\
-                #.replace(chr, " ")
-        #output += text.length()
     return humanize(variables).length()
-    
 
 func get_function_calls() -> Dictionary:
     return _used_function_calls
