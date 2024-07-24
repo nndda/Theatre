@@ -118,7 +118,7 @@ func _init(src : String = ""):
         elif n.strip_edges().is_empty():
             newline_stack += 1
 
-        elif is_valid_line:
+        elif is_valid_line and !output.is_empty():
             current_processed_string = dlg_raw[i].strip_edges()
 
             regex_func_match = regex_func.search(current_processed_string)
