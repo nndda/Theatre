@@ -394,6 +394,8 @@ func progress(skip_render : bool = false) -> void:
         push_error("Failed to progress Stage: no Dialogue present")
     elif dialogue_label == null:
         push_error("Failed to progress Stage: no DialogueLabel")
+    elif dialogue_label.rendering_paused:
+        push_warning("Attempt to progress Dialogue while rendering_paused is true on DialogueLabel")
     else:
         _at_end = _step + 1 >= _current_dialogue_length
 

@@ -76,6 +76,19 @@ signal character_drawn
 #region NOTE: Core & rendering ---------------------------------------------------------------------
 var _is_rendering := false
 
+## If [code]true[/code], text rendering will be paused.
+## Progressing [Dialogue] won't work until [member rendering_paused]
+## is set to [code]false[/code],
+## or [method resume_render] is called.
+## [br][br]
+## See also [method pause_render] and [method resume_render].
+var rendering_paused := false:
+    set(v):
+        rendering_paused = v
+        _characters_ticker.paused = v
+        if _current_stage != null:
+            _current_stage
+
 var _delay_queue : PackedInt64Array = []
 var _speed_queue : PackedInt64Array = []
 var _func_queue : PackedInt64Array = []
@@ -117,6 +130,18 @@ func is_rendering() -> bool:
 func rerender() -> void:
     clear_render()
     start_render()
+
+## Pause text rendering. The same as setting [member rendering_paused] to [code]true[/code].
+## Progressing [Dialogue] won't work until [method resume_render]
+## is called, or [member rendering_paused] is set to [code]false[/code].
+func pause_render() -> void:
+    rendering_paused = true
+    _characters_ticker.paused = rendering_paused
+
+## Continue paused text rendering. The same as setting [member rendering_paused] to [code]false[/code].
+func resume_render() -> void:
+    rendering_paused = false
+    _characters_ticker.paused = rendering_paused
 
 func _characters_ticker_timeout() -> void:
     if !_func_queue.is_empty():
