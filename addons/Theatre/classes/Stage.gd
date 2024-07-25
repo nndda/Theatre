@@ -312,10 +312,10 @@ var _dialogue_full_string : String = ""
 # Current progress of the Dialogue.
 var _step : int = -1
 
-## Start the [Dialogue] specified in [param dialogue], if [param dialogue] is [code]null[/code], 
+## Start the [Dialogue] with the specified [param dialogue]. If [param dialogue] is [code]null[/code], 
 ## [member current_dialogue] will be used instead.
-## Optionally set [param to_line] parameter to jump to a specific line when the [Dialogue] start.
-func start(dialogue : Dialogue = null, to_line : int = 0) -> void:
+## Optionally, set [param to_section] parameter to start the [param dialogue] at a specific line or section.
+func start(dialogue : Dialogue = null, to_section : Variant = 0) -> void:
     if is_playing():
         push_warning("Theres already a running Dialogue!")
     else:
@@ -328,7 +328,25 @@ func start(dialogue : Dialogue = null, to_line : int = 0) -> void:
             print("Starting Dialogue: %s..." % current_dialogue.get_source_path())
             _current_dialogue_length = current_dialogue._sets.size()
 
-            _step = to_line - 1
+            if to_section is int:
+                if to_section > _current_dialogue_length:
+                    push_error("Failed to start Dialogue at line %d: Dialogue length is %d" % [
+                        to_section, _current_dialogue_length
+                    ])
+                elif to_section <= -1:
+                    _step = wrapi(to_section - 1, 0, _current_dialogue_length)
+                else:
+                    _step = to_section - 1
+
+            elif to_section is String or to_section is StringName:
+                if !dialogue._sections.has(to_section):
+                    push_error("Failed to start Dialogue at section '%s': section not found." % to_section)
+                else:
+                    _step = dialogue._sections[to_section] - 1
+
+            else:
+                push_error("Failed to start Dialogue at section/line: invalid data type for '%s'." % str(to_section))
+
             _progress_forward()
             started.emit()
 
