@@ -380,6 +380,17 @@ func restart() -> void:
 
 var _at_end := false
 
+func _preprogress_check() -> bool:
+    if current_dialogue == null:
+        push_error("Failed to progress Stage: no Dialogue present")
+    elif dialogue_label == null:
+        push_error("Failed to progress Stage: no DialogueLabel")
+    elif dialogue_label.rendering_paused:
+        push_warning("Attempt to progress Dialogue while rendering_paused is true on DialogueLabel")
+    else:
+        return true
+    return false
+
 ## Progress the [Dialogue].
 ## Calling [method progress] with [param skip_render] set to [code]false[/code] while the
 ## [member dialogue_label] is still rendering the text, will force it to finish the rendering instead of progressing. [signal skipped] will also be emitted.
@@ -390,13 +401,7 @@ var _at_end := false
 ## If [member allow_skip] is set to [code]false[/code]. Regardless of whether [param skip_render]
 ## is [code]true[/code] or [code]false[/code], the [Dialogue] won't progress until [member dialogue_label] has finished rendering.
 func progress(skip_render : bool = false) -> void:
-    if current_dialogue == null:
-        push_error("Failed to progress Stage: no Dialogue present")
-    elif dialogue_label == null:
-        push_error("Failed to progress Stage: no DialogueLabel")
-    elif dialogue_label.rendering_paused:
-        push_warning("Attempt to progress Dialogue while rendering_paused is true on DialogueLabel")
-    else:
+    if _preprogress_check():
         _at_end = _step + 1 >= _current_dialogue_length
 
         # TODO: optimize this conditional trees
