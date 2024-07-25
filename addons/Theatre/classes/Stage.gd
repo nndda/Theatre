@@ -525,6 +525,7 @@ func _update_display() -> void:
 
 func _enter_tree() -> void:
     _update_caller()
+    add_caller("Stage", self)
 
     if dialogue_label != null:
         dialogue_label._current_stage = self
