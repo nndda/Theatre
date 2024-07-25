@@ -447,16 +447,19 @@ func _progress_forward() -> void:
 ## Will wrap if [param line] is negative.
 func jump_to_line(line : int) -> void:
     if _preprogress_check():
-        if line > _current_dialogue_length:
-            push_error("Failed to jump to Dialogue line %d: Dialogue length is %d" % [
-                line, _current_dialogue_length
-            ])
-        elif line <= -1:
-            _step = wrapi(line - 1, 0, _current_dialogue_length)
-            progress(true)
-        else:
-            _step = line - 1
-            progress(true)
+        _goto_line(line)
+
+func _goto_line(line : int) -> void:
+    if line > _current_dialogue_length:
+        push_error("Failed to jump to Dialogue line %d: Dialogue length is %d" % [
+            line, _current_dialogue_length
+        ])
+    elif line <= -1:
+        _step = wrapi(line - 1, 0, _current_dialogue_length)
+        progress(true)
+    else:
+        _step = line - 1
+        progress(true)
 
 ## Stop the [Dialogue], clear [member dialogue_label] text render, and reset everything.
 ## Require [member allow_cancel] to be [code]true[/code]. Optionally, pass [code]true[/code] to keep the [member current_dialogue].
