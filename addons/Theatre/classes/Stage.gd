@@ -449,6 +449,18 @@ func jump_to_line(line : int) -> void:
     if _preprogress_check():
         _goto_line(line)
 
+## Jump to section defined in the written Dialogue.
+## [br][br]
+## See also [method Dialogue.get_sections()].
+func jump_to_section(section : String) -> void:
+    if _preprogress_check():
+        if !current_dialogue._sections.has(section):
+            push_error("Failed to jump to Dialogue section '%s': section not found." % section)
+        else:
+            _goto_line(
+                current_dialogue._sections[section]
+            )
+
 func _goto_line(line : int) -> void:
     if line > _current_dialogue_length:
         push_error("Failed to jump to Dialogue line %d: Dialogue length is %d" % [

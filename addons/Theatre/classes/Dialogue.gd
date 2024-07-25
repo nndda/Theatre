@@ -23,6 +23,8 @@ extends Resource
 
 @export_storage var _used_variables : PackedStringArray = []
 @export_storage var _used_function_calls : Dictionary = {}
+
+@export_storage var _sections : Dictionary = {}
 #endregion
 
 #region NOTE: Loader/constructor -------------------------------------------------------------------
@@ -35,6 +37,7 @@ static func is_valid_filename(filename : String) -> bool:
 
 func _init(dlg_src : String = ""):
     _sets = []
+    _sections = {}
     _used_variables = []
     var parser : DialogueParser
 
@@ -47,6 +50,7 @@ func _init(dlg_src : String = ""):
         else:
             _source_path = dlg_src
             parser = DialogueParser.new(FileAccess.get_file_as_string(dlg_src))
+            _sections = parser.sections
             _sets = parser.output
             _update_used_variables()
             _update_used_function_calls()
@@ -60,6 +64,7 @@ func _init(dlg_src : String = ""):
             # BUG
             DialogueParser.normalize_indentation(dlg_src)
         )
+        _sections = parser.sections
         _sets = parser.output
         _update_used_variables()
         _update_used_function_calls()
@@ -135,6 +140,11 @@ func get_character_count(variables : Dictionary = {}) -> int:
 
 func get_function_calls() -> Dictionary:
     return _used_function_calls
+
+## Returns the defined sections in the written [Dialogue], as a key-value pair,
+## with the key being the section ID, the value being the [Dialogue] line it represent.
+func get_sections() -> Dictionary:
+    return _sections
 
 func _update_used_function_calls() -> void:
     for n : Dictionary in _sets:
