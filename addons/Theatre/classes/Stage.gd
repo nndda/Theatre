@@ -23,7 +23,7 @@ extends Node
 ## Allow cancelling/stopping [Dialogue] with [method cancel] or [method reset].
 @export var allow_cancel := true
 
-## Allow calling functions in the written [Dialogue].
+## Allow calling functions defined in the written [Dialogue].
 @export var allow_func := true
 
 #@export var auto := false
@@ -51,7 +51,7 @@ static var speed_scale_global : float = 1.0
 ## [br][br]
 ## [b]Note:[/b] [member current_dialogue] will be set to [code]null[/code],
 ## when [method cancel] or [method reset] is called with [param keep_dialogue]
-## set to [code]false[/code] (default), [i]and[/i] when [Stage] is finished.
+## set to [code]false[/code] (default), [i]and[/i] when [Stage] is finished running.
 @export_storage var current_dialogue : Dialogue:
     set(new_dlg):
         if !is_playing():
@@ -70,8 +70,8 @@ static var speed_scale_global : float = 1.0
 
 #region NOTE: Variable related ---------------------------------------------------------------------
 ## [Dictionary] of user-defined variables that will be used by [Stage].
-##
-## [b]Note:[/b] Avoid modifying [member variables] directly, use methods such as [method add_variable],
+## [br][br]
+## [b]Note: Do not[/b] modify [member variables] directly, use methods such as [method add_variable],
 ## [method merge_variables], [method remove_variable], and [method clear_variables] instead.
 @export var variables : Dictionary = {}:
     set(new_var):
@@ -460,16 +460,16 @@ func _progress_forward() -> void:
     progressed.emit()
     progressed_at.emit(_step, _current_dialogue_set)
  
-## Jump and progress to a specific Dialogue line.
+## Jump and progress to a specific [Dialogue] line.
 ## Return error if [param line] is greater than [Dialogue] length.
 ## Will wrap if [param line] is negative.
 func jump_to_line(line : int) -> void:
     if _preprogress_check():
         _goto_line(line)
 
-## Jump to section defined in the written Dialogue.
+## Jump to section defined in the written [Dialogue].
 ## [br][br]
-## See also [method Dialogue.get_sections()].
+## See also [method Dialogue.get_sections].
 func jump_to_section(section : String) -> void:
     if _preprogress_check():
         if !current_dialogue._sections.has(section):
