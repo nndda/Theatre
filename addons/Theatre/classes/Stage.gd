@@ -461,6 +461,16 @@ func jump_to_section(section : String) -> void:
                 current_dialogue._sections[section]
             )
 
+## Combined method of [method jump_to_line] and [method jump_to_section].
+## Can accept [Dialogue] line number as [int], and [Dialogue] section as [String].
+func jump_to(id : Variant) -> void:
+    if id is int:
+        jump_to_line(id)
+    elif id is String or id is StringName:
+        jump_to_section(id)
+    else:
+        push_error("Failed to jump to Dialogue section/line: invalid data type for '%s'." % str(id))
+
 func _goto_line(line : int) -> void:
     if line > _current_dialogue_length:
         push_error("Failed to jump to Dialogue line %d: Dialogue length is %d" % [
