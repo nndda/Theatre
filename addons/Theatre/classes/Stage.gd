@@ -441,6 +441,22 @@ func _progress_forward() -> void:
     dialogue_label.start_render()
     progressed.emit()
     progressed_at.emit(_step, _current_dialogue_set)
+ 
+## Jump and progress to a specific Dialogue line.
+## Return error if [param line] is greater than [Dialogue] length.
+## Will wrap if [param line] is negative.
+func jump_to_line(line : int) -> void:
+    if _preprogress_check():
+        if line > _current_dialogue_length:
+            push_error("Failed to jump to Dialogue line %d: Dialogue length is %d" % [
+                line, _current_dialogue_length
+            ])
+        elif line <= -1:
+            _step = wrapi(line - 1, 0, _current_dialogue_length)
+            progress(true)
+        else:
+            _step = line - 1
+            progress(true)
 
 ## Stop the [Dialogue], clear [member dialogue_label] text render, and reset everything.
 ## Require [member allow_cancel] to be [code]true[/code]. Optionally, pass [code]true[/code] to keep the [member current_dialogue].
