@@ -196,13 +196,13 @@ func _call_functions(f : Dictionary) -> void:
     if allow_func:
         if !_caller_all.has(f["caller"]):
             printerr("Error @%s:%d - caller '%s' doesn't exists" % [
-                current_dialogue.source_path, f["ln_num"],
+                current_dialogue._source_path, f["ln_num"],
                 f["caller"],
             ])
         else:
             if !_caller_all[f["caller"]].has_method(f["name"]):
                 printerr("Error @%s:%d - function '%s.%s()' doesn't exists" % [
-                    current_dialogue.source_path, f["ln_num"],
+                    current_dialogue._source_path, f["ln_num"],
                     f["name"], f["caller"]
                 ])
             else:
