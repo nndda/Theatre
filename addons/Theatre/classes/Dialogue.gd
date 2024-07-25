@@ -136,7 +136,7 @@ func get_word_count(variables : Dictionary = {}) -> int:
     return output
 
 func get_character_count(variables : Dictionary = {}) -> int:
-    return humanize(variables).length()
+    return humanize(false, variables).length()
 
 func get_function_calls() -> Dictionary:
     return _used_function_calls
@@ -169,8 +169,8 @@ func _update_used_variables() -> void:
 
 ## Returns the human-readable string of the compiled [Dialogue]. This will return the [Dialogue]
 ## without the Dialogue tags and/or BBCode tags. Optionally, insert the variables used by passing it to [param variables].
-func humanize(variables : Dictionary = {}) -> String:
-    return _strip(variables)
+func humanize(with_actor : bool = true, variables : Dictionary = {}) -> String:
+    return _strip(variables, !with_actor)
 
 func _strip(
     variables : Dictionary = {},
@@ -184,7 +184,9 @@ func _strip(
         if !exclude_actors:
             output += n.actor + ":" + newline
 
-        output += "    " + n.line + newline + newline
+        output += (
+            "" if exclude_actors else "    "
+        ) + n.line + newline + newline
 
     # Strip BBCode tags
     var regex_bbcode := RegEx.new()
