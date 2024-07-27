@@ -124,16 +124,14 @@ func get_source_path() -> String:
 ## Returns word count in the compiled [Dialogue]. Optionally pass [param variables] to insert
 ## variables used by the [Dialogue], otherwise it will count any variable placeholder as 1 word.
 func get_word_count(variables : Dictionary = {}) -> int:
-    var output : int = 0
-    var text : String
-    for n in _sets:
-        for chr in ":;.,{}-":
-            text = n["line_raw"]\
-                .format(variables)\
-                .format(Stage._VARIABLES_BUILT_IN)\
-                .replace(chr, " ")
-        output += text.split(" ", false).size()
-    return output
+    var regex := RegEx.new()
+    regex.compile(r"\w+")
+
+    # is it really any better?
+    return regex.search_all(_strip(
+        variables.merged(Stage._VARIABLES_BUILT_IN),
+        true, true
+    )).size()
 
 func get_character_count(variables : Dictionary = {}) -> int:
     return humanize(false, variables).length()
