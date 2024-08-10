@@ -54,15 +54,13 @@ static var speed_scale_global : float = 1.0
 ## set to [code]false[/code] (default), [i]and[/i] when [Stage] is finished running.
 @export_storage var current_dialogue : Dialogue:
     set(new_dlg):
+        current_dialogue = new_dlg
         if !is_playing():
-            current_dialogue = new_dlg
             if !variables.is_empty() and new_dlg != null:
                 for n in current_dialogue._sets.size():
                     DialogueParser.update_tags_position(
                         current_dialogue, n, variables
                     )
-        else:
-            push_error("Cannot set Dialogue: there's a Dialogue running")
 
 @export_storage var _caller : Dictionary = {}
 
@@ -239,6 +237,7 @@ signal cancelled
 ## Same as [signal cancelled], but with the line number and line data of the [Dialogue] passed.
 signal cancelled_at(line : int, line_data : Dictionary)
 
+## Emitted when the [Dialogue] is switched using [method switch].
 signal dialogue_switched(old_dialogue, new_dialogue)
 
 #signal locale_changed(lang : String)
@@ -349,6 +348,25 @@ func start(dialogue : Dialogue = null, to_section : Variant = 0) -> void:
 
             _progress_forward()
             started.emit()
+
+## Switch the [member current_dialogue] with [param dialogue].
+## Both [Dialogue] has to be the same length.
+func switch(dialogue : Dialogue) -> void:
+    if current_dialogue == null:
+        push_error("Failed switching dialogue: current_dialogue is null")
+    elif dialogue == null:
+        push_error("Failed switching dialogue: dialogue is null")
+    elif current_dialogue.get_length() != dialogue.get_length():
+        push_error("Failed switching dialogue: different dialogue length with current_dialogue")
+    else:
+        dialogue_switched.emit(current_dialogue, dialogue)
+        current_dialogue = dialogue
+
+        if is_playing():
+            _current_dialogue_set = current_dialogue._sets[_step]
+            _dialogue_full_string = _current_dialogue_set["line"]
+            _update_display()
+            dialogue_label.rerender()
 
 # TODO
 #func switch_lang(lang : String = "") -> void:
