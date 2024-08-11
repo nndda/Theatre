@@ -67,7 +67,7 @@ static var speed_scale_global : float = 1.0
 #endregion
 
 #region NOTE: Variable related ---------------------------------------------------------------------
-## [Dictionary] of user-defined variables that will be used by [Stage].
+## [Dictionary] of user-defined variables used in the written [Dialogue].
 ## [br][br]
 ## [b]Note: Do not[/b] modify [member variables] directly, use methods such as [method add_variable],
 ## [method merge_variables], [method remove_variable], and [method clear_variables] instead.
@@ -139,6 +139,7 @@ func clear_variables() -> void:
 #endregion
 
 #region NOTE: Function calls related ---------------------------------------------------------------
+## Node-based callers that are in the scene tree.
 @export var caller_nodes : Array[Node] = []
 
 static var _caller_built_in : Dictionary = {}
@@ -246,6 +247,7 @@ signal dialogue_switched(old_dialogue, new_dialogue)
 #endregion
 
 #region NOTE: Utilities ----------------------------------------------------------------------------
+## Return the current [Dialogue] line number.
 func get_line() -> int:
     return _step
 

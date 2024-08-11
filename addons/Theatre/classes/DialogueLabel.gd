@@ -40,6 +40,7 @@ func set_stage(stage : Stage) -> void:
         _current_stage = null
 
 func _validate_property(property: Dictionary) -> void:
+    # Hide and set bbcode_enabled to true.
     if property["name"] == "bbcode_enabled":
         bbcode_enabled = true
         property["usage"] = PROPERTY_USAGE_NO_EDITOR
