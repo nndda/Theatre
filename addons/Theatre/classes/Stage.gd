@@ -72,15 +72,16 @@ static var speed_scale_global : float = 1.0
 ## [b]Note: Do not[/b] modify [member variables] directly, use methods such as [method add_variable],
 ## [method merge_variables], [method remove_variable], and [method clear_variables] instead.
 @export var variables : Dictionary = {}:
-    set(new_var):
-        variables = new_var
+    set = _set_variables,
+    get = get_variables
 
-        if is_playing():
-            _update_display()
+func _set_variables(new_var : Dictionary) -> void:
+    variables = new_var
 
-        _update_variables_dialogue()
-    get:
-        return variables
+    if is_playing():
+        _update_display()
+
+    _update_variables_dialogue()
 
 func _update_variables_dialogue() -> void:
     _variables_all.clear()
@@ -112,6 +113,10 @@ var _variables_all : Dictionary = {}
 func set_variable(var_name : String, value) -> void:
     variables[var_name] = value
     _update_variables_dialogue()
+
+## Return user-defined [member variables] used.
+func get_variables() -> Dictionary:
+    return variables
 
 ## Set multiple variables in a [Dictionary] used in the written [Dialogue]. Will overwrite
 ## same variable name with the new one.
