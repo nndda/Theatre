@@ -6,25 +6,15 @@ edit_uri: edit/docs/docs/
 
 nav:
   - "index.md"
-  - "installation.md"
-  - "quickstart.md"
+  - "Quick Start":
+    - "installation.md"
+    - "quickstart.md"
   - "Dialogue":
-    - "class/dialogue/index.md"
     - "class/dialogue/syntax.md"
     - "Tutorials":
       - "class/dialogue/tutorials/constructing.md"
-    - "Class reference":
-      - "class/dialogue/reference/properties.md"
-      - "class/dialogue/reference/methods.md"
   - "Stage":
-    - "Tutorials":
-      - "class/stage/tutorials/setting-up.md"
-    - "Class reference":
-      - "class/stage/reference/properties.md"
-      - "class/stage/reference/signals.md"
-      - "class/stage/reference/methods.md"
-  - "DialogueLabel":
-    - "Class reference"
+    - "class/stage/configuration.md"
 
 theme:
   name: material
