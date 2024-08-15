@@ -1,8 +1,3 @@
----
-hide:
-  - navigation
----
-
 # Installation
 
 ## Installing the plugin
@@ -24,7 +19,7 @@ hide:
 1. Download the latest release from either:
     - [:simple-godotengine: Godot Asset Library](https://godotengine.org/asset-library/asset/2332)
     - [:simple-github: GitHub](https://github.com/nndda/Theatre/releases)
-    - [:simple-itchdotio: itch.io](https://nnda.itch.io/theatre)
+<!--    - [:simple-itchdotio: itch.io](https://nnda.itch.io/theatre)-->
 
 2. Go to the `AssetLib` scene tab.
 
@@ -41,5 +36,5 @@ Make sure that Theatre is enabled at `Project > Project Settings... > Plugins`.
 You should see the following on your console output.
 
 ```
-🎭 Theatre v0.3.6-alpha by nnda
+🎭 Theatre <version> by nnda
 ```
