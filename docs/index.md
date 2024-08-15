@@ -26,7 +26,7 @@ Yet another Godot dialogue addon.
 
 <p markdown>
 
-[:material-download: v0.5.0](https://github.com/nndda/Theatre/archive/refs/tags/0.5.0-alpha.zip "Download Theatre."){ .label }
+[:material-download: v0.5.0](https://github.com/nndda/Theatre/archive/refs/tags/0.5.0.zip "Download Theatre."){ .label }
 
 [:simple-godotengine: Godot 4.3](https://godotengine.org/ "Compatible with Godot 4.3 or above."){ .label }
 
@@ -57,13 +57,9 @@ Dia:
     "Welcome! {d=0.8}to the
     [fx1]Theatre[/fx1]!
         d=0.9
-    a text-based dialogue system
+    yet another text-based dialogue addon
         d=0.3
-    developed for Godot {gd_ver}
-        d=0.8
-    [fx3]
-        (well,{d = 0.8} 4.3 specifically)
-    [/fx3]."
+    developed for Godot {gd_ver}."
 
 
     ＼(^ ▽ ^)
