@@ -1,3 +1,7 @@
+.hidden {
+  display: none !important;
+}
+
 .var, .func {
   font-family: monospace;
   font-weight: bold;
@@ -18,12 +22,52 @@
   opacity: .9;
 }
 
-[data-md-color-media="(prefers-color-scheme: light)"] .main-logo,
-[data-md-color-media="(prefers-color-scheme: light)"] .md-header__button.md-logo {
-  filter: invert() brightness(1.25) contrast(60%);
+.func > .params:not(:last-child) {
+  margin-right: .5em;
 }
+
+.func > .params:not(:last-child):after {
+  content: ",";
+}
+
+/*[data-md-color-media="(prefers-color-scheme: light)"] .main-logo*/
+/*[data-md-color-media="(prefers-color-scheme: light)"] .md-header__button.md-logo*/
+/*{
+  filter: invert() brightness(1.25) contrast(60%);
+}*/
 
 .main-logo {
   display: block;
   margin: auto !important;
+}
+
+
+a.md-tabs__link[href="class/stage/tutorials/setting-up"] {}
+
+.button-home {
+  display: inline-block;
+}
+
+
+.label {
+  display: inline-block;
+  border: 1px solid var(--md-accent-fg-color);
+  background: var(--md-accent-fg-color--transparent);
+/*  color: var(--md-accent-fg-color);*/
+  color: var(--md-accent-bg-color--light) !important;
+  padding: .1em .6em;
+  margin: .25em;
+  border-radius: .3em;
+  font-size: .8em;
+}
+
+.label:hover {
+  background: var(--md-accent-fg-color);
+  color: var(--md-accent-bg-color) !important;
+}
+
+.md-typeset kbd {
+  box-shadow: none;
+  border-bottom: .25em solid var(--md-typeset-kbd-accent-color);
+  border-radius: .4em;
 }
