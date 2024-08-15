@@ -18,32 +18,33 @@ nav:
 
 theme:
   name: material
-  logo: assets/icons/Theatre.svg
-  favicon: assets/icons/Theatre.svg
+  logo: assets/icons/Theatre-icon.png
+  favicon: assets/icons/Theatre-icon.png
 
   palette: 
     # Palette toggle for dark mode
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
+    # - media: "(prefers-color-scheme: dark)"
+    - scheme: slate
       primary: black
-      accent: pink
-      toggle:
-        icon: material/weather-night
-        name: Dark mode
+      accent: blue
+      # toggle:
+      #   icon: material/weather-night
+      #   name: Dark mode
 
-    # Palette toggle for light mode
-    - media: "(prefers-color-scheme: light)"
-      scheme: light
-      primary: black
-      accent: pink
-      toggle:
-        icon: material/weather-sunny
-        name: Light mode
+    # # Palette toggle for light mode
+    # - media: "(prefers-color-scheme: light)"
+    #   scheme: light
+    #   primary: black
+    #   accent: pink
+    #   toggle:
+    #     icon: material/weather-sunny
+    #     name: Light mode
 
   icon:
     repo: fontawesome/brands/github-alt
     edit: material/pencil
     view: material/eye
+    annotation: material/arrow-right-circle
 
     admonition:
       note: octicons/tag-16
@@ -79,7 +80,6 @@ markdown_extensions:
       anchor_linenums: true
       line_spans: __span
       pygments_lang_class: true
-      # auto_title: true
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences
@@ -99,7 +99,7 @@ extra:
     - icon: simple/github
       link: https://github.com/nndda/Theatre
     - icon: simple/itchdotio
-      link: https://nnda.itch.io/theatre
+      link: https://nnda.itch.io
 
 extra_css:
   - assets/stylesheets/extra.css
