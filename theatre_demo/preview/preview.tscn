@@ -8,7 +8,7 @@
 [ext_resource type="Script" path="res://theatre_demo/preview/txt_fx3.gd" id="5_low7t"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g2l8a"]
-bg_color = Color(0.0509804, 0.0470588, 0.0705882, 1)
+bg_color = Color(0.0705882, 0.0627451, 0.0941176, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bleeh"]
 bg_color = Color(1, 0.9775, 0.91, 0.145098)
