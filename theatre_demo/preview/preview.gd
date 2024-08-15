@@ -5,7 +5,7 @@ extends Control
 var tree : SceneTree
 
 var dlg := Dialogue.load(
-    "res://theatre_demo/preview/preview-advanced.dlg"
+    "res://dialogue/preview-advanced.dlg"
 )
 var dlg_chr_count : int
 
