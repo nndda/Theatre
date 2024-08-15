@@ -90,7 +90,7 @@ static func load(path : String) -> Dialogue:
         elif FileAccess.file_exists(dlg_compiled + ".tres"):
             dlg_compiled += ".tres"
 
-        print("Getting Dialogue from file: %s..." % dlg_compiled)
+        #print("Getting Dialogue from file: %s..." % dlg_compiled)
 
         if FileAccess.file_exists(dlg_compiled):
             var dlg := load(dlg_compiled)
