@@ -3,7 +3,7 @@
 <img src="/addons/Theatre/assets/icons/Theatre.svg" height="160" align="right">
 
 Text-based linear dialogue system for Godot 4.3.
-- ✍️ Literally just a text file! Written in human-readable syntax & VCS-friendly.
+- ✍️ Written in human-readable syntax.
 - ✨ Focused on presentation and delivery of your story.
 - 📝 100% written in GDScript.
 
@@ -22,7 +22,7 @@ Text-based linear dialogue system for Godot 4.3.
 <tr>
 <td>
 
-<img src="https://github.com/nndda/Theatre/assets/96333146/58d7c400-9aac-4ba3-971c-57d7b28cb7e3" width="364">
+<img src="https://github.com/user-attachments/assets/5bbefeed-61bb-4b9d-89a0-69d8300a3c08" width="364">
 
 </td>
 <td>
@@ -32,13 +32,9 @@ Dia:
     "Welcome! {d=0.8}to the
     [fx1]Theatre[/fx1]!
         d=0.9
-    a text-based dialogue system
+    yet another text-based dialogue addon
         d=0.3
-    developed for Godot {gd_ver}
-        d=0.8
-    [fx3]
-        (well,{d = 0.8} 4.3 specifically)
-    [/fx3]."
+    developed for Godot {gd_ver}."
 
 
     ＼(^ ▽ ^)
