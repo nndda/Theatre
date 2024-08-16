@@ -164,7 +164,7 @@ func _ready():
 ```
 
 <p align="center">
-<a href="https://nndda.github.io/Theatre/quickstart/" target="_blank">More detailed quick start tutotial here</a>
+<a href="https://nndda.github.io/Theatre/quickstart/" target="_blank">More detailed quick start tutorial here</a>
 </p>
 
 ## License
