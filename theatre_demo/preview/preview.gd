@@ -20,7 +20,7 @@ func _ready() -> void:
     stage.dialogue_label.character_drawn.connect(_dialogue_label_character_drawn)
 
     # NOTE: Autoplay Dialogue
-    stage.dialogue_label.text_rendered.connect(progress_dlg)
+    #stage.dialogue_label.text_rendered.connect(progress_dlg)
     #stage.finished.connect(tree.quit)
 
     stage.progressed_at.connect(_stage_progressed_at)
