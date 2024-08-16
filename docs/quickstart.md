@@ -31,7 +31,7 @@ You can save it as `*.dlg` or `*.dlg.txt`. In this example, we'll save the file 
 
 ## Setting up the Stage
 
-Create a new 2D scene. And add `Stage`, `Label`, and `DialogueLabel` node. To tidy things up a little, we'll put those two `Control` node inside a `PanelContainer`. Resize the `PanelContainer` to your liking.
+Create a new 2D scene. And add `Stage`, `Label`, and `DialogueLabel` node. To tidy things up a little, we'll put them inside a `PanelContainer` and `VBoxContainer`. Resize the `PanelContainer` to your liking. Make sure that `fit_content` is set to `true` on `DialogueLabel`.
 
 Here's what the current scene should looks like:
 
@@ -39,8 +39,9 @@ Here's what the current scene should looks like:
 YourScene
   ├─ Stage
   └─ PanelContainer
-      ├─ Label
-      └─ DialogueLabel
+        └─ VBoxContainer
+            ├─ Label
+            └─ DialogueLabel
 ```
 
 Attach a script to your scene's root. And create a variable with `@onready` keyword to reference your `Stage` node made previously. In this example, we'll name the variable `'your_stage'`.
@@ -91,19 +92,19 @@ You might want to only show the UI when theres a Dialogue running, and hide it w
 ```gdscript
 func _ready():
 
-    stage.started.connect(
+    your_stage.started.connect(
         $PanelContainer.show
     )
 
-    stage.finished.connect(
+    your_stage.finished.connect(
         $PanelContainer.hide
     )
 
-    stage.cancelled.connect(
+    your_stage.cancelled.connect(
         $PanelContainer.hide
     )
 
-    stage.start(epic_dialogue)
+    your_stage.start(epic_dialogue)
 ```
 
 Alternatively, you can connect these signals via the `Node` dock window. In this example, we only used `show` and `hide` method for simplicity. You can use `AnimationPlayer` or `Tween` for more fancy transitions.
@@ -116,6 +117,8 @@ Here is the finalized script of the scene:
 ```gdscript
 extends Node2D
 
+@onready var your_stage : Stage = $Stage
+
 var epic_dialogue = Dialogue.load('res://intro.dlg')
 
 func _input(event):
@@ -123,15 +126,16 @@ func _input(event):
         your_stage.progress()
 
 func _ready():
-    stage.started.connect(
+
+    your_stage.started.connect(
         $PanelContainer.show
     )
 
-    stage.finished.connect(
+    your_stage.finished.connect(
         $PanelContainer.hide
     )
 
-    stage.cancelled.connect(
+    your_stage.cancelled.connect(
         $PanelContainer.hide
     )
 
