@@ -71,3 +71,7 @@ a.md-tabs__link[href="class/stage/tutorials/setting-up"] {}
   border-bottom: .25em solid var(--md-typeset-kbd-accent-color);
   border-radius: .4em;
 }
+
+aside.md-source-file {
+  margin-top: 3em;
+}
