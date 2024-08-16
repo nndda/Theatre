@@ -1,9 +1,10 @@
-# Theatre
-
-<img src="/addons/Theatre/assets/icons/Theatre.svg" height="160" align="right">
-
+<h1>
+Theatre
 <a href="https://godotengine.org/" target="_blank"><img src="https://img.shields.io/badge/Godot%204.3-white?style=flat-square&logo=godotengine&logoColor=white&color=%23478CBF"></a>
 <a href="https://nndda.github.io/Theatre/" target="_blank"><img src="https://img.shields.io/badge/Documentation-white?style=flat-square"></a>
+</h1>
+
+<img src="/addons/Theatre/assets/icons/Theatre.svg" height="160" align="right">
 
 Text-based linear dialogue system for Godot 4.3.
 - ✍️ Written in human-readable syntax.
