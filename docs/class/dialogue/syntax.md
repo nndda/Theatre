@@ -296,7 +296,7 @@ Dia:
     in the written Dialogue"
 ```
 
-You can start a `Dialogue` with at a specific section.
+You can start a `Dialogue` at a specific section.
 ```gdscript
 your_stage.start(
     Dialogue.load("res://convo.dlg"),
