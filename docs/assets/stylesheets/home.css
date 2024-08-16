@@ -49,3 +49,7 @@ a.md-content__button {
   width: var(--main-logo-width);
   margin: 0 !important;
 }
+
+aside.md-source-file {
+  display: none !important;
+}
