@@ -149,14 +149,14 @@ Reference the `Stage` node in the script, and set up a way to progress your Dial
 ```gdscript
 func _input(event):
     if event.is_action_pressed("ui_accept"):
-        your_stage.progress()
+        my_stage.progress()
 ```
 
 And finally, start the Stage
 
 ```gdscript
 func _ready():
-    your_stage.start(epic_dialogue)
+    my_stage.start(epic_dialogue)
 ```
 
 ## License
