@@ -2,6 +2,9 @@
 
 <img src="/addons/Theatre/assets/icons/Theatre.svg" height="160" align="right">
 
+<a href="https://godotengine.org/" target="_blank"><img src="https://img.shields.io/badge/Godot%204.3-white?style=flat-square&logo=godotengine&logoColor=white&color=%23478CBF"></a>
+<a href="https://nndda.github.io/Theatre/" target="_blank"><img src="https://img.shields.io/badge/Documentation-white?style=flat-square"></a>
+
 Text-based linear dialogue system for Godot 4.3.
 - ✍️ Written in human-readable syntax.
 - ✨ Focused on presentation and delivery of your story.
@@ -158,6 +161,10 @@ And finally, start the Stage
 func _ready():
     my_stage.start(epic_dialogue)
 ```
+
+<p align="center">
+<a href="https://nndda.github.io/Theatre/quickstart/" target="_blank">More detailed quick start tutotial here</a>
+</p>
 
 ## License
 
