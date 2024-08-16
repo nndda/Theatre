@@ -23,7 +23,7 @@ extends Node
 ## Allow cancelling/stopping [Dialogue] with [method cancel] or [method reset].
 @export var allow_cancel := true
 
-## Allow calling functions in the written [Dialogue].
+## Allow calling functions defined in the written [Dialogue].
 @export var allow_func := true
 
 #@export var auto := false
@@ -32,15 +32,17 @@ extends Node
 
 #@export var insert_actor := false
 
+static var speed_scale_global : float = 1.0
+
 ## The speed scale of the [member dialogue_label] text rendering.
 @export_range(0.01, 3.0, 0.01) var speed_scale : float = 1.0:
     set(s):
         speed_scale = s
         if dialogue_label != null:
-            dialogue_label.characters_draw_tick_scaled =\
+            dialogue_label._characters_draw_tick_scaled =\
                 dialogue_label.characters_draw_tick / s
-            dialogue_label.characters_ticker.wait_time =\
-                dialogue_label.characters_draw_tick_scaled
+            dialogue_label._characters_ticker.wait_time =\
+                dialogue_label._characters_draw_tick_scaled
 
 @export_group("Dialogues")
 
@@ -49,38 +51,37 @@ extends Node
 ## [br][br]
 ## [b]Note:[/b] [member current_dialogue] will be set to [code]null[/code],
 ## when [method cancel] or [method reset] is called with [param keep_dialogue]
-## set to [code]false[/code] (default), [i]and[/i] when [Stage] is finished.
+## set to [code]false[/code] (default), [i]and[/i] when [Stage] is finished running.
 @export_storage var current_dialogue : Dialogue:
     set(new_dlg):
+        current_dialogue = new_dlg
         if !is_playing():
-            current_dialogue = new_dlg
             if !variables.is_empty() and new_dlg != null:
                 for n in current_dialogue._sets.size():
                     DialogueParser.update_tags_position(
                         current_dialogue, n, variables
                     )
-        else:
-            push_error("Cannot set Dialogue: there's a Dialogue running")
 
 @export_storage var _caller : Dictionary = {}
 
 #endregion
 
 #region NOTE: Variable related ---------------------------------------------------------------------
-## [Dictionary] of user-defined variables that will be used by [Stage].
-##
-## [b]Note:[/b] Avoid modifying [member variables] directly, use methods such as [method add_variable],
+## [Dictionary] of user-defined variables used in the written [Dialogue].
+## [br][br]
+## [b]Note: Do not[/b] modify [member variables] directly, use methods such as [method add_variable],
 ## [method merge_variables], [method remove_variable], and [method clear_variables] instead.
 @export var variables : Dictionary = {}:
-    set(new_var):
-        variables = new_var
+    set = _set_variables,
+    get = get_variables
 
-        if is_playing():
-            _update_display()
+func _set_variables(new_var : Dictionary) -> void:
+    variables = new_var
 
-        _update_variables_dialogue()
-    get:
-        return variables
+    if is_playing():
+        _update_display()
+
+    _update_variables_dialogue()
 
 func _update_variables_dialogue() -> void:
     _variables_all.clear()
@@ -102,6 +103,7 @@ func _update_variables_dialogue() -> void:
 
 const _VARIABLES_BUILT_IN : Dictionary = {
     "n" : "\n",
+    "spc" : " ",
 }
 var _variables_all : Dictionary = {}
 
@@ -111,6 +113,10 @@ var _variables_all : Dictionary = {}
 func set_variable(var_name : String, value) -> void:
     variables[var_name] = value
     _update_variables_dialogue()
+
+## Return user-defined [member variables] used.
+func get_variables() -> Dictionary:
+    return variables
 
 ## Set multiple variables in a [Dictionary] used in the written [Dialogue]. Will overwrite
 ## same variable name with the new one.
@@ -138,6 +144,15 @@ func clear_variables() -> void:
 #endregion
 
 #region NOTE: Function calls related ---------------------------------------------------------------
+## Node-based callers that are in the scene tree.
+@export var caller_nodes : Array[Node] = []
+
+static var _caller_built_in : Dictionary = {}
+var _caller_all : Dictionary = {}
+
+func _update_caller() -> void:
+    _caller_all = _caller.merged(_caller_built_in, true)
+
 ## Return user-defined callers that will be used in the written [Dialogue].
 func get_callers() -> Dictionary:
     return _caller
@@ -150,6 +165,7 @@ func add_caller(id : String, object : Object) -> void:
     _caller[id] = object
     if object is Node:
         object.tree_exited.connect(remove_caller.bind(id))
+    _update_caller()
 
 ## Remove function caller used in the written [Dialogue].
 ## [br][br]
@@ -165,6 +181,7 @@ func remove_caller(id : String) -> void:
                     remove_caller.bind(id)
                 )
         _caller.erase(id)
+    _update_caller()
 
 ## Remove all function callers.
 ## [br][br]
@@ -178,26 +195,23 @@ func clear_callers() -> void:
                     remove_caller.bind(id)
                 )
     _caller.clear()
+    _update_caller()
 
-func _call_functions(func_data : Dictionary) -> void:
+func _call_functions(f : Dictionary) -> void:
     if allow_func:
-        var f := func_data
-        print("Calling function: %s.%s()" % [
-            f["caller"], f["name"],
-        ])
-        if !_caller.has(f["caller"]):
-            printerr("Error @%s:%d - _caller '%s' doesn't exists" % [
-                current_dialogue.source_path, f["ln_num"],
+        if !_caller_all.has(f["caller"]):
+            printerr("Error @%s:%d - caller '%s' doesn't exists" % [
+                current_dialogue._source_path, f["ln_num"],
                 f["caller"],
             ])
         else:
-            if !_caller[f["caller"]].has_method(f["name"]):
+            if !_caller_all[f["caller"]].has_method(f["name"]):
                 printerr("Error @%s:%d - function '%s.%s()' doesn't exists" % [
-                    current_dialogue.source_path, f["ln_num"],
+                    current_dialogue._source_path, f["ln_num"],
                     f["name"], f["caller"]
                 ])
             else:
-                _caller[f["caller"]].callv(f["name"], f["args"])
+                _caller_all[f["caller"]].callv(f["name"], f["args"])
 
 func _execute_functions() -> void:
     if allow_func:
@@ -230,6 +244,7 @@ signal cancelled
 ## Same as [signal cancelled], but with the line number and line data of the [Dialogue] passed.
 signal cancelled_at(line : int, line_data : Dictionary)
 
+## Emitted when the [Dialogue] is switched using [method switch].
 signal dialogue_switched(old_dialogue, new_dialogue)
 
 #signal locale_changed(lang : String)
@@ -237,6 +252,7 @@ signal dialogue_switched(old_dialogue, new_dialogue)
 #endregion
 
 #region NOTE: Utilities ----------------------------------------------------------------------------
+## Return the current [Dialogue] line number.
 func get_line() -> int:
     return _step
 
@@ -283,7 +299,7 @@ func get_invalid_functions() -> Dictionary:
 
         else:
             for m in used_funcs[n]:
-                if !(_caller[n] as Object).has_method(&"%s" % used_funcs[n][m]["name"]):
+                if !(_caller[n] as Object).has_method(used_funcs[n][m]["name"]):
                     if !output.has("no_method"):
                         output["no_method"] = []
 
@@ -303,10 +319,10 @@ var _dialogue_full_string : String = ""
 # Current progress of the Dialogue.
 var _step : int = -1
 
-## Start the [Dialogue] specified in [param dialogue], if [param dialogue] is [code]null[/code], 
+## Start the [Dialogue] with the specified [param dialogue]. If [param dialogue] is [code]null[/code], 
 ## [member current_dialogue] will be used instead.
-## Optionally set [param to_line] parameter to jump to a specific line when the [Dialogue] start.
-func start(dialogue : Dialogue = null, to_line : int = 0) -> void:
+## Optionally, set [param to_section] parameter to start the [param dialogue] at a specific line or section.
+func start(dialogue : Dialogue = null, to_section : Variant = 0) -> void:
     if is_playing():
         push_warning("Theres already a running Dialogue!")
     else:
@@ -319,9 +335,46 @@ func start(dialogue : Dialogue = null, to_line : int = 0) -> void:
             print("Starting Dialogue: %s..." % current_dialogue.get_source_path())
             _current_dialogue_length = current_dialogue._sets.size()
 
-            _step = to_line - 1
+            if to_section is int:
+                if to_section > _current_dialogue_length:
+                    push_error("Failed to start Dialogue at line %d: Dialogue length is %d" % [
+                        to_section, _current_dialogue_length
+                    ])
+                elif to_section <= -1:
+                    _step = wrapi(to_section - 1, 0, _current_dialogue_length)
+                else:
+                    _step = to_section - 1
+
+            elif to_section is String or to_section is StringName:
+                if !dialogue._sections.has(to_section):
+                    push_error("Failed to start Dialogue at section '%s': section not found." % to_section)
+                else:
+                    _step = dialogue._sections[to_section] - 1
+
+            else:
+                push_error("Failed to start Dialogue at section/line: invalid data type for '%s'." % str(to_section))
+
             _progress_forward()
             started.emit()
+
+## Switch the [member current_dialogue] with [param dialogue].
+## Both [Dialogue] has to be the same length.
+func switch(dialogue : Dialogue) -> void:
+    if current_dialogue == null:
+        push_error("Failed switching dialogue: current_dialogue is null")
+    elif dialogue == null:
+        push_error("Failed switching dialogue: dialogue is null")
+    elif current_dialogue.get_length() != dialogue.get_length():
+        push_error("Failed switching dialogue: different dialogue length with current_dialogue")
+    else:
+        dialogue_switched.emit(current_dialogue, dialogue)
+        current_dialogue = dialogue
+
+        if is_playing():
+            _current_dialogue_set = current_dialogue._sets[_step]
+            _dialogue_full_string = _current_dialogue_set["line"]
+            _update_display()
+            dialogue_label.rerender()
 
 # TODO
 #func switch_lang(lang : String = "") -> void:
@@ -369,6 +422,19 @@ func restart() -> void:
         _reset_progress(true)
         start()
 
+var _at_end := false
+
+func _preprogress_check() -> bool:
+    if current_dialogue == null:
+        push_error("Failed to progress Stage: no Dialogue present")
+    elif dialogue_label == null:
+        push_error("Failed to progress Stage: no DialogueLabel")
+    elif dialogue_label.rendering_paused:
+        push_warning("Attempt to progress Dialogue while rendering_paused is true on DialogueLabel")
+    else:
+        return true
+    return false
+
 ## Progress the [Dialogue].
 ## Calling [method progress] with [param skip_render] set to [code]false[/code] while the
 ## [member dialogue_label] is still rendering the text, will force it to finish the rendering instead of progressing. [signal skipped] will also be emitted.
@@ -379,12 +445,8 @@ func restart() -> void:
 ## If [member allow_skip] is set to [code]false[/code]. Regardless of whether [param skip_render]
 ## is [code]true[/code] or [code]false[/code], the [Dialogue] won't progress until [member dialogue_label] has finished rendering.
 func progress(skip_render : bool = false) -> void:
-    if current_dialogue == null:
-        push_error("Failed to progress Stage: no Dialogue present")
-    elif dialogue_label == null:
-        push_error("Failed to progress Stage: no DialogueLabel")
-    else:
-        var at_end := _step + 1 >= _current_dialogue_length
+    if _preprogress_check():
+        _at_end = _step + 1 >= _current_dialogue_length
 
         # TODO: optimize this conditional trees
         #if dialogue_label.visible_ratio < 1.0:
@@ -394,12 +456,12 @@ func progress(skip_render : bool = false) -> void:
                     _progress_skip()
             else:
                 if allow_skip:
-                    if at_end:
+                    if _at_end:
                         _reset_progress()
                     else:
                         _progress_forward()
         else:
-            if at_end:
+            if _at_end:
                 _reset_progress()
             else:
                 _progress_forward()
@@ -423,6 +485,47 @@ func _progress_forward() -> void:
     dialogue_label.start_render()
     progressed.emit()
     progressed_at.emit(_step, _current_dialogue_set)
+ 
+## Jump and progress to a specific [Dialogue] line.
+## Return error if [param line] is greater than [Dialogue] length.
+## Will wrap if [param line] is negative.
+func jump_to_line(line : int) -> void:
+    if _preprogress_check():
+        _goto_line(line)
+
+## Jump to section defined in the written [Dialogue].
+## [br][br]
+## See also [method Dialogue.get_sections].
+func jump_to_section(section : String) -> void:
+    if _preprogress_check():
+        if !current_dialogue._sections.has(section):
+            push_error("Failed to jump to Dialogue section '%s': section not found." % section)
+        else:
+            _goto_line(
+                current_dialogue._sections[section]
+            )
+
+## Combined method of [method jump_to_line] and [method jump_to_section].
+## Can accept [Dialogue] line number as [int], and [Dialogue] section as [String].
+func jump_to(id : Variant) -> void:
+    if id is int:
+        jump_to_line(id)
+    elif id is String or id is StringName:
+        jump_to_section(id)
+    else:
+        push_error("Failed to jump to Dialogue section/line: invalid data type for '%s'." % str(id))
+
+func _goto_line(line : int) -> void:
+    if line > _current_dialogue_length:
+        push_error("Failed to jump to Dialogue line %d: Dialogue length is %d" % [
+            line, _current_dialogue_length
+        ])
+    elif line <= -1:
+        _step = wrapi(line - 1, 0, _current_dialogue_length)
+        progress(true)
+    else:
+        _step = line - 1
+        progress(true)
 
 ## Stop the [Dialogue], clear [member dialogue_label] text render, and reset everything.
 ## Require [member allow_cancel] to be [code]true[/code]. Optionally, pass [code]true[/code] to keep the [member current_dialogue].
@@ -475,11 +578,19 @@ func _update_display() -> void:
 #endregion
 
 func _enter_tree() -> void:
+    _update_caller()
+    add_caller("Stage", self)
+
     if dialogue_label != null:
         dialogue_label._current_stage = self
 
     if !variables.is_empty():
         _update_variables_dialogue()
+
+    await get_tree().current_scene.ready
+    for node in caller_nodes:
+        if node != null:
+            add_caller("%s" % node.name, node)
 
 func _exit_tree() -> void:
     if dialogue_label._current_stage == self:
@@ -489,5 +600,6 @@ func _exit_tree() -> void:
     dialogue_label = null
     current_dialogue = null
 
+    caller_nodes.clear()
     clear_variables()
     clear_callers()

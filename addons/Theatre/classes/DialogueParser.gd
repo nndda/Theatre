@@ -2,6 +2,7 @@ extends RefCounted
 class_name DialogueParser
 
 var output : Array[Dictionary]
+var sections : Dictionary = {}
 
 const REGEX_DLG_TAGS :=\
     r"\{\s*(?<tag>\w+)\s*(\=\s*(?<arg>.+?)\s*)*\}"
@@ -17,6 +18,8 @@ const REGEX_INDENT :=\
     r"(?<=\n{1})\s+"
 const REGEX_VALID_DLG :=\
     r"\n+\w+\:\n+\s+\w+"
+const REGEX_SECTION :=\
+    r"^\:(.+)"
 
 const SETS_TEMPLATE := {
     "actor": "",
@@ -56,22 +59,23 @@ const TAG_SPEED_ALIASES : PackedStringArray = [
     "SPEED", "SPD", "S"
 ]
 
-const VARS_BUILT_IN_KEYS : PackedStringArray = ["n"]
+const VARS_BUILT_IN_KEYS : PackedStringArray = ["n", "spc"]
 
 const BUILT_IN_TAGS : PackedStringArray = (
     TAG_DELAY_ALIASES +
     TAG_SPEED_ALIASES +
     VARS_BUILT_IN_KEYS
 )
-#endregion
 
 func _init(src : String = ""):
     output = []
+    sections = {}
     var dlg_raw : PackedStringArray = src.split("\n")
 
     var body_pos : int = 0
     var dlg_raw_size : int = dlg_raw.size()
     var newline_stack : int = 0
+    var dlg_line_stack : int = 0
 
     var regex_func := RegEx.new();\
         regex_func.compile(REGEX_FUNC_CALL);\
@@ -85,6 +89,9 @@ func _init(src : String = ""):
         regex_bbcode.compile(REGEX_BBCODE_TAGS);\
         var regex_bbcode_match : RegExMatch
 
+    var regex_section := RegEx.new();\
+        regex_section.compile(REGEX_SECTION)
+
     # Per raw string line
     for i in dlg_raw_size:
         var ln_num : int = i + 1
@@ -97,6 +104,7 @@ func _init(src : String = ""):
             #region NOTE: Create new Dialogue line -------------------------------------------------
             var setsl := SETS_TEMPLATE.duplicate(true)
             newline_stack = 0
+            dlg_line_stack += 1
 
             if dlg_raw_size < i + 1:
                 printerr("Error: actor's name exists without a dialogue body")
@@ -116,10 +124,15 @@ func _init(src : String = ""):
             body_pos = output.size() - 1
             #endregion
 
+        elif regex_section.search(n) != null:
+            sections[
+                n.split(" ", false, 1)[0].strip_edges().trim_prefix(":")
+            ] = dlg_line_stack
+
         elif n.strip_edges().is_empty():
             newline_stack += 1
 
-        elif is_valid_line:
+        elif is_valid_line and !output.is_empty():
             current_processed_string = dlg_raw[i].strip_edges()
 
             regex_func_match = regex_func.search(current_processed_string)

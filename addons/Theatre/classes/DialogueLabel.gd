@@ -40,12 +40,16 @@ func set_stage(stage : Stage) -> void:
         _current_stage = null
 
 func _validate_property(property: Dictionary) -> void:
+    # Hide and set bbcode_enabled to true.
     if property["name"] == "bbcode_enabled":
         bbcode_enabled = true
         property["usage"] = PROPERTY_USAGE_NO_EDITOR
 
 func _enter_tree() -> void:
     if !Engine.is_editor_hint():
+        _delay_timer = Timer.new()
+        _characters_ticker = Timer.new()
+
         text = ""
         bbcode_enabled = true
 
@@ -73,19 +77,32 @@ signal character_drawn
 #region NOTE: Core & rendering ---------------------------------------------------------------------
 var _is_rendering := false
 
+## If [code]true[/code], text rendering will be paused.
+## Progressing [Dialogue] won't work until [member rendering_paused]
+## is set to [code]false[/code],
+## or [method resume_render] is called.
+## [br][br]
+## See also [method pause_render] and [method resume_render].
+var rendering_paused := false:
+    set(v):
+        rendering_paused = v
+        _characters_ticker.paused = v
+        if _current_stage != null:
+            _current_stage
+
 var _delay_queue : PackedInt64Array = []
 var _speed_queue : PackedInt64Array = []
 var _func_queue : PackedInt64Array = []
 
-var _delay_timer := Timer.new()
-var _characters_ticker := Timer.new()
+var _delay_timer : Timer
+var _characters_ticker : Timer
 
 ## Start the rendering of the current [Dialogue] line text.
 func start_render() -> void:
     _delay_timer.one_shot = true
 
     _characters_draw_tick_scaled = characters_draw_tick /\
-        Theatre.speed_scale / _current_stage.speed_scale
+        _current_stage.speed_scale_global / _current_stage.speed_scale
     _characters_ticker.start(_characters_draw_tick_scaled)
 
     _delay_queue = _current_stage._current_dialogue_set["tags"]["delays"].keys()
@@ -115,6 +132,18 @@ func rerender() -> void:
     clear_render()
     start_render()
 
+## Pause text rendering. The same as setting [member rendering_paused] to [code]true[/code].
+## Progressing [Dialogue] won't work until [method resume_render]
+## is called, or [member rendering_paused] is set to [code]false[/code].
+func pause_render() -> void:
+    rendering_paused = true
+    _characters_ticker.paused = rendering_paused
+
+## Continue paused text rendering. The same as setting [member rendering_paused] to [code]false[/code].
+func resume_render() -> void:
+    rendering_paused = false
+    _characters_ticker.paused = rendering_paused
+
 func _characters_ticker_timeout() -> void:
     if !_func_queue.is_empty():
         if _func_queue[0] == visible_characters:
@@ -137,7 +166,7 @@ func _characters_ticker_timeout() -> void:
     if !_speed_queue.is_empty():
         if _speed_queue[0] == visible_characters:
             _characters_ticker.wait_time = _characters_draw_tick_scaled /\
-                Theatre.speed_scale /\
+                _current_stage.speed_scale_global /\
                 _current_stage._current_dialogue_set["tags"]["speeds"][_speed_queue[0]]
             _characters_ticker.start()
             _speed_queue.remove_at(0)

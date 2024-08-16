@@ -1,6 +1,5 @@
 @icon("res://addons/Theatre/assets/icons/Theatre.svg")
-extends Object
-class_name Theatre
+extends Node
 
 class Debug extends RefCounted:
     static func format_stack(stack_arr : Array[Dictionary], indent : String = "  ") -> String:
@@ -9,10 +8,15 @@ class Debug extends RefCounted:
             output += "%s %d: {source}:{line} @ {function}()\n".format(stack_arr[n]) % [indent, n]
         return output
 
-static var speed_scale : float = 1.0
+func _enter_tree() -> void:
+    var tree := get_tree()
 
-static var lamg : String = ""
-static var default_lang : String = "en"
+    for singleton in Engine.get_singleton_list():
+        Stage._caller_built_in[singleton] = Engine.get_singleton(singleton)
 
-static func print_silly() -> void:
+    for autoload in tree.root.get_children():
+        if autoload != tree.current_scene:
+            Stage._caller_built_in["%s" % autoload.name] = autoload
+
+func print_silly() -> void:
     print("silly :p")

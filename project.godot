@@ -12,13 +12,23 @@ config_version=5
 
 config/name="Theatre"
 config/description="Demo for Theatre: a text-based DIalogue plugin for Godot 4.3"
-run/main_scene="res://theatre_demo/intro_1.tscn"
+run/main_scene="res://theatre_demo/1_intro.tscn"
 config/features=PackedStringArray("4.3")
 config/icon="res://addons/Theatre/assets/icons/Theatre.svg"
+
+[autoload]
+
+Theatre="*res://addons/Theatre/classes/Theatre.gd"
 
 [display]
 
 window/stretch/mode="canvas_items"
+window/vsync/vsync_mode=0
+
+[editor]
+
+movie_writer/disable_vsync=true
+movie_writer/fps=25
 
 [editor_plugins]
 

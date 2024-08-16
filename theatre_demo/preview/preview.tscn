@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://c7sx4nn7nbs5t"]
+[gd_scene load_steps=14 format=3 uid="uid://c7sx4nn7nbs5t"]
 
 [ext_resource type="Script" path="res://theatre_demo/preview/preview.gd" id="1_86xvy"]
 [ext_resource type="Script" path="res://addons/Theatre/classes/Stage.gd" id="2_wv2tv"]
@@ -7,8 +7,28 @@
 [ext_resource type="Script" path="res://theatre_demo/preview/txt_fx2.gd" id="4_6f1ve"]
 [ext_resource type="Script" path="res://theatre_demo/preview/txt_fx3.gd" id="5_low7t"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g2l8a"]
+bg_color = Color(0.0705882, 0.0627451, 0.0941176, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bleeh"]
+bg_color = Color(1, 0.9775, 0.91, 0.145098)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wgoqw"]
+bg_color = Color(1, 0.9775, 0.91, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
 [sub_resource type="Theme" id="Theme_jyvrw"]
 default_font_size = 14
+PanelContainer/styles/panel = SubResource("StyleBoxFlat_g2l8a")
+ProgressBar/styles/background = SubResource("StyleBoxFlat_bleeh")
+ProgressBar/styles/fill = SubResource("StyleBoxFlat_wgoqw")
 
 [sub_resource type="RichTextEffect" id="RichTextEffect_s00e0"]
 script = ExtResource("3_ctwg2")
@@ -19,7 +39,7 @@ script = ExtResource("4_6f1ve")
 [sub_resource type="RichTextEffect" id="RichTextEffect_bysel"]
 script = ExtResource("5_low7t")
 
-[node name="Preview" type="Control"]
+[node name="Preview" type="Control" node_paths=PackedStringArray("stage", "progress_bar")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -27,22 +47,18 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_86xvy")
+stage = NodePath("Stage")
+progress_bar = NodePath("PanelContainer/CenterContainer/VBoxContainer/ProgressBar")
 
 [node name="Stage" type="Node" parent="." node_paths=PackedStringArray("actor_label", "dialogue_label")]
 script = ExtResource("2_wv2tv")
 actor_label = NodePath("../PanelContainer/CenterContainer/VBoxContainer/Label")
 dialogue_label = NodePath("../PanelContainer/CenterContainer/VBoxContainer/DialogueLabel")
+allow_skip = false
+allow_cancel = false
 variables = {
 "gd_ver": 4
 }
-
-[node name="ReferenceRect" type="ReferenceRect" parent="."]
-layout_mode = 0
-offset_left = 368.0
-offset_top = 208.0
-offset_right = 784.0
-offset_bottom = 440.0
-border_width = 5.0
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
 layout_mode = 1
@@ -57,11 +73,13 @@ theme = SubResource("Theme_jyvrw")
 layout_mode = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/CenterContainer"]
-custom_minimum_size = Vector2(380, 195)
+custom_minimum_size = Vector2(380, 220)
 layout_mode = 2
 
 [node name="Label" type="Label" parent="PanelContainer/CenterContainer/VBoxContainer"]
 layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.937255, 0.74902, 1)
+theme_override_font_sizes/font_size = 17
 text = "Actor's label"
 
 [node name="HSeparator" type="HSeparator" parent="PanelContainer/CenterContainer/VBoxContainer"]
@@ -72,6 +90,7 @@ theme_override_constants/separation = 3
 [node name="DialogueLabel" type="RichTextLabel" parent="PanelContainer/CenterContainer/VBoxContainer"]
 clip_contents = false
 layout_mode = 2
+theme_override_colors/default_color = Color(0.8649, 0.915895, 0.93, 1)
 theme_override_constants/line_separation = 4
 bbcode_enabled = true
 text = "..."
@@ -89,3 +108,11 @@ layout_mode = 2
 max_value = 1.0
 value = 0.1
 show_percentage = false
+
+[node name="ReferenceRect" type="ReferenceRect" parent="."]
+layout_mode = 0
+offset_left = 360.0
+offset_top = 200.0
+offset_right = 792.0
+offset_bottom = 448.0
+border_width = 5.0

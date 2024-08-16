@@ -81,6 +81,9 @@ func _enter_tree() -> void:
     plugin_submenu.id_pressed.connect(tool_submenu_id_pressed)
     add_tool_submenu_item("🎭 Theatre", plugin_submenu)
 
+    # Initiate Theatre singleton
+    add_autoload_singleton("Theatre", "res://addons/Theatre/classes/Theatre.gd")
+
 #func _ready() -> void:
     # Initialize update check
     #http_update_req = HTTPRequest.new()
@@ -104,7 +107,10 @@ func _exit_tree() -> void:
     plugin_submenu.id_pressed.disconnect(tool_submenu_id_pressed)
     remove_tool_menu_item("🎭 Theatre")
 
-func crawl(path : String = "res://") -> void:
+    # Clear Theatre singleton
+    remove_autoload_singleton("Theatre")
+
+func crawl(path : String = "res://", clean_only : bool = false) -> void:
     var dir := DirAccess.open(path)
     var ignored_directories : PackedStringArray = (ProjectSettings.get_setting(
         Config.DIALOGUE_IGNORED_DIR, ["addons"]
@@ -125,10 +131,21 @@ func crawl(path : String = "res://") -> void:
                             Config.DEBUG_SHOW_CRAWL_FOLDER, false
                             ):
                             print("Crawling " + new_dir + " for dialogue resources...")
-                        crawl(new_dir)
+                        crawl(new_dir, clean_only)
             else:
-                if file_name.ends_with(".dlg.txt") or\
-                    file_name.ends_with(".dlg"):
+                if clean_only and (
+                    file_name.ends_with(".dlg.res") or 
+                    file_name.ends_with(".dlg.tres")
+                    ):
+                    var err := dir.remove(file_name)
+                    print("Removing compiled Dialogue resource: %s..." % file_name)
+                    if err != OK:
+                        printerr("Error removing Dialogue resource: ", error_string(err))
+
+                elif !clean_only and (
+                    file_name.ends_with(".dlg.txt") or
+                    file_name.ends_with(".dlg")
+                    ):
                     var file := path + "/" + file_name
                     var file_com : String
 
@@ -150,9 +167,9 @@ func crawl(path : String = "res://") -> void:
                     if sav_err != OK:
                         push_error("Error saving Dialogue resource: ", sav_err)
 
-                    editor_resource_filesystem.scan()
-
             file_name = dir.get_next()
+
+    editor_resource_filesystem.scan()
 
 func init_gitignore() -> void:
     if FileAccess.file_exists("res://.gitignore"):
@@ -175,7 +192,9 @@ func init_gitignore() -> void:
 func tool_submenu_id_pressed(id : int) -> void:
     match id:
         1:
-            crawl()
+            crawl("res://", false)
+        11:
+            crawl("res://", true)
         10:
             init_gitignore()
         5:

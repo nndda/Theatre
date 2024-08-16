@@ -9,7 +9,8 @@ Dia:
     & Stage"
 
 :
-    "Lets start with Dialogue:{d = 0.8} Its a resource, containing the writing of
+    "Lets start with Dialogue:{d = 0.8}
+    Its a resource, containing the writing of
     your{s = 0.035}...{s}{d = 0.5} well,{d = 0.8} dialogue!{d = 1.0}
     You write them in a plain text file,{d = 0.9}
     the written dialogue then get parsed to a resource,{d = 0.9}
@@ -19,9 +20,13 @@ Dia:
     "And {s = 0.9}um{s = 0.04}...{s} Thats it!{s = 0.035}...{s} for now."
 
 :
-    "Most of the classes functionalities are documented directly in the class.{d = 0.8}
-    In the editor,{d = 0.8} You can press F1 and look for Theatre's classes, if You
-    needs more info."
+    "Most of the classes references are documented directly in the addon.{d = 0.8}
+    In the editor,{d = 0.8} You can press F1 and look for Theatre's classes
+    to see its documentation page."
+
+:
+    "We also have online documentation page,{d = 0.2}
+    live at nndda.github.io/Theatre"
 
 :
     "Stay tuned for the next updates!"

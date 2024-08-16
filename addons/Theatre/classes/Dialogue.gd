@@ -18,13 +18,13 @@ extends Resource
 ## [/codeblock]
 
 #region NOTE: Stored variables ---------------------------------------------------------------------
-#static var default_lang := "en"
-
 @export_storage var _sets : Array[Dictionary] = []
 @export_storage var _source_path : String
 
 @export_storage var _used_variables : PackedStringArray = []
 @export_storage var _used_function_calls : Dictionary = {}
+
+@export_storage var _sections : Dictionary = {}
 #endregion
 
 #region NOTE: Loader/constructor -------------------------------------------------------------------
@@ -37,6 +37,7 @@ static func is_valid_filename(filename : String) -> bool:
 
 func _init(dlg_src : String = ""):
     _sets = []
+    _sections = {}
     _used_variables = []
     var parser : DialogueParser
 
@@ -49,6 +50,7 @@ func _init(dlg_src : String = ""):
         else:
             _source_path = dlg_src
             parser = DialogueParser.new(FileAccess.get_file_as_string(dlg_src))
+            _sections = parser.sections
             _sets = parser.output
             _update_used_variables()
             _update_used_function_calls()
@@ -62,6 +64,7 @@ func _init(dlg_src : String = ""):
             # BUG
             DialogueParser.normalize_indentation(dlg_src)
         )
+        _sections = parser.sections
         _sets = parser.output
         _update_used_variables()
         _update_used_function_calls()
@@ -87,7 +90,7 @@ static func load(path : String) -> Dialogue:
         elif FileAccess.file_exists(dlg_compiled + ".tres"):
             dlg_compiled += ".tres"
 
-        print("Getting Dialogue from file: %s..." % dlg_compiled)
+        #print("Getting Dialogue from file: %s..." % dlg_compiled)
 
         if FileAccess.file_exists(dlg_compiled):
             var dlg := load(dlg_compiled)
@@ -121,32 +124,25 @@ func get_source_path() -> String:
 ## Returns word count in the compiled [Dialogue]. Optionally pass [param variables] to insert
 ## variables used by the [Dialogue], otherwise it will count any variable placeholder as 1 word.
 func get_word_count(variables : Dictionary = {}) -> int:
-    var output : int = 0
-    var text : String
-    for n in _sets:
-        for chr in ":;.,{}-":
-            text = n["line_raw"]\
-                .format(variables)\
-                .format(Stage._VARIABLES_BUILT_IN)\
-                .replace(chr, " ")
-        output += text.split(" ", false).size()
-    return output
+    var regex := RegEx.new()
+    regex.compile(r"\w+")
+
+    # is it really any better?
+    return regex.search_all(_strip(
+        variables.merged(Stage._VARIABLES_BUILT_IN),
+        true, true
+    )).size()
 
 func get_character_count(variables : Dictionary = {}) -> int:
-    #var output : int = 0
-    #var text : String
-    #for n in _sets:
-        #for chr in ":;.,{}-":
-            #text = n["line_raw"]\
-                #.format(variables)\
-                #.format(Stage._VARIABLES_BUILT_IN)\
-                #.replace(chr, " ")
-        #output += text.length()
-    return humanize(variables).length()
-    
+    return humanize(false, variables).length()
 
 func get_function_calls() -> Dictionary:
     return _used_function_calls
+
+## Returns the defined sections in the written [Dialogue], as a key-value pair,
+## with the key being the section ID, the value being the [Dialogue] line it represent.
+func get_sections() -> Dictionary:
+    return _sections
 
 func _update_used_function_calls() -> void:
     for n : Dictionary in _sets:
@@ -171,8 +167,8 @@ func _update_used_variables() -> void:
 
 ## Returns the human-readable string of the compiled [Dialogue]. This will return the [Dialogue]
 ## without the Dialogue tags and/or BBCode tags. Optionally, insert the variables used by passing it to [param variables].
-func humanize(variables : Dictionary = {}) -> String:
-    return _strip(variables)
+func humanize(with_actor : bool = true, variables : Dictionary = {}) -> String:
+    return _strip(variables, !with_actor)
 
 func _strip(
     variables : Dictionary = {},
@@ -186,7 +182,9 @@ func _strip(
         if !exclude_actors:
             output += n.actor + ":" + newline
 
-        output += "    " + n.line + newline + newline
+        output += (
+            "" if exclude_actors else "    "
+        ) + n.line + newline + newline
 
     # Strip BBCode tags
     var regex_bbcode := RegEx.new()
