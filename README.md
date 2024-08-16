@@ -8,7 +8,7 @@ Text-based linear dialogue system for Godot 4.3.
 - 📝 100% written in GDScript.
 
 > [!IMPORTANT]
-> This project is currently in its alpha stage and is subject to frequent and breaking changes, and bugs.
+> This project is still in development, and is subject to frequent and breaking changes, and bugs.
 
 <table align="center">
 <tr align="center">
@@ -71,20 +71,22 @@ Connect your story to the game with function calls.
 ```
 ```
 Ritsu:
-    "Smile for the camera!"
+    "Cheers!"
 
-    Portrait.change('res://ritsu_smile.png')
+    Portrait.set("ritsu_smile.png")
 ```
 
 Call functions only at specific points in the Dialogue.
 ```
 Dia:
-    "Let me just...{d = 0.7}
-    set the mood a little...{1.2}
-    {0}there we go"
+    "
+    Let me brighten up the room a little...{d = 1.1}
+    {0}
+    there we go.
+    "
 
 # Call this function using its index: {0}
-    Environment.brightness(0.8)
+    Background.set_brightness(1.0)
 ```
 
 # Quick Start
@@ -125,13 +127,16 @@ Set the Stage! Create a `Stage` node, and reference the `Label` & `DialogueLabel
 <td>
 
 ```gdscript
-@onready var your_stage : Stage = $Stage
+@onready var my_stage : Stage = $Stage
 
 func _ready():
-    your_stage.allow_skip = true
-    your_stage.allow_cancel = true
-    your_stage.allow_func = true
-    your_stage.speed_scale = 1.0
+    my_stage.actor_label = $Label
+    my_stage.dialogue_label = $DialogueLabel
+
+    my_stage.allow_skip = true
+    my_stage.allow_cancel = true
+    my_stage.allow_func = true
+    my_stage.speed_scale = 1.0
 ```
 
 </td>
