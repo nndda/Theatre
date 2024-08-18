@@ -104,8 +104,6 @@ func _init(src : String = ""):
     var dlg_line_stack : int = 0
 
     var regex_func_match : RegExMatch
-    var regex_tags_newline_match : RegExMatch
-    var regex_bbcode_match : RegExMatch
 
     # Per raw string line
     for i in dlg_raw_size:
@@ -149,10 +147,7 @@ func _init(src : String = ""):
 
         elif is_valid_line and !output.is_empty():
             current_processed_string = dlg_raw[i].strip_edges()
-
             regex_func_match = _regex_func_call.search(current_processed_string)
-            regex_tags_newline_match = _regex_dlg_tags_newline.search(current_processed_string)
-            regex_bbcode_match = _regex_bbcode_tags.search(current_processed_string)
 
             #region NOTE: Function calls -----------------------------------------------------------
             if regex_func_match != null:
@@ -185,13 +180,13 @@ func _init(src : String = ""):
             #endregion
 
             #region NOTE: Newline Dialogue tags ----------------------------------------------------
-            elif is_regex_full_string(regex_tags_newline_match):
+            elif is_regex_full_string(_regex_dlg_tags_newline.search(current_processed_string)):
                 output[body_pos]["line_raw"] += "{%s}" % current_processed_string
-                output[body_pos]["line"] += "{%s}" % current_processed_string
+                output[body_pos]["line"] += output[body_pos]["line_raw"]
             #endregion
 
             #region NOTE: Newline BBCode tags ------------------------------------------------------
-            elif is_regex_full_string(regex_bbcode_match):
+            elif is_regex_full_string(_regex_bbcode_tags.search(current_processed_string)):
                 output[body_pos]["line_raw"] += current_processed_string
                 output[body_pos]["line"] += current_processed_string
             #endregion
@@ -254,7 +249,7 @@ static func normalize_indentation(string : String) -> String:
     for n in _regex_indent.search_all(string):
         var len := n.get_string(1).length()
         if !indents.has(len):
-            indents.append(n.get_string(1).length())
+            indents.append(len)
 
     if indents.max() > 0:
         var spc := ""
@@ -286,12 +281,10 @@ static func parse_tags(string : String) -> Dictionary:
 
     var stripped_tags := _regex_dlg_tags.sub(string, "", true)
 
-    var regex_bbcode_match := _regex_bbcode_tags.search_all(stripped_tags)
-
     var bbcode_pos_offset : int = 0
 
     # Strip and log BBCode tags
-    for bb in regex_bbcode_match:
+    for bb in _regex_bbcode_tags.search_all(stripped_tags):
         var bb_start : int = bb.get_start() - bbcode_pos_offset
         var bb_end : int = bb.get_end() - bbcode_pos_offset
         var bb_tag := bb.get_string("tag")
@@ -326,10 +319,9 @@ static func parse_tags(string : String) -> Dictionary:
         string = regex_curly_brackets.sub(string, "-", true)
 
     # Dialogue tags ========================================================
-    var regex_tags_match := _regex_dlg_tags.search_all(string)
     var tag_pos_offset : int = 0
 
-    for b in regex_tags_match:
+    for b in _regex_dlg_tags.search_all(string):
         var string_match := b.strings[0]
 
         var tag_pos : int = b.get_start() - tag_pos_offset
@@ -381,10 +373,6 @@ static func parse_tags(string : String) -> Dictionary:
     output["func_idx"] = func_idx
     output["variables"] = vars
 
-    #region CLEANUP
-    regex_tags_match.clear()
-    regex_bbcode_match.clear()
-    #endregion
 
     return output
 
