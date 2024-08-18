@@ -54,6 +54,7 @@ const SETS_TEMPLATE := {
         #   start, end
         #   15: 20
     },
+    "has_vars": false,
     "vars": [],
 }
 const FUNC_TEMPLATE := {
@@ -226,6 +227,7 @@ func _init(src : String = ""):
                 body = body.replace(tag.strings[0], "")
 
             output[n]["vars"] = parsed_tags["vars"]
+            output[n]["has_vars"] = parsed_tags["has_vars"]
             output[n]["func_pos"] = parsed_tags["func_pos"]
             output[n]["func_idx"] = parsed_tags["func_idx"]
 
@@ -372,6 +374,7 @@ static func parse_tags(string : String) -> Dictionary:
     output["func_pos"] = func_pos
     output["func_idx"] = func_idx
     output["vars"] = vars
+    output["has_vars"] = !vars.is_empty()
 
     return output
 
@@ -389,6 +392,7 @@ static func update_tags_position(dlg : Dialogue, pos : int, vars : Dictionary) -
     dlg._sets[pos]["tags"] = parsed_tags["tags"]
     dlg._sets[pos]["line"] = parsed_tags["string"]
     dlg._sets[pos]["vars"] = parsed_tags["vars"]
+    dlg._sets[pos]["has_vars"] = parsed_tags["has_vars"]
     dlg._sets[pos]["func_pos"] = parsed_tags["func_pos"]
     dlg._sets[pos]["func_idx"] = parsed_tags["func_idx"]
 
