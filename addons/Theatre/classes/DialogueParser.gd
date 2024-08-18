@@ -9,7 +9,7 @@ const REGEX_DLG_TAGS :=\
 const REGEX_DLG_TAGS_NEWLINE :=\
     r"^\s*(?<tag>\w+)\=((?<arg>.+))*$"
 const REGEX_BBCODE_TAGS :=\
-    r"(?<tag>[\[\/]+?\w+)[^\[\]]*?\]"
+    r"[\[\/]+?(?<tag>\w+)[^\[\]]*?\]"
 const REGEX_FUNC_CALL :=\
     r"(?<caller>\w+)\.(?<name>\w+)\((?<args>.*)\)$"
 const REGEX_PLACEHOLDER :=\
