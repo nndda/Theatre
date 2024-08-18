@@ -308,20 +308,6 @@ static func parse_tags(string : String) -> Dictionary:
         else:
             string = string.replace(bb.strings[0], "")
 
-        # TODO:
-        #if bb.get_string("tag") == "[img":
-            #bb_data[bb_start]["img"] = true
-            #bb_data[bb_start]["img-pos"] = bb_end
-            #bb_data[bb_start]["img-res"] = string.substr(
-                #bb_start, string.find("[/img]", bb_start) - bb_start
-            #)
-#
-            #string = string\
-                #.erase(bb_start, bb_data[bb_start]["img-res"].length())\
-                #.insert(bb_start, "i")
-
-            #bbcode_pos_offset += bb_data[bb_start]["img-res"].length()
-
     # Escaped Curly Brackets ===============================================
     # 💀💀💀💀💀💀💀💀💀💀💀
     var regex_curly_brackets := RegEx.new()
@@ -389,13 +375,6 @@ static func parse_tags(string : String) -> Dictionary:
     for bb in bb_data:
         string = string.insert(bb, bb_data[bb]["content"])
 
-        if bb_data[bb]["img"]:
-            string = string.erase(bb_data[bb]["img-pos"], 1)
-            string = string.insert(
-                bb_data[bb]["img-pos"],
-                bb_data[bb]["img-res"],
-            )
-
     output["tags"] = tags
     output["string"] = string
     output["func_pos"] = func_pos
@@ -405,8 +384,6 @@ static func parse_tags(string : String) -> Dictionary:
     #region CLEANUP
     regex_tags_match.clear()
     regex_bbcode_match.clear()
-    #regex_int_func.clear()
-    #regex_int_func = null
     #endregion
 
     return output
