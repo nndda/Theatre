@@ -79,6 +79,12 @@ const BUILT_IN_TAGS : PackedStringArray = (
     VARS_BUILT_IN_KEYS
 )
 
+const NEWLINE := "\n"
+const SPACE := " "
+const EMPTY := ""
+const UNDERSCORE := "_"
+const COLON := ":"
+
 static var _regex_initialized := false
 static func _initialize_regex() -> void:
     _regex_dlg_tags = RegEx.create_from_string(REGEX_DLG_TAGS)
@@ -97,7 +103,7 @@ func _init(src : String = ""):
 
     output = []
     sections = {}
-    var dlg_raw : PackedStringArray = src.split("\n")
+    var dlg_raw : PackedStringArray = src.split(NEWLINE)
 
     var body_pos : int = -1
     var dlg_raw_size : int = dlg_raw.size()
@@ -113,9 +119,9 @@ func _init(src : String = ""):
         var n_stripped := n.strip_edges()
         var is_valid_line := !n.begins_with("#") and !n.is_empty()
 
-        var current_processed_string : String = ""
+        var current_processed_string : String
 
-        if is_valid_line and !is_indented(n) and n_stripped.ends_with(":"):
+        if is_valid_line and !is_indented(n) and n_stripped.ends_with(COLON):
             #region NOTE: Create new Dialogue line -------------------------------------------------
             var setsl := SETS_TEMPLATE.duplicate(true)
             newline_stack = 0
@@ -124,11 +130,11 @@ func _init(src : String = ""):
             if dlg_raw_size < i + 1:
                 printerr("Error: actor's name exists without a dialogue body")
 
-            setsl["actor"] = n_stripped.trim_suffix(":")
+            setsl["actor"] = n_stripped.trim_suffix(COLON)
             setsl["line_num"] = ln_num
 
-            if setsl["actor"] == "_":
-                setsl["actor"] = ""
+            if setsl["actor"] == UNDERSCORE:
+                setsl["actor"] = EMPTY
             elif setsl["actor"].is_empty():
                 if body_pos < 0:
                     printerr("Warning: missing initial actor's name on line %d" % ln_num)
@@ -141,7 +147,7 @@ func _init(src : String = ""):
 
         elif _regex_section.search(n) != null:
             sections[
-                n.split(" ", false, 1)[0].strip_edges().trim_prefix(":")
+                n.split(SPACE, false, 1)[0].strip_edges().trim_prefix(COLON)
             ] = dlg_line_stack
 
         elif n_stripped.is_empty():
@@ -197,9 +203,9 @@ func _init(src : String = ""):
             else:
                 if newline_stack > 0:
                     newline_stack += 1
-                var dlg_body := "\n".repeat(newline_stack)\
+                var dlg_body := NEWLINE.repeat(newline_stack)\
                     + current_processed_string\
-                    + " "
+                    + SPACE
                 newline_stack = 0
 
                 # Append Dialogue body
@@ -208,7 +214,7 @@ func _init(src : String = ""):
 
     # Per dialogue line
     for n in body_pos:
-        var body : String = ""
+        var body : String
 
         if output[n]["line_raw"].is_empty():
             printerr("Warning: empty dialogue body for '%s' on line %d" % [
@@ -223,7 +229,7 @@ func _init(src : String = ""):
 
             body = output[n]["line_raw"]
             for tag in _regex_dlg_tags.search_all(output[n]["line_raw"]):
-                body = body.replace(tag.strings[0], "")
+                body = body.replace(tag.strings[0], EMPTY)
 
             output[n]["vars"] = parsed_tags["vars"]
             output[n]["has_vars"] = parsed_tags["has_vars"]
@@ -253,10 +259,10 @@ static func normalize_indentation(string : String) -> String:
             indents.append(len)
 
     if indents.max() > 0:
-        var spc := ""
+        var spc : String
         for n in indents.min():
-            spc += " "
-        string = string.replacen("\n" + spc, "\n")
+            spc += SPACE
+        string = string.replacen(NEWLINE + spc, NEWLINE)
 
     indents.clear()
     return string
@@ -283,7 +289,7 @@ static func parse_tags(string : String) -> Dictionary:
     var bbcode_pos_offset : int = 0
 
     # Strip and log BBCode tags
-    for bb in _regex_bbcode_tags.search_all(_regex_dlg_tags.sub(string, "", true)):
+    for bb in _regex_bbcode_tags.search_all(_regex_dlg_tags.sub(string, EMPTY, true)):
         var bb_start : int = bb.get_start() - bbcode_pos_offset
         var bb_end : int = bb.get_end() - bbcode_pos_offset
         var bb_tag := bb.get_string("tag")
@@ -298,7 +304,7 @@ static func parse_tags(string : String) -> Dictionary:
         elif bb_tag == r"rb":
             string = string.replace(bb.strings[0], "]")
         else:
-            string = string.replace(bb.strings[0], "")
+            string = string.replace(bb.strings[0], EMPTY)
 
     # Escaped Curly Brackets ===============================================
     # 💀💀💀💀💀💀💀💀💀💀💀
@@ -336,7 +342,7 @@ static func parse_tags(string : String) -> Dictionary:
             )
 
         if !(tag_key_l in VARS_BUILT_IN_KEYS):
-            string = string.replace(string_match, "")
+            string = string.replace(string_match, EMPTY)
 
         if tag_key_l.is_valid_int():
             var idx = tag_key_l.to_int()
