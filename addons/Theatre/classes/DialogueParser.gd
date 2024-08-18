@@ -99,7 +99,7 @@ func _init(src : String = ""):
     sections = {}
     var dlg_raw : PackedStringArray = src.split("\n")
 
-    var body_pos : int = 0
+    var body_pos : int = -1
     var dlg_raw_size : int = dlg_raw.size()
     var newline_stack : int = 0
     var dlg_line_stack : int = 0
@@ -110,11 +110,12 @@ func _init(src : String = ""):
     for i in dlg_raw_size:
         var ln_num : int = i + 1
         var n := dlg_raw[i]
+        var n_stripped := n.strip_edges()
         var is_valid_line := !n.begins_with("#") and !n.is_empty()
 
         var current_processed_string : String = ""
 
-        if is_valid_line and !is_indented(n) and n.strip_edges().ends_with(":"):
+        if is_valid_line and !is_indented(n) and n_stripped.ends_with(":"):
             #region NOTE: Create new Dialogue line -------------------------------------------------
             var setsl := SETS_TEMPLATE.duplicate(true)
             newline_stack = 0
@@ -123,19 +124,19 @@ func _init(src : String = ""):
             if dlg_raw_size < i + 1:
                 printerr("Error: actor's name exists without a dialogue body")
 
-            setsl["actor"] = n.strip_edges().trim_suffix(":")
+            setsl["actor"] = n_stripped.trim_suffix(":")
             setsl["line_num"] = ln_num
 
             if setsl["actor"] == "_":
                 setsl["actor"] = ""
             elif setsl["actor"].is_empty():
-                if output.size() - 1 < 0:
+                if body_pos < 0:
                     printerr("Warning: missing initial actor's name on line %d" % ln_num)
                 else:
-                    setsl["actor"] = output[output.size() - 1]["actor"]
+                    setsl["actor"] = output[body_pos]["actor"]
 
             output.append(setsl)
-            body_pos = output.size() - 1
+            body_pos += 1
             #endregion
 
         elif _regex_section.search(n) != null:
@@ -143,7 +144,7 @@ func _init(src : String = ""):
                 n.split(" ", false, 1)[0].strip_edges().trim_prefix(":")
             ] = dlg_line_stack
 
-        elif n.strip_edges().is_empty():
+        elif n_stripped.is_empty():
             newline_stack += 1
 
         elif is_valid_line and !output.is_empty():
@@ -206,7 +207,7 @@ func _init(src : String = ""):
                 output[body_pos]["line"] += dlg_body
 
     # Per dialogue line
-    for n in output.size():
+    for n in body_pos:
         var body : String = ""
 
         if output[n]["line_raw"].is_empty():
@@ -220,10 +221,8 @@ func _init(src : String = ""):
             for tag : String in SETS_TEMPLATE["tags"].keys():
                 output[n]["tags"][tag].merge(parsed_tags["tags"][tag])
 
-            var regex_tags_match := _regex_dlg_tags.search_all(output[n]["line_raw"])
-
             body = output[n]["line_raw"]
-            for tag in regex_tags_match:
+            for tag in _regex_dlg_tags.search_all(output[n]["line_raw"]):
                 body = body.replace(tag.strings[0], "")
 
             output[n]["vars"] = parsed_tags["vars"]
@@ -281,12 +280,10 @@ static func parse_tags(string : String) -> Dictionary:
         .replace(r"\[", r"[lb]")\
         .replace(r"\]", r"[rb]")
 
-    var stripped_tags := _regex_dlg_tags.sub(string, "", true)
-
     var bbcode_pos_offset : int = 0
 
     # Strip and log BBCode tags
-    for bb in _regex_bbcode_tags.search_all(stripped_tags):
+    for bb in _regex_bbcode_tags.search_all(_regex_dlg_tags.sub(string, "", true)):
         var bb_start : int = bb.get_start() - bbcode_pos_offset
         var bb_end : int = bb.get_end() - bbcode_pos_offset
         var bb_tag := bb.get_string("tag")
