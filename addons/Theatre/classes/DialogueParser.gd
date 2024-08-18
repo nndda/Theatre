@@ -225,7 +225,7 @@ func _init(src : String = ""):
             for tag in regex_tags_match:
                 body = body.replace(tag.strings[0], "")
 
-            output[n]["vars"] = parsed_tags["variables"]
+            output[n]["vars"] = parsed_tags["vars"]
             output[n]["func_pos"] = parsed_tags["func_pos"]
             output[n]["func_idx"] = parsed_tags["func_idx"]
 
@@ -371,8 +371,7 @@ static func parse_tags(string : String) -> Dictionary:
     output["string"] = string
     output["func_pos"] = func_pos
     output["func_idx"] = func_idx
-    output["variables"] = vars
-
+    output["vars"] = vars
 
     return output
 
@@ -389,7 +388,7 @@ static func update_tags_position(dlg : Dialogue, pos : int, vars : Dictionary) -
 
     dlg._sets[pos]["tags"] = parsed_tags["tags"]
     dlg._sets[pos]["line"] = parsed_tags["string"]
-    dlg._sets[pos]["vars"] = parsed_tags["variables"]
+    dlg._sets[pos]["vars"] = parsed_tags["vars"]
     dlg._sets[pos]["func_pos"] = parsed_tags["func_pos"]
     dlg._sets[pos]["func_idx"] = parsed_tags["func_idx"]
 
