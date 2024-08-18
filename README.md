@@ -1,14 +1,18 @@
-# Theatre
+<h1>
+Theatre
+<a href="https://godotengine.org/" target="_blank"><img src="https://img.shields.io/badge/Godot%204.3-white?style=flat-square&logo=godotengine&logoColor=white&color=%23478CBF"></a>
+<a href="https://nndda.github.io/Theatre/" target="_blank"><img src="https://img.shields.io/badge/Documentation-white?style=flat-square"></a>
+</h1>
 
 <img src="/addons/Theatre/assets/icons/Theatre.svg" height="160" align="right">
 
 Text-based linear dialogue system for Godot 4.3.
-- ✍️ Literally just a text file! Written in human-readable syntax & VCS-friendly.
+- ✍️ Written in human-readable syntax.
 - ✨ Focused on presentation and delivery of your story.
 - 📝 100% written in GDScript.
 
 > [!IMPORTANT]
-> This project is currently in its alpha stage and is subject to frequent and breaking changes, and bugs.
+> This project is still in development, and is subject to frequent and breaking changes, and bugs.
 
 <table align="center">
 <tr align="center">
@@ -22,7 +26,7 @@ Text-based linear dialogue system for Godot 4.3.
 <tr>
 <td>
 
-<img src="https://github.com/nndda/Theatre/assets/96333146/58d7c400-9aac-4ba3-971c-57d7b28cb7e3" width="364">
+<img src="https://github.com/user-attachments/assets/5bbefeed-61bb-4b9d-89a0-69d8300a3c08" width="364">
 
 </td>
 <td>
@@ -32,13 +36,9 @@ Dia:
     "Welcome! {d=0.8}to the
     [fx1]Theatre[/fx1]!
         d=0.9
-    a text-based dialogue system
+    yet another text-based dialogue addon
         d=0.3
-    developed for Godot {gd_ver}
-        d=0.8
-    [fx3]
-        (well,{d = 0.8} 4.3 specifically)
-    [/fx3]."
+    developed for Godot {gd_ver}."
 
 
     ＼(^ ▽ ^)
@@ -75,20 +75,22 @@ Connect your story to the game with function calls.
 ```
 ```
 Ritsu:
-    "Smile for the camera!"
+    "Cheers!"
 
-    Portrait.change('res://ritsu_smile.png')
+    Portrait.set("ritsu_smile.png")
 ```
 
 Call functions only at specific points in the Dialogue.
 ```
 Dia:
-    "Let me just...{d = 0.7}
-    set the mood a little...{1.2}
-    {0}there we go"
+    "
+    Let me brighten up the room a little...{d = 1.1}
+    {0}
+    there we go.
+    "
 
 # Call this function using its index: {0}
-    Environment.brightness(0.8)
+    Background.set_brightness(1.0)
 ```
 
 # Quick Start
@@ -129,13 +131,16 @@ Set the Stage! Create a `Stage` node, and reference the `Label` & `DialogueLabel
 <td>
 
 ```gdscript
-@onready var your_stage : Stage = $Stage
+@onready var my_stage : Stage = $Stage
 
 func _ready():
-    your_stage.allow_skip = true
-    your_stage.allow_cancel = true
-    your_stage.allow_func = true
-    your_stage.speed_scale = 1.0
+    my_stage.actor_label = $Label
+    my_stage.dialogue_label = $DialogueLabel
+
+    my_stage.allow_skip = true
+    my_stage.allow_cancel = true
+    my_stage.allow_func = true
+    my_stage.speed_scale = 1.0
 ```
 
 </td>
@@ -148,15 +153,19 @@ Reference the `Stage` node in the script, and set up a way to progress your Dial
 ```gdscript
 func _input(event):
     if event.is_action_pressed("ui_accept"):
-        your_stage.progress()
+        my_stage.progress()
 ```
 
 And finally, start the Stage
 
 ```gdscript
 func _ready():
-    your_stage.start(epic_dialogue)
+    my_stage.start(epic_dialogue)
 ```
+
+<p align="center">
+<a href="https://nndda.github.io/Theatre/quickstart/" target="_blank">More detailed quick start tutorial here</a>
+</p>
 
 ## License
 
