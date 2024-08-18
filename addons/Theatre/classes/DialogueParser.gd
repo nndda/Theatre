@@ -343,9 +343,6 @@ static func parse_tags(string : String) -> Dictionary:
     var regex_tags_match := _regex_dlg_tags.search_all(string)
     var tag_pos_offset : int = 0
 
-    var regex_int_func := RegEx.new()
-    regex_int_func.compile(r"\d+")
-
     for b in regex_tags_match:
         var string_match := b.strings[0]
 
@@ -364,9 +361,8 @@ static func parse_tags(string : String) -> Dictionary:
         if !(tag_key_l in VARS_BUILT_IN_KEYS):
             string = string.replace(string_match, "")
 
-        var regex_int_func_match := regex_int_func.search(tag_key_l)
-        if regex_int_func_match != null:
-            var idx = regex_int_func_match.strings[0].to_int()
+        if tag_key_l.is_valid_int():
+            var idx = tag_key_l.to_int()
             func_pos[tag_pos] = idx
 
             if !func_idx.has(idx):
@@ -374,7 +370,7 @@ static func parse_tags(string : String) -> Dictionary:
 
         if !BUILT_IN_TAGS.has(tag_key) and\
             !(tag_key_l in vars) and\
-            (regex_int_func_match == null):
+            !tag_key_l.is_valid_int():
             vars.append(tag_key_l)
 
         tag_pos_offset += string_match.length()
@@ -409,8 +405,8 @@ static func parse_tags(string : String) -> Dictionary:
     #region CLEANUP
     regex_tags_match.clear()
     regex_bbcode_match.clear()
-    regex_int_func.clear()
-    regex_int_func = null
+    #regex_int_func.clear()
+    #regex_int_func = null
     #endregion
 
     return output
