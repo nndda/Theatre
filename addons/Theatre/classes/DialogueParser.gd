@@ -185,7 +185,11 @@ func _init(src : String = ""):
             else:
                 if newline_stack > 0:
                     newline_stack += 1
-                var dlg_body := "\n".repeat(newline_stack) + current_processed_string + " "
+                var dlg_body := "\n".repeat(newline_stack)\
+                    + current_processed_string\
+                        .replace(r"\[", "[lb]")\
+                        .replace(r"\]", "[rb]")\
+                    + " "
                 newline_stack = 0
 
                 # Append Dialogue body
@@ -274,6 +278,11 @@ static func normalize_indentation(string : String) -> String:
 
     return string
 
+static func escape_brackets(string : String) -> String:
+    return string\
+        .replace(r"\{", "{")\
+        .replace(r"\}", "}")
+
 # 😭😭😭
 static func parse_tags(string : String) -> Dictionary:
     var output : Dictionary = {}
@@ -300,13 +309,18 @@ static func parse_tags(string : String) -> Dictionary:
     for bb in regex_bbcode_match:
         var bb_start : int = bb.get_start() - bbcode_pos_offset
         var bb_end : int = bb.get_end() - bbcode_pos_offset
+        var bb_tag := bb.get_string("tag")
 
-        bb_data[bb_start] = {
-            "content" : bb.strings[0],
-            "img" : false,
-        }
-
-        string = string.replace(bb.strings[0], "")
+        if bb_tag == "lb":
+            string = string.replace(bb.strings[0], "[")
+        elif bb_tag == "rb":
+            string = string.replace(bb.strings[0], "]")
+        else:
+            bb_data[bb_start] = {
+                "content" : bb.strings[0],
+                "img" : false,
+            }
+            string = string.replace(bb.strings[0], "")
 
         # TODO:
         #if bb.get_string("tag") == "[img":
@@ -363,6 +377,10 @@ static func parse_tags(string : String) -> Dictionary:
         tag_pos_offset += string_match.length()
 
     # Insert back BBCodes ==================================================
+    string = string\
+        .replace("[", "[lb]")\
+        .replace("]", "[rb]")
+
     for bb in bb_data:
         string = string.insert(bb, bb_data[bb]["content"])
 

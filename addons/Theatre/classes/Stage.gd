@@ -567,9 +567,13 @@ func _reset_progress(keep_dialogue : bool = false) -> void:
 
 func _update_display() -> void:
     if actor_label != null:
-        actor_label.text = _current_dialogue_set["actor"].format(_variables_all)
+        actor_label.text = DialogueParser.escape_brackets(
+            _current_dialogue_set["actor"].format(_variables_all)
+        )
     if dialogue_label != null:
-        dialogue_label.text = _dialogue_full_string.format(_variables_all)
+        dialogue_label.text = DialogueParser.escape_brackets(
+            _dialogue_full_string.format(_variables_all)
+        )
 
 # TODO:
 #func switch_dialogue(dialogue : Dialogue, current_line : bool = true) -> void:
