@@ -336,6 +336,23 @@ static func parse_tags(string : String) -> Dictionary:
 
             #bbcode_pos_offset += bb_data[bb_start]["img-res"].length()
 
+    # Escaped Curly Brackets ===============================================
+    # 💀💀💀💀💀💀💀💀💀💀💀
+    var regex_curly_brackets := RegEx.new()
+    regex_curly_brackets.compile(r"\\\{|\\\}")
+
+    var esc_curly_brackets : Array[Dictionary] = []
+
+    for cb in regex_curly_brackets.search_all(string):
+        esc_curly_brackets.append({
+            "pos": cb.get_start(),
+            "chr": cb.strings[0],
+        })
+
+    if !esc_curly_brackets.is_empty():
+        esc_curly_brackets.reverse()
+        string = regex_curly_brackets.sub(string, "-", true)
+
     # Dialogue tags ========================================================
     var regex_tags_match := regex_tags.search_all(string)
     var tag_pos_offset : int = 0
@@ -375,6 +392,12 @@ static func parse_tags(string : String) -> Dictionary:
             vars.append(tag_key_l)
 
         tag_pos_offset += string_match.length()
+
+    # Insert back escaped curly brackets ===================================
+    for cb in esc_curly_brackets:
+        string = string\
+            .erase(cb["pos"])\
+            .insert(cb["pos"], cb["chr"])
 
     # Insert back BBCodes ==================================================
     string = string\
