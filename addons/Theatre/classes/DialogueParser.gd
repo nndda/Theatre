@@ -14,7 +14,7 @@ const REGEX_DLG_TAGS_NEWLINE :=\
 
 const REGEX_BBCODE_TAGS :=\
     r"[\[\/]+?(?<tag>\w+)[^\[\]]*?\]";\
-    static var _regex_bbcode_tags : RegEx
+    static var _regex_bbcode_tags := RegEx.create_from_string(REGEX_BBCODE_TAGS)
 
 const REGEX_FUNC_CALL :=\
     r"(?<caller>\w+)\.(?<name>\w+)\((?<args>.*)\)$";\
@@ -202,8 +202,6 @@ func _init(src : String = ""):
                     newline_stack += 1
                 var dlg_body := "\n".repeat(newline_stack)\
                     + current_processed_string\
-                        .replace(r"\[", "[lb]")\
-                        .replace(r"\]", "[rb]")\
                     + " "
                 newline_stack = 0
 
@@ -282,11 +280,12 @@ static func parse_tags(string : String) -> Dictionary:
 
     # BBCode ===============================================================
     var bb_data : Dictionary = {}
-    # Strip all Dialogue tags to process BBCode tags
+    string = string\
+        .replace(r"\[", r"[lb]")\
+        .replace(r"\]", r"[rb]")
+
     var stripped_tags := _regex_dlg_tags.sub(string, "", true)
 
-    var _regex_bbcode_tags := RegEx.new()
-    _regex_bbcode_tags.compile(REGEX_BBCODE_TAGS)
     var regex_bbcode_match := _regex_bbcode_tags.search_all(stripped_tags)
 
     var bbcode_pos_offset : int = 0
@@ -297,15 +296,16 @@ static func parse_tags(string : String) -> Dictionary:
         var bb_end : int = bb.get_end() - bbcode_pos_offset
         var bb_tag := bb.get_string("tag")
 
-        if bb_tag == "lb":
+        bb_data[bb_start] = {
+            "content" : bb.strings[0],
+            "img" : false,
+        }
+
+        if bb_tag == r"lb":
             string = string.replace(bb.strings[0], "[")
-        elif bb_tag == "rb":
+        elif bb_tag == r"rb":
             string = string.replace(bb.strings[0], "]")
         else:
-            bb_data[bb_start] = {
-                "content" : bb.strings[0],
-                "img" : false,
-            }
             string = string.replace(bb.strings[0], "")
 
         # TODO:
@@ -387,8 +387,8 @@ static func parse_tags(string : String) -> Dictionary:
 
     # Insert back BBCodes ==================================================
     string = string\
-        .replace("[", "[lb]")\
-        .replace("]", "[rb]")
+        .replace("[", "")\
+        .replace("]", "")
 
     for bb in bb_data:
         string = string.insert(bb, bb_data[bb]["content"])
