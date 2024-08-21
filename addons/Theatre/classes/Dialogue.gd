@@ -38,8 +38,11 @@ static func is_valid_filename(filename : String) -> bool:
 func _init(dlg_src : String = ""):
     var parser : DialogueParser
 
-    if is_valid_filename(dlg_src):
-        print("Parsing Dialogue from file: %s..." % dlg_src)
+    if dlg_src.is_empty():
+        push_error("Unable to create Dialogue resource: empty source string")
+
+    elif is_valid_filename(dlg_src):
+        #print("Parsing Dialogue from file: %s..." % dlg_src)
 
         if !FileAccess.file_exists(dlg_src):
             push_error("Unable to create Dialogue resource: '%s' does not exists" % dlg_src)
