@@ -1,7 +1,7 @@
 extends RefCounted
 class_name DialogueParser
 
-var output : Array[Dictionary]
+var output : Array[Dictionary] = []
 var sections : Dictionary = {}
 
 const REGEX_DLG_TAGS :=\
@@ -105,8 +105,6 @@ func _init(src : String = ""):
         _initialize_regex()
         _regex_initialized = true
 
-    output = []
-    sections = {}
     var dlg_raw : PackedStringArray = src.split(NEWLINE)
 
     var body_pos : int = -1
