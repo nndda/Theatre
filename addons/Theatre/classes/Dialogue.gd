@@ -55,7 +55,8 @@ func _init(dlg_src : String = ""):
             _update_used_variables()
             _update_used_function_calls()
 
-    elif DialogueParser.is_valid_source(dlg_src) and dlg_src.split("\n", false).size() >= 2:
+    elif DialogueParser.is_valid_source(dlg_src) and\
+        dlg_src.split(DialogueParser.NEWLINE, false, 3).size() >= 2:
         var stack : Dictionary = get_stack()[-1]
         print("Parsing Dialogue from raw string: %s:%d" % [
             stack["source"], stack["line"]
@@ -175,20 +176,20 @@ func _strip(
     exclude_actors : bool = false,
     exclude_newline : bool = false
     ) -> String:
-    var output := ""
-    var newline : String = "" if exclude_newline else "\n"
+    var output := DialogueParser.EMPTY
+    var newline : String = DialogueParser.EMPTY if exclude_newline else DialogueParser.NEWLINE
 
     for n in _sets:
         if !exclude_actors:
-            output += n.actor + ":" + newline
+            output += n.actor + DialogueParser.COLON + newline
 
         output += (
-            "" if exclude_actors else "    "
+            DialogueParser.EMPTY if exclude_actors else DialogueParser.INDENT_4
         ) + n.line + newline + newline
 
     # Strip BBCode tags
     for bb in DialogueParser._regex_bbcode_tags.search_all(output):
-        output = output.replace(bb.strings[0], "")
+        output = output.replace(bb.strings[0], DialogueParser.EMPTY)
 
     return output.format(variables)
 
@@ -197,7 +198,7 @@ func to_json(path : String) -> Error:
     var file := FileAccess.open(path, FileAccess.WRITE)
     if FileAccess.get_open_error() == OK:
         file.store_string(
-            JSON.stringify(_sets, "  ", true, true)
+            JSON.stringify(_sets, DialogueParser.INDENT_2, true, true)
         )
     else:
         return FileAccess.get_open_error()

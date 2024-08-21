@@ -84,6 +84,10 @@ const SPACE := " "
 const EMPTY := ""
 const UNDERSCORE := "_"
 const COLON := ":"
+const HASH := "#"
+
+const INDENT_2 := "  "
+const INDENT_4 := "    "
 
 static var _regex_initialized := false
 static func _initialize_regex() -> void:
@@ -117,7 +121,7 @@ func _init(src : String = ""):
         var ln_num : int = i + 1
         var n := dlg_raw[i]
         var n_stripped := n.strip_edges()
-        var is_valid_line := !n.begins_with("#") and !n.is_empty()
+        var is_valid_line := !n.begins_with(HASH) and !n.is_empty()
 
         var current_processed_string : String
 
@@ -368,8 +372,8 @@ static func parse_tags(string : String) -> Dictionary:
 
     # Insert back BBCodes ==================================================
     string = string\
-        .replace("[", "")\
-        .replace("]", "")
+        .replace("[", EMPTY)\
+        .replace("]", EMPTY)
 
     for bb in bb_data:
         string = string.insert(bb, bb_data[bb]["content"])
