@@ -10,7 +10,7 @@ const REGEX_DLG_TAGS :=\
 
 const REGEX_DLG_TAGS_NEWLINE :=\
     r"^\s*(?<tag>\w+)\=((?<arg>.+))*$";\
-    static var _regex_dlg_tags_newline : RegEx
+    static var _regex_dlg_tags_newline := RegEx.create_from_string(REGEX_DLG_TAGS_NEWLINE)
 
 const REGEX_BBCODE_TAGS :=\
     r"[\[\/]+?(?<tag>\w+)[^\[\]]*?\]";\
@@ -18,11 +18,11 @@ const REGEX_BBCODE_TAGS :=\
 
 const REGEX_FUNC_CALL :=\
     r"(?<caller>\w+)\.(?<name>\w+)\((?<args>.*)\)$";\
-    static var _regex_func_call : RegEx
+    static var _regex_func_call := RegEx.create_from_string(REGEX_FUNC_CALL)
 
 const REGEX_INDENT :=\
     r"(?<=\n{1})\s+";\
-    static var _regex_indent : RegEx
+    static var _regex_indent := RegEx.create_from_string(REGEX_INDENT)
 
 const REGEX_VALID_DLG :=\
     r"\n+\w+\:\n+\s+\w+";\
@@ -30,7 +30,7 @@ const REGEX_VALID_DLG :=\
 
 const REGEX_SECTION :=\
     r"^\:(.+)";\
-    static var _regex_section : RegEx
+    static var _regex_section := RegEx.create_from_string(REGEX_SECTION)
 
 const SETS_TEMPLATE := {
     "actor": "",
