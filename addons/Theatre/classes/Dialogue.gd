@@ -36,9 +36,6 @@ static func is_valid_filename(filename : String) -> bool:
     )
 
 func _init(dlg_src : String = ""):
-    _sets = []
-    _sections = {}
-    _used_variables = []
     var parser : DialogueParser
 
     if is_valid_filename(dlg_src):
@@ -187,10 +184,7 @@ func _strip(
         ) + n.line + newline + newline
 
     # Strip BBCode tags
-    var regex_bbcode := RegEx.new()
-    regex_bbcode.compile(DialogueParser.REGEX_BBCODE_TAGS)
-    var regex_bbcode_match := regex_bbcode.search_all(output)
-    for bb in regex_bbcode_match:
+    for bb in DialogueParser._regex_bbcode_tags.search_all(output):
         output = output.replace(bb.strings[0], "")
 
     return output.format(variables)
