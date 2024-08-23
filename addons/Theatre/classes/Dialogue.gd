@@ -39,7 +39,7 @@ func _init(dlg_src : String = ""):
     var parser : DialogueParser
 
     if dlg_src.is_empty():
-        push_error("Unable to create Dialogue resource: empty source string")
+        pass
 
     elif is_valid_filename(dlg_src):
         #print("Parsing Dialogue from file: %s..." % dlg_src)
