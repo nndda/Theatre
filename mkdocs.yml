@@ -9,6 +9,11 @@ nav:
   - "Quick Start":
     - "installation.md"
     - "quickstart.md"
+  - "Tutorials":
+    - "tutorials/index.md"
+    - "tutorials/minimal_setup/index.md"
+    - "tutorials/dialogue_ui_toggle/index.md"
+    - "tutorials/dialogue_beep/index.md"
   - "Dialogue":
     - "class/dialogue/syntax.md"
     - "Tutorials":
