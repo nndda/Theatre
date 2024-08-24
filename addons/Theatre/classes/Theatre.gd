@@ -9,6 +9,8 @@ class Debug extends RefCounted:
         return output
 
 func _enter_tree() -> void:
+    DialogueParser._initialize_regex()
+
     var tree := get_tree()
 
     for singleton in Engine.get_singleton_list():
