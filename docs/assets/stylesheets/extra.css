@@ -75,3 +75,8 @@ a.md-tabs__link[href="class/stage/tutorials/setting-up"] {}
 aside.md-source-file {
   margin-top: 3em;
 }
+
+img.center {
+  display: block;
+  margin: auto;
+}
