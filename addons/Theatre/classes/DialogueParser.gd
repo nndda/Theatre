@@ -215,7 +215,7 @@ func _init(src : String = ""):
                 output[body_pos]["line"] += dlg_body
 
     # Per dialogue line
-    for n in body_pos:
+    for n in output.size():
         var body : String
 
         if output[n]["line_raw"].is_empty():
