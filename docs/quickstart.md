@@ -25,18 +25,134 @@ Actor's name:
 
 ```
 
-You can save it as `*.dlg` or `*.dlg.txt`. In this example, we'll save the file as `res://intro.dlg`. Now that the `Dialogue` is ready, lets set up the `Stage`.
+You can save it as `*.dlg` or `*.dlg.txt`. In this example, we'll save the file as `res://intro.dlg`. Now that the `Dialogue` is ready, let's set up the `Stage`.
 
 [**More on writing Dialogue here.**](class/dialogue/syntax.md){ .md-button }
 
 ## Setting up the Stage
 
-Create a new 2D scene. And add `Stage`, `Label`, and `DialogueLabel` node. To tidy things up a little, we'll put them inside a `PanelContainer` and `VBoxContainer`. Resize the `PanelContainer` to your liking. Make sure that `fit_content` is set to `true` on `DialogueLabel`.
+### Nodes & UI
 
-Here's what the current scene should looks like:
+Create a new `2D` or `User Interface` scene. We'll use `User Interface` scene, which use `Control` node for the scene's root. And add the following nodes: `Stage`, `Label`, and `DialogueLabel`.
+
+<div class="grid cards" markdown>
+
+- ![Stage, Label, and DialogueLabel](quickstart/nodes_1.png){ .center }
+
+</div>
+
+To tidy things up a little, add `PanelContainer`, and `VBoxContainer` inside it. Put the `Label` and `DialogueLabel` inside the `VBoxContainer`.
+
+<div class="grid cards" markdown>
+
+- ![Stage, Label, and DialogueLabel](quickstart/nodes_2.png){ .center }
+
+</div>
+
+Adjust the size and position of the `PanelContainer` to your liking.
+
+And lastly, make sure that `fit_content` is set to `true` on `DialogueLabel`.
+
+<div class="grid cards" markdown>
+
+- ![Stage, Label, and DialogueLabel](quickstart/dialogue_label-fit_content.png){ .center }
+
+</div>
+
+### Script
+
+Attach a script to the scene's root.
+
+```gdscript
+extends Control
+```
+
+Create a variable with `@export` annotation to reference the `Stage` node made previously. In this example, we'll name the variable `'my_stage'`.
+
+```gdscript hl_lines="3"
+extends Control
+
+@export var my_stage : Stage
+```
+
+Click the scene's root node, go to the inspector, and assign the `Stage` node to `my_stage`.
+
+<div class="grid cards" markdown>
+
+- ![](quickstart/my_stage.png){ .center }
+
+- ![](tutorials/minimal_setup/stage_node_2.png){ .center }
+
+</div>
+
+Click the `Stage` node, and head over to the inspector dock. Reference the `Label` and `DialogueLabel` node that were made before.
+
+<div class="grid cards" markdown>
+
+- ![Label and DialogueLabel node assigned on the Stage inspector](tutorials/minimal_setup/stage_required_nodes.png){ .center }
+
+</div>
+
+[**More on configuring Stage here.**](class/stage/configuration.md){ .md-button }
+
+## Controlling the Stage
+
+### Starting
+
+Create another variable to store the `Dialogue`, we'll name it `'epic_dialogue'`. Use `Dialogue.load()` and pass the path of the written dialogue file.
+
+```gdscript hl_lines="3"
+extends Control
+
+var epic_dialogue = Dialogue.load('res://intro.dlg')
+
+@export var my_stage : Stage
+```
+
+Call `start()` method on `my_stage`, and pass our `epic_dialogue` as the argument to start it.
+
+```gdscript hl_lines="7 8"
+extends Control
+
+var epic_dialogue = Dialogue.load('res://intro.dlg')
+
+@export var my_stage : Stage
+
+func _ready():
+    my_stage.start(epic_dialogue)
+```
+
+Now the `Dialogue` will start when you play the scene. But we're not done here yet!
+
+### Progressing
+
+Progress the `Dialogue` with `progress()`. In this example, we'll use `_input(event)` with Godot's default action key `'ui_accept'` (space/enter key).
+
+```gdscript hl_lines="10 11 12"
+extends Control
+
+var epic_dialogue = Dialogue.load('res://intro.dlg')
+
+@export var my_stage : Stage
+
+func _ready():
+    my_stage.start(epic_dialogue)
+
+func _input(event):
+    if event.is_action_pressed('ui_accept'):
+        my_stage.progress()
+```
+
+Now, everytime `'ui_accept'` key is pressed, the Dialogue should progress.
+
+## Summary
+
+And, thats it!
+
+Here is how the scene and script should looks like:
 
 ```
-YourScene
+MyScene
   ├─ Stage
   └─ PanelContainer
         └─ VBoxContainer
@@ -44,106 +160,29 @@ YourScene
             └─ DialogueLabel
 ```
 
-Attach a script to your scene's root. And create a variable with `@onready` keyword to reference your `Stage` node made previously. In this example, we'll name the variable `'your_stage'`.
-
 ```gdscript
-@onready var your_stage : Stage = $Stage
-```
-
-Click your `Stage` node, and head over to the inspector dock. Reference the `Label` and `DialogueLabel` node that were made before.
-
-[**More on configuring Stage here.**](class/stage/configuration.md){ .md-button }
-
-### Starting
-
-Now, we'll create another variable to store the Dialogue. Use `Dialogue.load()` and pass the path of the written dialogue file:
-```gdscript
-var epic_dialogue = Dialogue.load('res://intro.dlg')
-```
-
-Call `start()` method on your Stage to start the Dialogue:
-```gdscript
-func _ready():
-    your_stage.start(epic_dialogue)
-```
-
-Now the Dialogue will start when you play the scene. But we're not done here yet!
-
-### Progressing
-
-Progress the `Dialogue` with `progress()`. In this example, we'll use `_input(event)` with Godot's default action key `'ui_accept'` (space/enter key).
-
-```gdscript
-func _input(event):
-    if event.is_action_pressed('ui_accept'):
-        your_stage.progress()
-```
-
-Now, everytime `'ui_accept'` key is pressed, the Dialogue should progress.
-
-## Additional stuff
-
-### Toggling the UI
-
-You might want to only show the UI when theres a Dialogue running, and hide it when the Dialogue ends.
-
-`Stage` class is also equipped with signals such as `started`, `finished`, and `cancelled`. We'll connect these signals in `_ready()` before starting the Dialogue. And just call the method `show` and `hide` on the parents UI node `$PanelContainer`:
-
-```gdscript
-func _ready():
-
-    your_stage.started.connect(
-        $PanelContainer.show
-    )
-
-    your_stage.finished.connect(
-        $PanelContainer.hide
-    )
-
-    your_stage.cancelled.connect(
-        $PanelContainer.hide
-    )
-
-    your_stage.start(epic_dialogue)
-```
-
-Alternatively, you can connect these signals via the `Node` dock window. In this example, we only used `show` and `hide` method for simplicity. You can use `AnimationPlayer` or `Tween` for more fancy transitions.
-
-## Summary
-
-And, thats it!
-
-Here is the finalized script of the scene:
-```gdscript
-extends Node2D
-
-@onready var your_stage : Stage = $Stage
+extends Control
 
 var epic_dialogue = Dialogue.load('res://intro.dlg')
 
-func _input(event):
-    if event.is_action_pressed('ui_accept'):
-        your_stage.progress()
+@export var my_stage : Stage
 
 func _ready():
+    my_stage.start(epic_dialogue)
 
-    your_stage.started.connect(
-        $PanelContainer.show
-    )
-
-    your_stage.finished.connect(
-        $PanelContainer.hide
-    )
-
-    your_stage.cancelled.connect(
-        $PanelContainer.hide
-    )
-
-    your_stage.start(epic_dialogue)
-
+func _input(event):
+    if event.is_action_pressed('ui_accept'):
+        my_stage.progress()
 ```
+
+There's also the [Minimal Theatre Setup](tutorials/minimal_setup/index.md) tutorial which is very similar to this article, but a lot more shorter and straightforward.
 
 ## Next step
 
 * More about writing your `Dialogue` on [Dialogue Syntax](class/dialogue/syntax.md).
 * Configure your `Stage` on [Configuring Stage](class/stage/configuration.md).
+
+### Specific tutorials
+
+* [Toggling Dialogue UI](tutorials/dialogue_ui_toggle/index.md)
+* [Adding Dialogue Beep SFX](tutorials/dialogue_beep/index.md)

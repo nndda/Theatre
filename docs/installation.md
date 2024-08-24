@@ -8,7 +8,7 @@
 
 2. Search for `"Theatre"`.
 
-    ![Image title](./assets/images/installation_assetlib_theatre.png){ width="320" }
+    ![Theatre on AssetLib](./assets/images/installation_assetlib_theatre.png){ width="320" }
 
 3. Click `Download`, and wait for the download to finish.
 
