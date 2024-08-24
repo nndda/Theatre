@@ -145,8 +145,10 @@ Select the `Stage` node, and reference the `Label` & `DialogueLabel` node to dis
 @onready var my_stage : Stage = $Stage
 
 func _ready():
-    my_stage.actor_label = $PanelContainer/VBoxContainer/Label
-    my_stage.dialogue_label = $PanelContainer/VBoxContainer/DialogueLabel
+    my_stage.actor_label =\
+        $PanelContainer/VBoxContainer/Label
+    my_stage.dialogue_label =\
+        $PanelContainer/VBoxContainer/DialogueLabel
 
     my_stage.allow_skip = true
     my_stage.allow_cancel = true
