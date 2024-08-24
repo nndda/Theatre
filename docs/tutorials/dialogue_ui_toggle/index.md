@@ -134,6 +134,6 @@ func hide_dialogue_ui():
 
 ## Download
 
-[Download scene & script](tutorial-dialogue_beep.zip "Drop the directory 'tutorials' directly in your project root folder"){ .md-button download="tutorial-dialogue_beep.zip" }
+[Download scene & script](tutorial-dialogue_ui_toggle.zip "Drop the directory 'tutorials' directly in your project root folder"){ .md-button download="tutorial-dialogue_ui_toggle.zip" }
 
 Got any questions? feel free to ask them in the [GitHub Discussions!](https://github.com/nndda/Theatre/discussions/new?category=help){ target="_blank" }
