@@ -1,5 +1,6 @@
 <h1>
 Theatre
+&nbsp;
 <a href="https://godotengine.org/" target="_blank"><img src="https://img.shields.io/badge/Godot%204.3-white?style=flat-square&logo=godotengine&logoColor=white&color=%23478CBF"></a>
 <a href="https://nndda.github.io/Theatre/" target="_blank"><img src="https://img.shields.io/badge/Documentation-white?style=flat-square"></a>
 </h1>
@@ -110,7 +111,17 @@ Dia:
 var epic_dialogue = Dialogue.load("res://epic_dialogue.dlg")
 ```
 
-Set the Stage! Create a `Stage` node, and reference the `Label` & `DialogueLabel` node to display your Dialogue. Adjust and configure your `Stage` via the inspector. Alternatively, you can also set them in script:
+Set the Stage! Add `Stage` and `DialogueLabel` node to your scene. Structure your scene like the following:
+
+<div align="center">
+<img src="https://github.com/user-attachments/assets/05e5e3ba-adfb-4208-81bc-adbbf6b6c571">
+</div>
+
+<br>
+
+Adjust the position and size of the `PanelContainer` to your liking.
+
+Select the `Stage` node, and reference the `Label` & `DialogueLabel` node to display your Dialogue. Adjust and configure your `Stage` via the inspector. Alternatively, you can also set them in script:
 
 <table align="center">
 <tr align="center">
@@ -134,8 +145,10 @@ Set the Stage! Create a `Stage` node, and reference the `Label` & `DialogueLabel
 @onready var my_stage : Stage = $Stage
 
 func _ready():
-    my_stage.actor_label = $Label
-    my_stage.dialogue_label = $DialogueLabel
+    my_stage.actor_label =\
+        $PanelContainer/VBoxContainer/Label
+    my_stage.dialogue_label =\
+        $PanelContainer/VBoxContainer/DialogueLabel
 
     my_stage.allow_skip = true
     my_stage.allow_cancel = true
@@ -156,7 +169,7 @@ func _input(event):
         my_stage.progress()
 ```
 
-And finally, start the Stage
+And finally, start the `Stage` with your `epic_dialogue`.
 
 ```gdscript
 func _ready():
