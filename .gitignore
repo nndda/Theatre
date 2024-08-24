@@ -1,4 +1,9 @@
+# Uncompressed tutorial assets
+docs/tutorials/**/tutorials/
+
 # Python gitignore
+lib64
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
