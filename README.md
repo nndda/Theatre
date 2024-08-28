@@ -7,7 +7,7 @@ Theatre
 
 <img src="/addons/Theatre/assets/icons/Theatre.svg" height="160" align="right">
 
-Text-based linear dialogue system for Godot 4.3.
+Yet another <i><sub>(linear)</sub></i> dialogue system/addon/plugin for Godot.
 - ✍️ Written in human-readable syntax.
 - ✨ Focused on presentation and delivery of your story.
 - 📝 100% written in GDScript.
@@ -56,13 +56,13 @@ Dia:
 Fine-tune your dialogue flow with `{delay}` and `{speed}`.
 ```
 Godette:
-    "Hello!{delay = 0.7} nice to meet you"
+    "Hello!{delay = 0.7} Nice to meet you."
 ```
 ```
 Godette:
     "Hello!
         delay=0.7
-    nice to meet you"
+    Nice to meet you."
 ```
 
 ## Function calls
@@ -70,7 +70,7 @@ Godette:
 Connect your story to the game with function calls.
 ```
 {player_name}:
-    "Thanks! that feels so much better"
+    "Thanks! That feels so much better."
 
     Player.heal(20)
 ```
@@ -84,11 +84,9 @@ Ritsu:
 Call functions only at specific points in the Dialogue.
 ```
 Dia:
-    "
-    Let me brighten up the room a little...{d = 1.1}
+    "Let's brighten up the room a little...{d = 1.1}
     {0}
-    there we go.
-    "
+    there we go."
 
 # Call this function using its index: {0}
     Background.set_brightness(1.0)
@@ -107,7 +105,7 @@ Dia:
 
 """)
 
-# alternatively, write it in a *.dlg.txt or *.dlg  file, and load it
+# alternatively, write it in a *.dlg file, and load it
 var epic_dialogue = Dialogue.load("res://epic_dialogue.dlg")
 ```
 
