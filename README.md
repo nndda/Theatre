@@ -92,6 +92,10 @@ Dia:
     Background.set_brightness(1.0)
 ```
 
+<p align="center">
+<a href="https://nndda.github.io/Theatre/class/dialogue/syntax/" target="_blank">More comprehensive Dialogue features documented here</a>
+</p>
+
 # Quick Start
 
 Write your epic Dialogue!
