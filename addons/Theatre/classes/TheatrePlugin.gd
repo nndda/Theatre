@@ -77,6 +77,14 @@ func _enter_tree() -> void:
             text_files_ext + ",dlg"
         )
 
+    var text_files_find_ext : PackedStringArray =\
+        ProjectSettings.get_setting("editor/script/search_in_file_extensions")
+    if not ".dlg" in text_files_find_ext:
+        text_files_find_ext.append(".dlg")
+        ProjectSettings.set_setting("editor/script/search_in_file_extensions",
+            text_files_find_ext
+        )
+
     # Initialize plugin submenu
     plugin_submenu.id_pressed.connect(tool_submenu_id_pressed)
     add_tool_submenu_item("🎭 Theatre", plugin_submenu)
