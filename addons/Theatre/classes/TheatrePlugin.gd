@@ -8,6 +8,9 @@ class Config extends RefCounted:
     const DEBUG_SHOW_CRAWL_FOLDER := "theatre/debug/log/show_current_crawling_directory"
     const DIALOGUE_IGNORED_DIR := "theatre/resources/dialogue/ignored_directories"
 
+    static var debug_show_crawl_dir := false
+    static var ignored_directories : PackedStringArray
+
     static func init_configs() -> void:
         print("  Initializing configs...")
         for config_item : Array in [
@@ -45,6 +48,15 @@ class Config extends RefCounted:
         if err != OK:
             push_error("Error saving Theatre config: ", err)
 
+    static func _project_settings_changed() -> void:
+        debug_show_crawl_dir = ProjectSettings.get_setting(
+            DEBUG_SHOW_CRAWL_FOLDER, false
+        )
+
+        ignored_directories = (ProjectSettings.get_setting(
+            DIALOGUE_IGNORED_DIR
+        ) as String ).split(",", false)
+
 var http_update_req : HTTPRequest
 
 var editor_settings := EditorInterface.get_editor_settings()
@@ -68,6 +80,8 @@ func _enter_tree() -> void:
 
     # Initialize project settings
     Config.init_configs()
+    ProjectSettings.settings_changed.connect(Config._project_settings_changed)
+    Config._project_settings_changed()
 
     # Add `.dlg` text file extension
     var text_files_ext : String = editor_settings\
@@ -107,6 +121,7 @@ func _exit_tree() -> void:
     print("🎭 Disabling Theatre...")
     # Clear project settings
     Config.remove_configs()
+    ProjectSettings.settings_changed.disconnect(Config._project_settings_changed)
 
     # Clear update check
     #http_update_req.queue_free()
@@ -120,9 +135,6 @@ func _exit_tree() -> void:
 
 func crawl(path : String = "res://", clean_only : bool = false) -> void:
     var dir := DirAccess.open(path)
-    var ignored_directories : PackedStringArray = (ProjectSettings.get_setting(
-        Config.DIALOGUE_IGNORED_DIR, ["addons"]
-    ) as String ).split(",", false)
 
     if dir:
         dir.list_dir_begin()
@@ -131,13 +143,11 @@ func crawl(path : String = "res://", clean_only : bool = false) -> void:
             if dir.current_is_dir():
                 # Ignore directories beginning with "."
                 if !file_name.begins_with("."):
-                    if !ignored_directories.has(file_name):
+                    if !Config.ignored_directories.has(file_name):
                         var new_dir := path + (
                             "" if path == "res://" else "/"
                         ) + file_name
-                        if ProjectSettings.get_setting(
-                            Config.DEBUG_SHOW_CRAWL_FOLDER, false
-                            ):
+                        if Config.debug_show_crawl_dir:
                             print("Crawling " + new_dir + " for dialogue resources...")
                         crawl(new_dir, clean_only)
             else:
