@@ -141,39 +141,40 @@ func crawl(path : String = "res://", clean_only : bool = false) -> void:
                             print("Crawling " + new_dir + " for dialogue resources...")
                         crawl(new_dir, clean_only)
             else:
-                if clean_only and (
-                    file_name.ends_with(".dlg.res") or 
+                var is_dlg := file_name.ends_with(".dlg")
+                var is_dlg_txt := file_name.ends_with(".dlg.txt")
+                var is_dlg_comp :=\
+                    file_name.ends_with(".dlg.res") or\
                     file_name.ends_with(".dlg.tres")
-                    ):
+
+                if clean_only and is_dlg_comp:
                     var err := dir.remove(file_name)
                     print("Removing compiled Dialogue resource: %s..." % file_name)
                     if err != OK:
                         printerr("Error removing Dialogue resource: ", error_string(err))
 
                 elif !clean_only and (
-                    file_name.ends_with(".dlg.txt") or
-                    file_name.ends_with(".dlg")
+                    is_dlg_txt or is_dlg
                     ):
                     var file := path + "/" + file_name
-                    var file_com : String
+                    var file_comp : String
 
-                    if file_name.ends_with(".dlg.txt"):
-                        file_com = file.trim_suffix(".txt") + ".res"
-                    elif file_name.ends_with(".dlg"):
-                        file_com = file + ".res"
+                    if is_dlg:
+                        file_comp = file + ".res"
+                    elif is_dlg_txt:
+                        file_comp = file.trim_suffix(".txt") + ".res"
 
-                    if file_name.ends_with(".dlg.tres") or\
-                        file_name.ends_with(".dlg.res"):
-                        var rem_err := dir.remove(file_name)
+                    if FileAccess.file_exists(file_comp):
+                        var rem_err := dir.remove(file_comp)
                         if rem_err != OK:
                             printerr("Error removing Dialogue resource: ", error_string(rem_err))
 
                     var sav_err := ResourceSaver.save(
-                        Dialogue.new(file), file_com,
+                        Dialogue.new(file), file_comp,
                         ResourceSaver.FLAG_CHANGE_PATH
                     )
                     if sav_err != OK:
-                        push_error("Error saving Dialogue resource: ", sav_err)
+                        push_error("Error saving Dialogue resource: ", error_string(sav_err))
 
             file_name = dir.get_next()
 
