@@ -104,7 +104,8 @@ func _enter_tree() -> void:
     add_tool_submenu_item("🎭 Theatre", plugin_submenu)
 
     # Initiate Theatre singleton
-    add_autoload_singleton("Theatre", "res://addons/Theatre/classes/Theatre.gd")
+    if !Engine.get_singleton_list().has("Theatre"):
+        add_autoload_singleton("Theatre", "res://addons/Theatre/classes/Theatre.gd")
 
 #func _ready() -> void:
     # Initialize update check
@@ -130,6 +131,7 @@ func _exit_tree() -> void:
     plugin_submenu.id_pressed.disconnect(tool_submenu_id_pressed)
     remove_tool_menu_item("🎭 Theatre")
 
+func _disable_plugin() -> void:
     # Clear Theatre singleton
     remove_autoload_singleton("Theatre")
 
