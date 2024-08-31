@@ -233,10 +233,7 @@ func _init(src : String = ""):
             for tag in _regex_dlg_tags.search_all(output[n]["line_raw"]):
                 body = body.replace(tag.strings[0], EMPTY)
 
-            output[n]["vars"] = parsed_tags["vars"]
-            output[n]["has_vars"] = parsed_tags["has_vars"]
-            output[n]["func_pos"] = parsed_tags["func_pos"]
-            output[n]["func_idx"] = parsed_tags["func_idx"]
+            output[n].merge(parsed_tags, true)
 
         output[n]["line"] = body
 
@@ -394,14 +391,7 @@ static func update_tags_position(dlg : Dialogue, pos : int, vars : Dictionary) -
     for n in ["delays", "speeds"]:
         dlg._sets[pos]["tags"][n].clear()
 
-    var parsed_tags := parse_tags(dlg_str)
-
-    dlg._sets[pos]["tags"] = parsed_tags["tags"]
-    dlg._sets[pos]["line"] = parsed_tags["string"]
-    dlg._sets[pos]["vars"] = parsed_tags["vars"]
-    dlg._sets[pos]["has_vars"] = parsed_tags["has_vars"]
-    dlg._sets[pos]["func_pos"] = parsed_tags["func_pos"]
-    dlg._sets[pos]["func_idx"] = parsed_tags["func_idx"]
+    dlg._sets[pos].merge(parse_tags(dlg_str), true)
 
 static func is_regex_full_string(regex_match : RegExMatch) -> bool:
     if regex_match == null:
