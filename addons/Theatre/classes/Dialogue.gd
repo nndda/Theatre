@@ -31,7 +31,7 @@ extends Resource
 ## Returns [code]true[/code] if [param filename] use a valid written [Dialogue] file name ([code]*.dlg.txt[/code] or [code]*.dlg[/code]).
 static func is_valid_filename(filename : String) -> bool:
     return (
-        (filename.ends_with(".dlg.txt") or filename.ends_with(".dlg"))
+        (filename.ends_with(TheatrePlugin.EXT_DLG_TXT) or filename.ends_with(TheatrePlugin.EXT_DLG))
         and filename.get_file().is_valid_filename()
     )
 
@@ -83,13 +83,13 @@ static func load(path : String) -> Dialogue:
         # Find filename alias
         var dlg_compiled := path
 
-        if path.ends_with(".txt"):
-            dlg_compiled = path.trim_suffix(".txt")
+        if path.ends_with(TheatrePlugin.EXT_TXT):
+            dlg_compiled = path.trim_suffix(TheatrePlugin.EXT_TXT)
 
-        if FileAccess.file_exists(dlg_compiled + ".res"):
-            dlg_compiled += ".res"
-        elif FileAccess.file_exists(dlg_compiled + ".tres"):
-            dlg_compiled += ".tres"
+        if FileAccess.file_exists(dlg_compiled + TheatrePlugin.EXT_RES):
+            dlg_compiled += TheatrePlugin.EXT_RES
+        elif FileAccess.file_exists(dlg_compiled + TheatrePlugin.EXT_TRES):
+            dlg_compiled += TheatrePlugin.EXT_TRES
 
         #print("Getting Dialogue from file: %s..." % dlg_compiled)
 

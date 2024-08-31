@@ -57,6 +57,18 @@ class Config extends RefCounted:
             DIALOGUE_IGNORED_DIR
         ) as String ).split(",", false)
 
+const RES_PATH := "res://"
+const PATH_SEPARATOR := "/"
+const DOT := "."
+
+const EXT_TXT := ".txt"
+const EXT_DLG := ".dlg"
+const EXT_DLG_TXT := ".dlg.txt"
+const EXT_DLG_RES := ".dlg.res"
+const EXT_DLG_TRES := ".dlg.tres"
+const EXT_RES := ".res"
+const EXT_TRES := ".tres"
+
 var http_update_req : HTTPRequest
 
 var editor_settings := EditorInterface.get_editor_settings()
@@ -93,8 +105,8 @@ func _enter_tree() -> void:
 
     var text_files_find_ext : PackedStringArray =\
         ProjectSettings.get_setting("editor/script/search_in_file_extensions")
-    if not ".dlg" in text_files_find_ext:
-        text_files_find_ext.append(".dlg")
+    if !text_files_find_ext.has(EXT_DLG):
+        text_files_find_ext.append(EXT_DLG)
         ProjectSettings.set_setting("editor/script/search_in_file_extensions",
             text_files_find_ext
         )
@@ -135,29 +147,29 @@ func _disable_plugin() -> void:
     # Clear Theatre singleton
     remove_autoload_singleton("Theatre")
 
-func crawl(path : String = "res://", clean_only : bool = false) -> void:
+func crawl(path : String = RES_PATH, clean_only : bool = false) -> void:
     var dir := DirAccess.open(path)
 
     if dir:
         dir.list_dir_begin()
         var file_name := dir.get_next()
-        while file_name != "":
+        while file_name != DialogueParser.EMPTY:
             if dir.current_is_dir():
                 # Ignore directories beginning with "."
-                if !file_name.begins_with("."):
+                if !file_name.begins_with(DOT):
                     if !Config.ignored_directories.has(file_name):
                         var new_dir := path + (
-                            "" if path == "res://" else "/"
+                            DialogueParser.EMPTY if path == RES_PATH else PATH_SEPARATOR
                         ) + file_name
                         if Config.debug_show_crawl_dir:
                             print("Crawling " + new_dir + " for dialogue resources...")
                         crawl(new_dir, clean_only)
             else:
-                var is_dlg := file_name.ends_with(".dlg")
-                var is_dlg_txt := file_name.ends_with(".dlg.txt")
+                var is_dlg := file_name.ends_with(EXT_DLG)
+                var is_dlg_txt := file_name.ends_with(EXT_DLG_TXT)
                 var is_dlg_comp :=\
-                    file_name.ends_with(".dlg.res") or\
-                    file_name.ends_with(".dlg.tres")
+                    file_name.ends_with(EXT_DLG_RES) or\
+                    file_name.ends_with(EXT_DLG_TRES)
 
                 if clean_only and is_dlg_comp:
                     var err := dir.remove(file_name)
@@ -168,13 +180,13 @@ func crawl(path : String = "res://", clean_only : bool = false) -> void:
                 elif !clean_only and (
                     is_dlg_txt or is_dlg
                     ):
-                    var file := path + "/" + file_name
+                    var file := path + PATH_SEPARATOR + file_name
                     var file_comp : String
 
                     if is_dlg:
-                        file_comp = file + ".res"
+                        file_comp = file + EXT_RES
                     elif is_dlg_txt:
-                        file_comp = file.trim_suffix(".txt") + ".res"
+                        file_comp = file.trim_suffix(EXT_TXT) + EXT_RES
 
                     if FileAccess.file_exists(file_comp):
                         var rem_err := dir.remove(file_comp)
@@ -193,17 +205,18 @@ func crawl(path : String = "res://", clean_only : bool = false) -> void:
     editor_resource_filesystem.scan()
 
 func init_gitignore() -> void:
-    if FileAccess.file_exists("res://.gitignore"):
+    const GITIGNORE_PATH := "res://.gitignore"
+    if FileAccess.file_exists(GITIGNORE_PATH):
         print("Found `.gitignore`, initializing...")
-        var gitignore_str := FileAccess.get_file_as_string("res://.gitignore")
-        var gitignore := FileAccess.open("res://.gitignore", FileAccess.WRITE)
+        var gitignore_str := FileAccess.get_file_as_string(GITIGNORE_PATH)
+        var gitignore := FileAccess.open(GITIGNORE_PATH, FileAccess.WRITE)
         for i : String in [
                 "# Parsed Dialogue resources",
                 "*.dlg.tres",
                 "*.dlg.res",
             ]:
-            gitignore_str = gitignore_str.replace("\n" + i, "")
-            gitignore_str += "\n" + i
+            gitignore_str = gitignore_str.replace(DialogueParser.NEWLINE + i, DialogueParser.EMPTY)
+            gitignore_str += DialogueParser.NEWLINE + i
 
         gitignore.store_string(gitignore_str)
         gitignore.close()
@@ -213,9 +226,9 @@ func init_gitignore() -> void:
 func tool_submenu_id_pressed(id : int) -> void:
     match id:
         1:
-            crawl("res://", false)
+            crawl(RES_PATH, false)
         11:
-            crawl("res://", true)
+            crawl(RES_PATH, true)
         10:
             init_gitignore()
         5:
