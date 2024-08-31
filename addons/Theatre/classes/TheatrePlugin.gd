@@ -119,16 +119,16 @@ func _enter_tree() -> void:
     if !Engine.get_singleton_list().has("Theatre"):
         add_autoload_singleton("Theatre", "res://addons/Theatre/classes/Theatre.gd")
 
-#func _ready() -> void:
+func _ready() -> void:
     # Initialize update check
-    #http_update_req = HTTPRequest.new()
-    #http_update_req.timeout = 3.0
-    #http_update_req.request_completed.connect(_update_response)
-    #add_child(http_update_req)
+    http_update_req = HTTPRequest.new()
+    http_update_req.timeout = 3.0
+    http_update_req.request_completed.connect(_update_response)
+    add_child(http_update_req)
 
-    #if ProjectSettings.get_setting(Config.GENERAL_AUTO_UPDATE, true):
-        #await get_tree().create_timer(2.5).timeout
-        #update_check()
+    if ProjectSettings.get_setting(Config.GENERAL_AUTO_UPDATE, true):
+        await get_tree().create_timer(2.5).timeout
+        update_check()
 
 func _exit_tree() -> void:
     print("🎭 Disabling Theatre...")
@@ -137,7 +137,7 @@ func _exit_tree() -> void:
     ProjectSettings.settings_changed.disconnect(Config._project_settings_changed)
 
     # Clear update check
-    #http_update_req.queue_free()
+    http_update_req.queue_free()
 
     # Clear plugin submenu
     plugin_submenu.id_pressed.disconnect(tool_submenu_id_pressed)
