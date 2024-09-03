@@ -245,12 +245,17 @@ func is_indented(string : String) -> bool:
 
 ## Check if [param string] is written in a valid Dialogue string format/syntax or not.
 static func is_valid_source(string : String) -> bool:
+    if _regex_valid_dlg == null:
+        _regex_valid_dlg = RegEx.create_from_string(REGEX_VALID_DLG)
     return _regex_valid_dlg.search(string) == null
 
 # BUG
 ## Normalize indentation of the Dialogue raw string.
 static func normalize_indentation(string : String) -> String:
     var indents : Array[int] = []
+
+    if _regex_indent == null:
+        _regex_indent = RegEx.create_from_string(REGEX_INDENT)
 
     for n in _regex_indent.search_all(string):
         var len := n.get_string(1).length()
