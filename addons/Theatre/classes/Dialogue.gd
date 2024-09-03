@@ -57,10 +57,14 @@ func _init(dlg_src : String = ""):
 
     elif DialogueParser.is_valid_source(dlg_src) and\
         dlg_src.split(DialogueParser.NEWLINE, false, 3).size() >= 2:
-        var stack : Dictionary = get_stack()[-1]
-        print("Parsing Dialogue from raw string: %s:%d" % [
-            stack["source"], stack["line"]
-        ])
+        var stack : Array[Dictionary] = get_stack()
+        if stack.size() >= 1:
+            var stack_ln : Dictionary = stack[-1]
+            print("Parsing Dialogue from raw string: %s:%d" % [
+                stack_ln["source"], stack_ln["line"]
+            ])
+            _source_path = "%s:%d" % [stack_ln["source"], stack_ln["line"]]
+
         parser = DialogueParser.new(
             # BUG
             DialogueParser.normalize_indentation(dlg_src)
@@ -70,7 +74,6 @@ func _init(dlg_src : String = ""):
         _update_used_variables()
         _update_used_function_calls()
 
-        _source_path = "%s:%d" % [stack["source"], stack["line"]]
 
 ## Load written [Dialogue] file from [param path]. Use [method Dialogue.new] instead to create a written [Dialogue] directly in the script.
 static func load(path : String) -> Dialogue:
