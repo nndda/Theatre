@@ -166,20 +166,20 @@ func _update_response(
     body : PackedByteArray,
     ) -> void:
     if response_code != 200:
-        print("  Error getting updates: %d" % response_code)
+        print_rich("  [color=red]Error getting updates: %d[/color]" % response_code)
     else:
         var json := JSON.new()
         var err := json.parse(body.get_string_from_utf8())
 
         if err != OK:
-            print("  Error getting updates data: %s" % error_string(err))
+            print_rich("  [color=red]Error getting updates data: %s[/color]" % error_string(err))
         else:
             var data : Dictionary = json.get_data() as Dictionary
             var current_ver := get_plugin_version()
             if data["tag_name"] == current_ver:
                 print("  Using the latest version: %s" % current_ver)
             else:
-                print("  New updates available: %s -> %s" % [current_ver,
+                print_rich("  [color=cyan]New updates available: %s -> %s[/color]" % [current_ver,
                     "[url=%s]%s[/url]" % [
                         data["html_url"],
                         data["tag_name"],
