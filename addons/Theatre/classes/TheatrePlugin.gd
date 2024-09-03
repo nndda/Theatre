@@ -71,6 +71,8 @@ const EXT_TRES := ".tres"
 
 var http_update_req : HTTPRequest
 
+var dialogue_importer : DialogueImporter
+
 var editor_settings := EditorInterface.get_editor_settings()
 var editor_resource_filesystem := EditorInterface.get_resource_filesystem()
 
@@ -86,6 +88,7 @@ func _build() -> bool:
 
 func _enter_tree() -> void:
     plugin_submenu.hide()
+    dialogue_importer = DialogueImporter.new()
 
     # Initialize Theatre config
     print("🎭 Theatre v%s by nnda" % get_plugin_version())
@@ -122,6 +125,9 @@ func _enter_tree() -> void:
     if !Engine.get_singleton_list().has("Theatre"):
         add_autoload_singleton("Theatre", "res://addons/Theatre/classes/Theatre.gd")
 
+    # Initialize Dialogue importer
+    add_import_plugin(dialogue_importer)
+
 func _ready() -> void:
     # Initialize update check
     http_update_req = HTTPRequest.new()
@@ -135,6 +141,7 @@ func _ready() -> void:
 
 func _exit_tree() -> void:
     print("🎭 Disabling Theatre...")
+
     # Clear project settings
     Config.remove_configs()
     ProjectSettings.settings_changed.disconnect(Config._project_settings_changed)
@@ -145,6 +152,10 @@ func _exit_tree() -> void:
     # Clear plugin submenu
     plugin_submenu.id_pressed.disconnect(tool_submenu_id_pressed)
     remove_tool_menu_item("🎭 Theatre")
+
+    # Clear Dialogue importer
+    remove_import_plugin(dialogue_importer)
+    dialogue_importer = null
 
 func _disable_plugin() -> void:
     # Clear Theatre singleton
