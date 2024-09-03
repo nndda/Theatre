@@ -90,6 +90,9 @@ func _enter_tree() -> void:
     # Initialize Theatre config
     print("🎭 Theatre v%s by nnda" % get_plugin_version())
 
+    # Compile DialogueParser RegExes
+    DialogueParser._initialize_regex()
+
     # Initialize project settings
     Config.init_configs()
     ProjectSettings.settings_changed.connect(Config._project_settings_changed)
