@@ -376,44 +376,6 @@ func switch(dialogue : Dialogue) -> void:
             _update_display()
             dialogue_label.rerender()
 
-# TODO
-#func switch_lang(lang : String = "") -> void:
-    #if current_dialogue == null:
-        #push_error("Failed switching lang: current_dialogue is null")
-    #else:
-        #if current_dialogue.source_path == "":
-            #push_error("Failed switching lang: no Dialogue source_path")
-        #else:
-            #var regex_lang := RegEx.new()
-            #regex_lang.compile(r"\.\w{2,4}\.txt$")
-            #var src := current_dialogue.source_path
-            #var ext := "" if lang == "" or lang == Theatre.default_lang\
-                #else ("." + lang)
-#
-            ## TODO: mybe `default_lang` is not necessary.
-            ## Make `default_lang` as an alias
-#
-            #if regex_lang.search(src) == null: # is using default lang
-                #src = src.insert(src.rfind(".txt"), ext)
-            #else:
-                #src = src.replace(
-                    #regex_lang.search(src).strings[0], ext + ".txt"
-                #)
-#
-            #if !FileAccess.file_exists(src):
-                #push_error("Failed switching lang: %s does not exists" % src)
-            #else:
-                #var dlg_tr := Dialogue.load(src)
-                #if dlg_tr._sets.size() != current_dialogue._sets.size():
-                    #push_error("Failed switching lang: Dialogue length does not match")
-                #else:
-                    #current_dialogue = dlg_tr
-                    #locale_changed.emit(lang)
-                    #if is_playing():
-                        #_current_dialogue_set = current_dialogue._sets[_step]
-                        #_update_display()
-                        #dialogue_label.rerender()
-
 ## Reset, and start over the [Dialogue] progres. Functions will be re-called. And [signal started] will also be emitted.
 func restart() -> void:
     if current_dialogue == null:

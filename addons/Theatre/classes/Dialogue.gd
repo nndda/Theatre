@@ -28,32 +28,11 @@ extends Resource
 #endregion
 
 #region NOTE: Loader/constructor -------------------------------------------------------------------
-## Returns [code]true[/code] if [param filename] use a valid written [Dialogue] file name ([code]*.dlg.txt[/code] or [code]*.dlg[/code]).
-static func is_valid_filename(filename : String) -> bool:
-    return (
-        (filename.ends_with(TheatrePlugin.EXT_DLG_TXT) or filename.ends_with(TheatrePlugin.EXT_DLG))
-        and filename.get_file().is_valid_filename()
-    )
-
 func _init(dlg_src : String = ""):
     var parser : DialogueParser
 
     if dlg_src.is_empty():
         pass
-
-    elif is_valid_filename(dlg_src):
-        #print("Parsing Dialogue from file: %s..." % dlg_src)
-
-        if !FileAccess.file_exists(dlg_src):
-            push_error("Unable to create Dialogue resource: '%s' does not exists" % dlg_src)
-
-        else:
-            _source_path = dlg_src
-            parser = DialogueParser.new(FileAccess.get_file_as_string(dlg_src))
-            _sections = parser.sections
-            _sets = parser.output
-            _update_used_variables()
-            _update_used_function_calls()
 
     elif DialogueParser.is_valid_source(dlg_src) and\
         dlg_src.split(DialogueParser.NEWLINE, false, 3).size() >= 2:
@@ -74,34 +53,9 @@ func _init(dlg_src : String = ""):
         _update_used_variables()
         _update_used_function_calls()
 
-
 ## Load written [Dialogue] file from [param path]. Use [method Dialogue.new] instead to create a written [Dialogue] directly in the script.
 static func load(path : String) -> Dialogue:
-    if !is_valid_filename(path):
-        printerr("Error loading Dialogue: '%s' is not a valid path/filename\n" % path,
-            Theatre.Debug.format_stack(get_stack())
-        )
-        return null
-    else:
-        # Find filename alias
-        var dlg_compiled := path
-
-        if path.ends_with(TheatrePlugin.EXT_TXT):
-            dlg_compiled = path.trim_suffix(TheatrePlugin.EXT_TXT)
-
-        if FileAccess.file_exists(dlg_compiled + TheatrePlugin.EXT_RES):
-            dlg_compiled += TheatrePlugin.EXT_RES
-        elif FileAccess.file_exists(dlg_compiled + TheatrePlugin.EXT_TRES):
-            dlg_compiled += TheatrePlugin.EXT_TRES
-
-        #print("Getting Dialogue from file: %s..." % dlg_compiled)
-
-        if FileAccess.file_exists(dlg_compiled):
-            var dlg := load(dlg_compiled)
-            return dlg as Dialogue
-        else:
-            push_warning("Compiled Dialogue '%s' doesn't exists. Creating new dialogue\n" % path)
-            return Dialogue.new(path)
+    return load(path) as Dialogue
 #endregion
 
 #region NOTE: Utilities ----------------------------------------------------------------------------
