@@ -528,24 +528,33 @@ func _reset_progress(keep_dialogue : bool = false) -> void:
         current_dialogue = null
 
 func _update_display() -> void:
-    if _current_dialogue_set["has_vars"]:
-        if actor_label != null:
-            actor_label.text = DialogueParser.escape_brackets(
-                _current_dialogue_set["actor"].format(_variables_all)
-            )
-        if dialogue_label != null:
-            dialogue_label.text = DialogueParser.escape_brackets(
-                _dialogue_full_string.format(_variables_all)
-            )
-    else:
-        if actor_label != null:
-            actor_label.text = DialogueParser.escape_brackets(
-                _current_dialogue_set["actor"]
-            )
-        if dialogue_label != null:
-            dialogue_label.text = DialogueParser.escape_brackets(
-                _dialogue_full_string
-            )
+    if actor_label != null:
+        actor_label.text = DialogueParser.escape_brackets(
+            _current_dialogue_set["actor"].format(_variables_all)
+        )
+    if dialogue_label != null:
+        dialogue_label.text = DialogueParser.escape_brackets(
+            _dialogue_full_string.format(_variables_all)
+        )
+    # TODO
+    #if _current_dialogue_set["has_vars"]:
+        #if actor_label != null:
+            #actor_label.text = DialogueParser.escape_brackets(
+                #_current_dialogue_set["actor"].format(_variables_all)
+            #)
+        #if dialogue_label != null:
+            #dialogue_label.text = DialogueParser.escape_brackets(
+                #_dialogue_full_string.format(_variables_all)
+            #)
+    #else:
+        #if actor_label != null:
+            #actor_label.text = DialogueParser.escape_brackets(
+                #_current_dialogue_set["actor"]
+            #)
+        #if dialogue_label != null:
+            #dialogue_label.text = DialogueParser.escape_brackets(
+                #_dialogue_full_string
+            #)
 
 # TODO:
 #func switch_dialogue(dialogue : Dialogue, current_line : bool = true) -> void:
