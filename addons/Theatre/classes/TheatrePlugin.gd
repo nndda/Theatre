@@ -80,12 +80,6 @@ var plugin_submenu : PopupMenu = preload(
     "res://addons/Theatre/components/tool_submenu.tscn"
 ).instantiate()
 
-func _build() -> bool:
-    print("💬 Compiling Dialogue resources...")
-    crawl()
-    print()
-    return true
-
 func _enter_tree() -> void:
     plugin_submenu.hide()
     dialogue_importer = DialogueImporter.new()
@@ -216,6 +210,9 @@ func crawl(path : String = RES_PATH, clean_only : bool = false) -> void:
 
             file_name = dir.get_next()
 
+    editor_resource_filesystem.scan()
+
+func _save_external_data() -> void:
     editor_resource_filesystem.scan()
 
 func init_gitignore() -> void:
