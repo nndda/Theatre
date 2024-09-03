@@ -6,7 +6,3 @@
 
 # Temporary files
 *.tmp
-
-# Parsed Dialogue resources
-*.dlg.tres
-*.dlg.res
