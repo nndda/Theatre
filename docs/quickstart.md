@@ -25,7 +25,7 @@ Actor's name:
 
 ```
 
-You can save it as `*.dlg` or `*.dlg.txt`. In this example, we'll save the file as `res://intro.dlg`. Now that the `Dialogue` is ready, let's set up the `Stage`.
+Save it as `*.dlg` file. Here we'll save the file as `res://intro.dlg`. Now that the `Dialogue` is ready, let's set up the `Stage`.
 
 [**More on writing Dialogue here.**](class/dialogue/syntax.md){ .md-button }
 
@@ -109,7 +109,7 @@ var epic_dialogue = Dialogue.load('res://intro.dlg')
 @export var my_stage : Stage
 ```
 
-Call `start()` method on `my_stage`, and pass our `epic_dialogue` as the argument to start it.
+Call `start()` method on `my_stage`, and pass the `epic_dialogue` as the argument to start it.
 
 ```gdscript hl_lines="7 8"
 extends Control

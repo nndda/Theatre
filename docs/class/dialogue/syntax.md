@@ -2,19 +2,12 @@
 
 This page covers the syntax of the written `Dialogue` and its features.
 
-Dialogue text file needs to be saved as `*.dlg` or `*.dlg.txt`(1). Dialogue text/string needs to have at least one actor's name with `:` at the end, and the dialogue body indented:
-{ .annotate }
-
-1.  !!! tip
-    Prefer saving written Dialogues as `*.dlg`, to keep the filename short and concise.
+Dialogue text file needs to be saved as `*.dlg`. Dialogue text/string needs to have at least one actor's name with `:` at the end, and the dialogue body indented:
 
 ```
 Actor's name:
     Dialogue body
 ```
-
-!!! note "Dialogue filename"
-    If there's two written `Dialogue` files with the same name, but are saved as `*.dlg` and `*.dlg.txt` (for example: `dialogue.dlg` and `dialogue.dlg.txt`), the one saved as `*.dlg.txt` will be ignored, and only `*.dlg` file will get gets compiled.
 
 ```
 Ritsu:
@@ -101,7 +94,7 @@ Define the variable using `Stage.set_variable()`.
 
 ```gdscript
 your_stage.set_variable(
-    'player', 'John'
+    "player", "John"
 )
 ```
 
@@ -109,8 +102,8 @@ You can also define multiple variables using `Stage.merge_variables` with a `Dic
 
 ```gdscript
 your_stage.merge_variables({
-    'player': 'John',
-    'item_left': 3
+    "player": "John",
+    "item_left": 3
 })
 ```
 
@@ -152,7 +145,7 @@ There are several built-in tags to fine-tune your Dialogue flows. Tags can have 
 
 :   Pause the text render at its position for `t` seconds.
     ```
-    { delay/wait/d/w = t }
+    { delay|wait|d|w = t }
     ```
     ```
     Dia:
@@ -163,13 +156,13 @@ There are several built-in tags to fine-tune your Dialogue flows. Tags can have 
 
 :   Change the text progress' speed at its position by `s` times. Revert back to normal speed (`s = 1`) when the Dialogue line is finished.
     ```
-    { speed/s = s }
+    { speed|s = s }
     ```
     ```
     Ritsu:
         "That is quite {speed = 0.4}spooky"
     ```
-:   You can also revert the speed back with `{s}`.
+:   You can also revert the speed back with `{s}`, which is equivalent to `{s = 1.0}`.
     ```
     Ritsu:
         "So {s = 0.4}uh...{s} {d=0.9}what are we gonna do?"
@@ -182,7 +175,7 @@ Before calling the functions in the written Dialogue, you need to set the `calle
 You can do that using `Stage.add_caller()`.The first argument is the id that will be used in the written Dialogue. The second argument must be an `Object` class or anything that inherits that.
 
 ```gdscript
-your_stage.add_caller('Player', $Player)
+your_stage.add_caller("Player", $Player)
 ```
 
 After that, you can call any script functions or built-in functions that are available in the caller.
@@ -195,10 +188,10 @@ After that, you can call any script functions or built-in functions that are ava
 If the caller is a `Node` or inherits `Node`, it will be removed automatically from the Stage if its freed. You can also remove caller manually with `Stage.remove_caller()`.
 
 ```gdscript
-your_stage.remove_caller('Player')
+your_stage.remove_caller("Player")
 ```
 
-All functions on a Dialogue line are called with the order they written. The following Dialogue will call `one()`, `two()`, and `three()` subsequently.
+All functions on a Dialogue line are called with the order they are written. The following Dialogue will call `one()`, `two()`, and `three()` subsequently.
 ```
 Dia:
     "You can call as many function as you want"
@@ -215,7 +208,7 @@ You can generally pass any data type in the function.
 Ritsu:
     "Cheers!"
 
-    Portrait.set("ritsu_smile.png")
+    Portrait.set("res://ritsu_smile.png")
 ```
 
 You can also write expressions.
@@ -239,11 +232,9 @@ Although, datatype constants are not supported for now.
 Just like Dialogue tags, functions can also be called at specific point in the written Dialogue.
 ```
 Dia:
-    "
-    Let me brighten up the room a little...{d = 1.1}
+    "Let me brighten up the room a little...{d = 1.1}
     {0}
-    there we go.
-    "
+    there we go."
 
     Background.set_brightness(1.0)
 ```
@@ -252,29 +243,30 @@ The `{0}` tag indicates that it will call the first function: `Background.set_br
 
 ```
 # {0}
-    Caller.func_a()
+    Caller.one()
 # {1}
-    Caller.func_b()
+    Caller.two()
 # {2}
-    Caller.func_c()
+    Caller.three()
 ```
 
 The rest of the functions that are not called at a specific position will be called immediately.
 
 ```
 Ritsu:
-    "
-    Such a lovely weather today!{d=0.9}
+    "Such a lovely weather today!{d=0.9}
     {1}
         delay=1.5
     {2}
-    I spoke too soon....
-    "
+    I spoke too soon...."
 
+#   {0}
     Portrait.set("ritsu_smile.png")
 
+#   {1}
     Environment.set_weather("storm")
 
+#   {2}
     Portrait.set("ritsu_pissed.png")
 ```
 
