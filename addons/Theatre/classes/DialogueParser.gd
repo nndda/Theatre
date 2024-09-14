@@ -4,6 +4,7 @@ class_name DialogueParser
 var output : Array[Dictionary] = []
 var sections : Dictionary = EMPTY_DICT
 
+#region RegExes
 const REGEX_DLG_TAGS :=\
     r"\{\s*(?<tag>\w+)\s*(\=\s*(?<arg>.+?)\s*)*\}";\
     static var _regex_dlg_tags := RegEx.create_from_string(REGEX_DLG_TAGS)
@@ -31,6 +32,7 @@ const REGEX_VALID_DLG :=\
 const REGEX_SECTION :=\
     r"^\:(.+)";\
     static var _regex_section := RegEx.create_from_string(REGEX_SECTION)
+#endregion
 
 #region Dictionary keys constants
 const __ACTOR := "actor"
@@ -170,7 +172,10 @@ func _init(src : String = ""):
 
         elif _regex_section.search(n) != null:
             sections[
-                n.split(SPACE, false, 1)[0].strip_edges().trim_prefix(COLON)
+                n
+                .split(SPACE, false, 1)[0]
+                .strip_edges()
+                .trim_prefix(COLON)
             ] = dlg_line_stack
 
         elif n_stripped.is_empty():
@@ -262,8 +267,6 @@ func _init(src : String = ""):
 
         output[n][__LINE] = body
 
-    dlg_raw.clear()
-
 ## Check if [param string] is indented with tabs or spaces.
 func is_indented(string : String) -> bool:
     return string != string.lstrip(" \t")
@@ -293,7 +296,6 @@ static func normalize_indentation(string : String) -> String:
             spc += SPACE
         string = string.replacen(NEWLINE + spc, NEWLINE)
 
-    indents.clear()
     return string
 
 static func escape_brackets(string : String) -> String:
