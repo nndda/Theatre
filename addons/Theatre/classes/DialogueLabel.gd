@@ -105,9 +105,9 @@ func start_render() -> void:
         _current_stage.speed_scale_global / _current_stage.speed_scale
     _characters_ticker.start(_characters_draw_tick_scaled)
 
-    _delay_queue = _current_stage._current_dialogue_set["tags"]["delays"].keys()
-    _speed_queue = _current_stage._current_dialogue_set["tags"]["speeds"].keys()
-    _func_queue = _current_stage._current_dialogue_set["func_pos"].keys()
+    _delay_queue = _current_stage._current_dialogue_set[DialogueParser.__TAGS][DialogueParser.__TAGS_DELAYS].keys()
+    _speed_queue = _current_stage._current_dialogue_set[DialogueParser.__TAGS][DialogueParser.__TAGS_SPEEDS].keys()
+    _func_queue = _current_stage._current_dialogue_set[DialogueParser.__FUNC_POS].keys()
     _is_rendering = true
 
 ## Stop the process of rendering text, and clear the [DialogueLabel] text.
@@ -149,8 +149,8 @@ func _characters_ticker_timeout() -> void:
         if _func_queue[0] == visible_characters:
             if _current_stage.allow_func:
                 _current_stage._call_functions(
-                    _current_stage._current_dialogue_set["func"][
-                        _current_stage._current_dialogue_set["func_pos"][_func_queue[0]]
+                    _current_stage._current_dialogue_set[DialogueParser.__FUNC][
+                        _current_stage._current_dialogue_set[DialogueParser.__FUNC_POS][_func_queue[0]]
                     ]
                 )
             _func_queue.remove_at(0)
@@ -159,7 +159,7 @@ func _characters_ticker_timeout() -> void:
         if _delay_queue[0] == visible_characters:
             _characters_ticker.stop()
             _delay_timer.start(
-                _current_stage._current_dialogue_set["tags"]["delays"][_delay_queue[0]]
+                _current_stage._current_dialogue_set[DialogueParser.__TAGS][DialogueParser.__TAGS_DELAYS][_delay_queue[0]]
             )
             return
 
@@ -167,7 +167,7 @@ func _characters_ticker_timeout() -> void:
         if _speed_queue[0] == visible_characters:
             _characters_ticker.wait_time = _characters_draw_tick_scaled /\
                 _current_stage.speed_scale_global /\
-                _current_stage._current_dialogue_set["tags"]["speeds"][_speed_queue[0]]
+                _current_stage._current_dialogue_set[DialogueParser.__TAGS][DialogueParser.__TAGS_SPEEDS][_speed_queue[0]]
             _characters_ticker.start()
             _speed_queue.remove_at(0)
 
@@ -191,8 +191,8 @@ func _delay_timer_timeout() -> void:
 func _on_stage_skipped() -> void:
     for f in _func_queue:
         _current_stage._call_functions(
-            _current_stage._current_dialogue_set["func"][
-                _current_stage._current_dialogue_set["func_pos"][f]
+            _current_stage._current_dialogue_set[DialogueParser.__FUNC][
+                _current_stage._current_dialogue_set[DialogueParser.__FUNC_POS][f]
             ]
         )
     text_rendered.emit(text)
