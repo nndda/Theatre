@@ -48,8 +48,8 @@ Dia:
         d=0.4
     and
     [color=#ffffaa]
-        [u]inserting variables[/u]
-    [/color]!
+        [u]inserting variables![/u]
+    [/color]
         d=0.65
     And that is not
         d=0.1
