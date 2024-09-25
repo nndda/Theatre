@@ -148,6 +148,9 @@ func _disable_plugin() -> void:
 func _save_external_data() -> void:
     editor_resource_filesystem.scan()
 
+func _handles(object: Object) -> bool:
+    return object is Dialogue
+
 func tool_submenu_id_pressed(id : int) -> void:
     match id:
         5:
