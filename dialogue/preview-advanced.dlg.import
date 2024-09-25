@@ -1,0 +1,14 @@
+[remap]
+
+importer="theatre.dialogue.importer"
+type="Resource"
+uid="uid://cyo105s2strga"
+path="res://.godot/imported/preview-advanced.dlg-15b4d28bd2fd69b45d6ff9944d07a088.res"
+
+[deps]
+
+source_file="res://dialogue/preview-advanced.dlg"
+dest_files=["res://.godot/imported/preview-advanced.dlg-15b4d28bd2fd69b45d6ff9944d07a088.res"]
+
+[params]
+
