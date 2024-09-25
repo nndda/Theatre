@@ -85,11 +85,9 @@ func get_source_path() -> String:
 ## Returns word count in the compiled [Dialogue]. Optionally pass [param variables] to insert
 ## variables used by the [Dialogue], otherwise it will count any variable placeholder as 1 word.
 func get_word_count(variables : Dictionary = {}) -> int:
-    var regex := RegEx.new()
-    regex.compile(r"\w+")
-
-    # is it really any better?
-    return regex.search_all(_strip(
+    return RegEx \
+    .create_from_string(r"\w+") \
+    .search_all(_strip(
         variables.merged(Stage._VARIABLES_BUILT_IN),
         true, true
     )).size()
@@ -148,8 +146,7 @@ func _strip(
         ) + n.line + newline + newline
 
     # Strip BBCode tags
-    for bb in DialogueParser._regex_bbcode_tags.search_all(output):
-        output = output.replace(bb.strings[0], DialogueParser.EMPTY)
+    output = DialogueParser._regex_bbcode_tags.sub(output, DialogueParser.EMPTY, true)
 
     return output.format(variables)
 
