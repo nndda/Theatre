@@ -312,7 +312,7 @@ static func parse_tags(string : String) -> Dictionary:
     var func_idx : PackedInt64Array = []
 
     # BBCode ===============================================================
-    var bb_data : Dictionary = {}
+    var bb_data : Array[Dictionary] = []
     string = string\
         .replace(r"\[", r"[lb]")\
         .replace(r"\]", r"[rb]")
@@ -325,10 +325,11 @@ static func parse_tags(string : String) -> Dictionary:
         var bb_end : int = bb.get_end() - bbcode_pos_offset
         var bb_tag := bb.get_string("tag")
 
-        bb_data[bb_start] = {
+        bb_data.append({
+            "pos" : bb_start,
             "content" : bb.strings[0],
-            "img" : false,
-        }
+            #"img" : false,
+        })
 
         if bb_tag == r"lb":
             string = string.replace(bb.strings[0], "[")
@@ -402,8 +403,8 @@ static func parse_tags(string : String) -> Dictionary:
         .replace("[", EMPTY)\
         .replace("]", EMPTY)
 
-    for bb in bb_data:
-        string = string.insert(bb, bb_data[bb]["content"])
+    for bb : Dictionary in bb_data:
+        string = string.insert(bb["pos"], bb["content"])
 
     output[__TAGS] = tags
     output["string"] = string
