@@ -113,7 +113,7 @@ var _variables_all : Dictionary = {}
 ## Set a variable used in the written [Dialogue].
 ## [br][br]
 ## See also [method merge_variables], and [method remove_variable], and [method clear_variables].
-func set_variable(var_name : String, value) -> void:
+func set_variable(var_name : String, value : Variant) -> void:
     variables[var_name] = value
     _update_variables_dialogue()
 
