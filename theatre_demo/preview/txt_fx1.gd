@@ -4,7 +4,7 @@ class_name TextEffect1
 
 var bbcode = "fx1"
 
-const COL := Color("#bff1ff")
+const COL := Color("#8ae5ff")
 var col_fx := COL.darkened(0.2)
 var f : float
 

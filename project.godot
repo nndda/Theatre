@@ -19,6 +19,7 @@ config/icon="res://addons/Theatre/assets/icons/Theatre.svg"
 [autoload]
 
 Theatre="*res://addons/Theatre/classes/Theatre.gd"
+DialogueTest="*res://tests/dialogue_test.gd"
 
 [display]
 
@@ -27,6 +28,7 @@ window/vsync/vsync_mode=0
 
 [editor]
 
+script/search_in_file_extensions=PackedStringArray("gd", "gdshader", "dlg")
 movie_writer/disable_vsync=true
 movie_writer/fps=25
 

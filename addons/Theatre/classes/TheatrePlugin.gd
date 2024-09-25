@@ -145,8 +145,23 @@ func _disable_plugin() -> void:
     # Clear Theatre singleton
     remove_autoload_singleton("Theatre")
 
+    # Remove `dlg` from search in file extensions
+    var text_files_find_ext : PackedStringArray =\
+        ProjectSettings.get_setting("editor/script/search_in_file_extensions")
+    if text_files_find_ext.has("dlg"):
+        var text_files_find_ext_new : PackedStringArray = []
+        for n in text_files_find_ext:
+            if n != "dlg":
+                text_files_find_ext_new.append(n)
+        ProjectSettings.set_setting("editor/script/search_in_file_extensions",
+            text_files_find_ext_new
+        )
+
 func _save_external_data() -> void:
     editor_resource_filesystem.scan()
+
+func _handles(object: Object) -> bool:
+    return object is Dialogue
 
 func tool_submenu_id_pressed(id : int) -> void:
     match id:

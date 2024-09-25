@@ -8,7 +8,7 @@ extends Resource
 ## Load it from the text file with [method Dialogue.load], or write it directly in script using [method Dialogue.new]
 ## [codeblock]
 ## var dlg = Dialogue.load("res://your_dialogue.dlg")
-##
+## # or
 ## var dlg = Dialogue.new("""
 ##
 ## Godette:
@@ -16,6 +16,9 @@ extends Resource
 ##
 ## """)
 ## [/codeblock]
+##
+## @tutorial(Dialogue Syntax): https://nndda.github.io/Theatre/class/dialogue/syntax/
+## @tutorial(Theatre's tutorial page): https://nndda.github.io/Theatre/tutorials/
 
 #region NOTE: Stored variables ---------------------------------------------------------------------
 @export_storage var _sets : Array[Dictionary] = []
@@ -82,11 +85,9 @@ func get_source_path() -> String:
 ## Returns word count in the compiled [Dialogue]. Optionally pass [param variables] to insert
 ## variables used by the [Dialogue], otherwise it will count any variable placeholder as 1 word.
 func get_word_count(variables : Dictionary = {}) -> int:
-    var regex := RegEx.new()
-    regex.compile(r"\w+")
-
-    # is it really any better?
-    return regex.search_all(_strip(
+    return RegEx \
+    .create_from_string(r"\w+") \
+    .search_all(_strip(
         variables.merged(Stage._VARIABLES_BUILT_IN),
         true, true
     )).size()
@@ -104,13 +105,13 @@ func get_sections() -> Dictionary:
 
 func _update_used_function_calls() -> void:
     for n : Dictionary in _sets:
-        for m : Dictionary in n["func"]:
-            if !_used_function_calls.has(m["caller"]):
-                _used_function_calls[m["caller"]] = {}
+        for m : Dictionary in n[DialogueParser.__FUNC]:
+            if !_used_function_calls.has(m[DialogueParser.__CALLER]):
+                _used_function_calls[m[DialogueParser.__CALLER]] = {}
 
-            _used_function_calls[m["caller"]][m["ln_num"]] = {
-                "name": m["name"],
-                "args": m["args"],
+            _used_function_calls[m[DialogueParser.__CALLER]][m[DialogueParser.__LN_NUM]] = {
+                DialogueParser.__NAME: m[DialogueParser.__NAME],
+                DialogueParser.__ARGS: m[DialogueParser.__ARGS],
             }
 
 ## Gets all variables used in the written [Dialogue].
@@ -119,7 +120,7 @@ func get_variables() -> PackedStringArray:
 
 func _update_used_variables() -> void:
     for n : Dictionary in _sets:
-        for m : String in n["vars"]:
+        for m : String in n[DialogueParser.__VARS]:
             if not m in _used_variables:
                 _used_variables.append(m)
 
@@ -145,8 +146,7 @@ func _strip(
         ) + n.line + newline + newline
 
     # Strip BBCode tags
-    for bb in DialogueParser._regex_bbcode_tags.search_all(output):
-        output = output.replace(bb.strings[0], DialogueParser.EMPTY)
+    output = DialogueParser._regex_bbcode_tags.sub(output, DialogueParser.EMPTY, true)
 
     return output.format(variables)
 
