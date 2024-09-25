@@ -5,6 +5,8 @@ extends RichTextLabel
 
 ## Control node built for displaying [Dialogue].
 ##
+## @tutorial(Theatre's tutorial page): https://nndda.github.io/Theatre/tutorials/
+##
 ## A [RichTextLabel] inherited node that are built for displaying and rendering [Dialogue] lines.
 ## [DialogueLabel] has a partial support for BBCode tags, as for now, the [code][img][/code] tag are not supported.
 ## [member RichTextLabel.bbcode_enabled] will always be [code]true[/code].

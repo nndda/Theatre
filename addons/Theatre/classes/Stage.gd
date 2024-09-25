@@ -4,8 +4,11 @@ extends Node
 
 ## Run, control, and configure [Dialogue], and reference UIs and Nodes that will be used to display the [Dialogue].
 ##
+## @tutorial(Theatre's tutorial page): https://nndda.github.io/Theatre/tutorials/
+##
 ## [Stage] connects your [Dialogue] and the [DialogueLabel]. This is where you configure and control
 ## your [Dialogue], manage variables, and set up function calls from your written [Dialogue].
+
 
 #region NOTE: Configurations & stored variables ----------------------------------------------------
 

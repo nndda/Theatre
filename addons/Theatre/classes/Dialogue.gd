@@ -8,7 +8,7 @@ extends Resource
 ## Load it from the text file with [method Dialogue.load], or write it directly in script using [method Dialogue.new]
 ## [codeblock]
 ## var dlg = Dialogue.load("res://your_dialogue.dlg")
-##
+## # or
 ## var dlg = Dialogue.new("""
 ##
 ## Godette:
@@ -16,6 +16,9 @@ extends Resource
 ##
 ## """)
 ## [/codeblock]
+##
+## @tutorial(Dialogue Syntax): https://nndda.github.io/Theatre/class/dialogue/syntax/
+## @tutorial(Theatre's tutorial page): https://nndda.github.io/Theatre/tutorials/
 
 #region NOTE: Stored variables ---------------------------------------------------------------------
 @export_storage var _sets : Array[Dictionary] = []
