@@ -1,19 +1,19 @@
 <h1>
 Theatre
 &nbsp;
-<a href="https://godotengine.org/" target="_blank"><img src="https://img.shields.io/badge/Godot%204.3-white?style=flat-square&logo=godotengine&logoColor=white&color=%23478CBF"></a>
-<a href="https://nndda.github.io/Theatre/" target="_blank"><img src="https://img.shields.io/badge/Documentation-white?style=flat-square"></a>
+<a href="https://godotengine.org/" target="_blank"><img src="https://img.shields.io/badge/Godot%204.3-white?style=flat-square&logo=godotengine&logoColor=white&color=%232e5f84" alt="Godot 4.3" height="20"></a>
+<a href="https://nndda.github.io/Theatre/" target="_blank"><img src="https://img.shields.io/badge/Documentation-white?style=flat-square" alt="Documentation" height="20"></a>
 </h1>
 
-<img src="/addons/Theatre/assets/icons/Theatre.svg" height="160" align="right">
+<img src="/addons/Theatre/assets/icons/Theatre.svg" alt="Theatre logo" height="160" align="right">
 
-Yet another <i><sub>(linear)</sub></i> dialogue system/addon/plugin for Godot.
+Yet another <i><sub>(linear)</sub></i> dialogue system<b>/</b>addon<b>/</b>plugin for Godot.
 - ✍️ Written in human-readable syntax.
-- ✨ Focused on presentation and delivery of your story.
-- 📝 100% written in GDScript.
+- 😐 ....
+- 📝 And 100% written in GDScript!
 
 > [!IMPORTANT]
-> This project is still in development, and is subject to frequent and breaking changes, and bugs.
+> This project is still in development, and is subject to frequent, breaking changes, and bugs.
 
 <table align="center">
 <tr align="center">
@@ -27,7 +27,7 @@ Yet another <i><sub>(linear)</sub></i> dialogue system/addon/plugin for Godot.
 <tr>
 <td>
 
-<img src="https://github.com/user-attachments/assets/5bbefeed-61bb-4b9d-89a0-69d8300a3c08" width="364">
+<img src="https://github.com/user-attachments/assets/5bbefeed-61bb-4b9d-89a0-69d8300a3c08" alt="Theatre in action" width="372">
 
 </td>
 <td>
@@ -93,7 +93,7 @@ Dia:
 ```
 
 <p align="center">
-<a href="https://nndda.github.io/Theatre/class/dialogue/syntax/" target="_blank">More comprehensive Dialogue features documented here</a>
+<a href="https://nndda.github.io/Theatre/class/dialogue/syntax/" target="_blank">More comprehensive Dialogue features documented here.</a>
 </p>
 
 # Quick Start
@@ -116,7 +116,7 @@ var epic_dialogue = Dialogue.load("res://epic_dialogue.dlg")
 Set the Stage! Add `Stage` and `DialogueLabel` node to your scene. Structure your scene like the following:
 
 <div align="center">
-<img src="https://github.com/user-attachments/assets/05e5e3ba-adfb-4208-81bc-adbbf6b6c571">
+<img src="https://github.com/user-attachments/assets/05e5e3ba-adfb-4208-81bc-adbbf6b6c571" alt="A scene tree, with Stage and PanelContainer > VBoxContainer > Label, DialogueLabel" width="207" height="302">
 </div>
 
 <br>
@@ -138,7 +138,7 @@ Select the `Stage` node, and reference the `Label` & `DialogueLabel` node to dis
 <tr>
 <td>
 
-<img src="https://github.com/nndda/Theatre/assets/96333146/69d7b946-2444-4247-8cdf-394332466c99" width="260">
+<img src="https://github.com/nndda/Theatre/assets/96333146/69d7b946-2444-4247-8cdf-394332466c99" alt="Inspector dock's representation of Stage's properties." width="261" height="235">
 
 </td>
 <td>
@@ -179,11 +179,11 @@ func _ready():
 ```
 
 <p align="center">
-<a href="https://nndda.github.io/Theatre/quickstart/" target="_blank">More detailed quick start tutorial here</a>
+<a href="https://nndda.github.io/Theatre/quickstart/" target="_blank">More detailed quick start tutorial here.</a>
 </p>
 
 ## License
 
 - Theatre is licensed under [MIT](LICENSE).
 - [Theatre logo](/addons/Theatre/assets/icons/Theatre.svg), created by [nnda](https://github.com/nndda), is licensed under [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/).
-- [Class icons](addons/Theatre/assets/icons/classes), from [@fontawesome](https://fontawesome.com), are licensed under [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+- [Class icons](addons/Theatre/assets/icons/classes) from [@fontawesome](https://fontawesome.com) (recolored), are licensed under [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/).
