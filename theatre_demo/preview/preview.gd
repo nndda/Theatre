@@ -50,5 +50,5 @@ func _dialogue_label_character_drawn() -> void:
 func _stage_progressed_at(_line : int, line_data : Dictionary) -> void:
     progress_bar.value = 0
     progress_bar.max_value = bbcode_regex.sub(
-        line_data["line"], "", true
+        line_data["content"], "", true
     ).length()

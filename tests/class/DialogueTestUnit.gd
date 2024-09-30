@@ -48,11 +48,11 @@ func test(target : Dialogue) -> void:
             var target_data : Dictionary = target_sets[n]
             var ref_data : Dictionary = ref_sets[n]
 
-            if target_data["line"] != ref_data["line"]:
-                log_fail("Inconsistent 'line' at: %d" % n, target_data[DialogueParser.__LINE_NUM])
+            if target_data["content"] != ref_data["content"]:
+                log_fail("Inconsistent 'content' at: %d" % n, target_data[DialogueParser.__LINE_NUM])
 
-            if target_data["line_raw"] != ref_data["line_raw"]:
-                log_fail("Inconsistent 'line_raw' at: %d" % n, target_data[DialogueParser.__LINE_NUM])
+            if target_data["content_raw"] != ref_data["content_raw"]:
+                log_fail("Inconsistent 'content_raw' at: %d" % n, target_data[DialogueParser.__LINE_NUM])
 
             _test_vars(target_data, ref_data)
             _test_tags(target_data, ref_data)
