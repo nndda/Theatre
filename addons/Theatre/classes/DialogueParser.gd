@@ -2,7 +2,7 @@ extends RefCounted
 class_name DialogueParser
 
 var output : Array[Dictionary] = []
-var sections : Dictionary = EMPTY_DICT
+var sections : Dictionary = {}
 
 #region RegExes
 const REGEX_DLG_TAGS :=\
@@ -36,8 +36,8 @@ const REGEX_SECTION :=\
 
 #region Dictionary keys constants
 const __ACTOR := "actor"
-const __LINE := "line"
-const __LINE_RAW := "line_raw"
+const __CONTENT := "content"
+const __CONTENT_RAW := "content_raw"
 const __LINE_NUM := "line_num"
 const __TAGS := "tags"
 const __TAGS_DELAYS := "delays"
@@ -55,35 +55,59 @@ const __ARGS := "args"
 const __LN_NUM := "ln_num"
 #endregion
 
-const EMPTY_ARR := []
-const EMPTY_DICT := {}
-
 const SETS_TEMPLATE := {
+    # Actor's name.
     __ACTOR: EMPTY,
-    __LINE: EMPTY,
-    __LINE_RAW: EMPTY,
+
+    # Dialogue content, stripped from the Dialogue tags.
+    __CONTENT: EMPTY,
+
+    # Written Dialogue content.
+    __CONTENT_RAW: EMPTY,
+
+    # Line number of where the Dialogue line is written.
     __LINE_NUM: -1,
+
+    # Built-in tags data.
     __TAGS: {
-        __TAGS_DELAYS: EMPTY_DICT,
-            #   pos,    delay(s)
-            #   15,     5
-        __TAGS_SPEEDS: EMPTY_DICT,
-            #   pos,    scale(f)
-            #   15:     1.2
+        __TAGS_DELAYS: {},
+            #   Position:   Delay in second.
+        __TAGS_SPEEDS: {},
+            #   Position:   Speed scale (0, 1).
     },
-    __FUNC: EMPTY_ARR,
-    __FUNC_POS: EMPTY_DICT,
-    __FUNC_IDX: EMPTY_ARR,
-    __OFFSETS: EMPTY_DICT,
+
+    # Function calls in order. Refer to FUNC_TEMPLATE.
+    __FUNC: [],
+        # Array of Dictionary (FUNC_TEMPLATE).
+
+    # Positional function calls.
+    __FUNC_POS: {},
+        # Position:     Function index.
+
+    # Function index tags.
+    __FUNC_IDX: [],
+
+    __OFFSETS: {},
         #   start, end
         #   15: 20
+
     __HAS_VARS: false,
-    __VARS: EMPTY_ARR,
+
+    # User-defined variables used.
+    __VARS: [],
 }
+
 const FUNC_TEMPLATE := {
+    # Function's caller name/id.
     __CALLER: EMPTY,
+
+    # Function name.
     __NAME: EMPTY,
-    __ARGS: EMPTY_ARR,
+
+    # Arguments used.
+    __ARGS: [],
+
+    # Line number of where the function is written.
     __LN_NUM: 0,
 }
 
@@ -218,14 +242,14 @@ func _init(src : String = ""):
 
             #region NOTE: Newline Dialogue tags ----------------------------------------------------
             elif is_regex_full_string(_regex_dlg_tags_newline.search(current_processed_string)):
-                output[body_pos][__LINE_RAW] += "{%s}" % current_processed_string
-                output[body_pos][__LINE] += output[body_pos][__LINE_RAW]
+                output[body_pos][__CONTENT_RAW] += "{%s}" % current_processed_string
+                output[body_pos][__CONTENT] += output[body_pos][__CONTENT_RAW]
             #endregion
 
             #region NOTE: Newline BBCode tags ------------------------------------------------------
             elif is_regex_full_string(_regex_bbcode_tags.search(current_processed_string)):
-                output[body_pos][__LINE_RAW] += current_processed_string
-                output[body_pos][__LINE] += current_processed_string
+                output[body_pos][__CONTENT_RAW] += current_processed_string
+                output[body_pos][__CONTENT] += current_processed_string
             #endregion
 
             # Dialogue text body
@@ -238,26 +262,26 @@ func _init(src : String = ""):
                 newline_stack = 0
 
                 # Append Dialogue body
-                output[body_pos][__LINE_RAW] += dlg_body
-                output[body_pos][__LINE] += dlg_body
+                output[body_pos][__CONTENT_RAW] += dlg_body
+                output[body_pos][__CONTENT] += dlg_body
 
     # Per dialogue line
     for n in output.size():
         var body : String
 
-        if output[n][__LINE_RAW].is_empty():
+        if output[n][__CONTENT_RAW].is_empty():
             printerr("Warning: empty dialogue body for '%s' on line %d" % [
                 output[n][__ACTOR], output[n][__LINE_NUM]
             ])
 
         else:
-            var parsed_tags := parse_tags(output[n][__LINE_RAW])
+            var parsed_tags := parse_tags(output[n][__CONTENT_RAW])
 
             for tag : String in SETS_TEMPLATE[__TAGS].keys():
                 output[n][__TAGS][tag].merge(parsed_tags[__TAGS][tag])
 
-            body = output[n][__LINE_RAW]
-            for tag in _regex_dlg_tags.search_all(output[n][__LINE_RAW]):
+            body = output[n][__CONTENT_RAW]
+            for tag in _regex_dlg_tags.search_all(output[n][__CONTENT_RAW]):
                 body = body.replace(tag.strings[0], EMPTY)
 
             output[n][__VARS] = parsed_tags[__VARS]
@@ -265,7 +289,7 @@ func _init(src : String = ""):
             output[n][__FUNC_POS] = parsed_tags[__FUNC_POS]
             output[n][__FUNC_IDX] = parsed_tags[__FUNC_IDX]
 
-        output[n][__LINE] = body
+        output[n][__CONTENT] = body
 
 ## Check if [param string] is indented with tabs or spaces.
 func is_indented(string : String) -> bool:
@@ -420,14 +444,14 @@ static func parse_tags(string : String) -> Dictionary:
 ## Format Dialogue body at [param pos] position with [member Stage.variables], and update the positions of the built-in tags.
 ## Return the formatted string.
 static func update_tags_position(dlg : Dialogue, pos : int, vars : Dictionary) -> void:
-    var dlg_str : String = dlg._sets[pos][__LINE_RAW].format(vars)
+    var dlg_str : String = dlg._sets[pos][__CONTENT_RAW].format(vars)
     for n in [__TAGS_DELAYS, __TAGS_SPEEDS]:
         dlg._sets[pos][__TAGS][n].clear()
 
     var parsed_tags := parse_tags(dlg_str)
 
     dlg._sets[pos][__TAGS] = parsed_tags[__TAGS]
-    dlg._sets[pos][__LINE] = parsed_tags["string"]
+    dlg._sets[pos][__CONTENT] = parsed_tags["string"]
     dlg._sets[pos][__VARS] = parsed_tags[__VARS]
     dlg._sets[pos][__HAS_VARS] = parsed_tags[__HAS_VARS]
     dlg._sets[pos][__FUNC_POS] = parsed_tags[__FUNC_POS]

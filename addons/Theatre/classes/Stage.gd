@@ -98,7 +98,7 @@ func _update_variables_dialogue() -> void:
         )
 
         if is_playing():
-            _dialogue_full_string = _current_dialogue_set[DialogueParser.__LINE]
+            _dialogue_full_string = _current_dialogue_set[DialogueParser.__CONTENT]
             _update_display()
 
             if dialogue_label != null:
@@ -375,7 +375,7 @@ func switch(dialogue : Dialogue) -> void:
 
         if is_playing():
             _current_dialogue_set = current_dialogue._sets[_step]
-            _dialogue_full_string = _current_dialogue_set[DialogueParser.__LINE]
+            _dialogue_full_string = _current_dialogue_set[DialogueParser.__CONTENT]
             _update_display()
             dialogue_label.rerender()
 
@@ -442,7 +442,7 @@ func _progress_forward() -> void:
 
     _step += 1
     _current_dialogue_set = current_dialogue._sets[_step]
-    _dialogue_full_string = _current_dialogue_set[DialogueParser.__LINE]
+    _dialogue_full_string = _current_dialogue_set[DialogueParser.__CONTENT]
 
     _execute_functions()
     _update_display()
