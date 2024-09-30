@@ -227,6 +227,19 @@ Although, datatype constants are not supported for now.
     Player.rotate(Vector2(0, 1))
 ```
 
+!!! warning "Function syntax"
+    Write function calls (including all of its arguments) in a single line only!
+
+    ```
+    # Not supported:
+        Portrait.set(
+            "res://ritsu_angy.png"
+        )
+
+    # Write function in a single line:
+        Portrait.set("res://ritsu_smile.png")
+    ```
+
 ### Positional Function Calls
 
 Just like Dialogue tags, functions can also be called at specific point in the written Dialogue.
