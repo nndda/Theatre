@@ -1,11 +1,10 @@
-<h1>
-Theatre
-&nbsp;
-<a href="https://godotengine.org/" target="_blank"><img src="https://img.shields.io/badge/Godot%204.3-white?style=flat-square&logo=godotengine&logoColor=white&color=%232e5f84" alt="Godot 4.3" height="20"></a>
-<a href="https://nndda.github.io/Theatre/" target="_blank"><img src="https://img.shields.io/badge/Documentation-white?style=flat-square" alt="Documentation" height="20"></a>
-</h1>
+<h1>Theatre</h1>
 
 <img src="/addons/Theatre/assets/icons/Theatre.svg" alt="Theatre logo" height="160" align="right">
+
+<a href="https://godotengine.org/" target="_blank"><img src="https://img.shields.io/badge/Godot%204.3-white?style=flat-square&logo=godotengine&logoColor=white&color=%232e5f84" alt="Godot 4.3" height="20"></a>
+<a href="https://github.com/nndda/Theatre/actions/workflows/dialogue-test.yaml" target="_blank"><img src="https://img.shields.io/github/actions/workflow/status/nndda/Theatre/dialogue-test.yaml?branch=main&event=push&style=flat-square&logo=github&label=Parser%20build&labelColor=%23282e33&color=%2329aa46" alt="Build status" height="20"></a>
+<a href="https://nndda.github.io/Theatre/" target="_blank"><img src="https://img.shields.io/badge/Documentation-white?style=flat-square" alt="Documentation" height="20"></a>
 
 Yet another <i><sub>(linear)</sub></i> dialogue system<b>/</b>addon<b>/</b>plugin for Godot.
 - ✍️ Written in human-readable syntax.
