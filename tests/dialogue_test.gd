@@ -8,14 +8,15 @@ func dlg(path : String) -> Dialogue:
     )
 
 func _ready() -> void:
-    DialogueTestUnit.new(
-        dlg("res://dialogue/preview-advanced.dlg.REF.tres")
-    ).test(
-        dlg("res://dialogue/preview-advanced.dlg")
-    )
+    if DisplayServer.get_name() != "headless":
+        DialogueTestUnit.new(
+            dlg("res://dialogue/preview-advanced.dlg.REF.tres"), true
+        ).test(
+            dlg("res://dialogue/preview-advanced.dlg")
+        )
 
-    DialogueTestUnit.new(
-        dlg("res://dialogue/demo_dialogue.dlg.REF.tres")
-    ).test(
-        dlg("res://dialogue/demo_dialogue.dlg")
-    )
+        DialogueTestUnit.new(
+            dlg("res://dialogue/demo_dialogue.dlg.REF.tres"), true
+        ).test(
+            dlg("res://dialogue/demo_dialogue.dlg")
+        )

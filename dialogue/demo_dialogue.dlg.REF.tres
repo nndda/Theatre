@@ -1,18 +1,18 @@
 [gd_resource type="Resource" script_class="Dialogue" load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://addons/Theatre/classes/Dialogue.gd" id="1_rhl43"]
+[ext_resource type="Script" path="res://addons/Theatre/classes/Dialogue.gd" id="1_yvcq1"]
 
 [resource]
-script = ExtResource("1_rhl43")
+script = ExtResource("1_yvcq1")
 _sets = Array[Dictionary]([{
 "actor": "Dia",
+"content": "\"Welcome to the Theatre! Hi there! this is a demo dialogue to demonstrate Theatre addon's core feature.\" ",
+"content_raw": "\"Welcome to the Theatre!{d = 0.5} Hi there!{d = 0.4} this is a demo dialogue to demonstrate Theatre addon's core feature.\" ",
 "func": [],
 "func_idx": PackedInt64Array(),
 "func_pos": {},
 "has_vars": false,
-"line": "\"Welcome to the Theatre! Hi there! this is a demo dialogue to demonstrate Theatre addon's core feature.\" ",
 "line_num": 1,
-"line_raw": "\"Welcome to the Theatre!{d = 0.5} Hi there!{d = 0.4} this is a demo dialogue to demonstrate Theatre addon's core feature.\" ",
 "offsets": {},
 "tags": {
 "delays": {
@@ -24,13 +24,13 @@ _sets = Array[Dictionary]([{
 "vars": PackedStringArray()
 }, {
 "actor": "Dia",
+"content": "\"There are 3 main classes that makes part of Theatre plugin: Dialogue,  DialogueLabel,  & Stage\" ",
+"content_raw": "\"There are 3 main classes that makes part of Theatre plugin:{delay = 0.7} Dialogue, {d = 0.7} DialogueLabel, {d = 0.7} & Stage\" ",
 "func": [],
 "func_idx": PackedInt64Array(),
 "func_pos": {},
 "has_vars": false,
-"line": "\"There are 3 main classes that makes part of Theatre plugin: Dialogue,  DialogueLabel,  & Stage\" ",
 "line_num": 5,
-"line_raw": "\"There are 3 main classes that makes part of Theatre plugin:{delay = 0.7} Dialogue, {d = 0.7} DialogueLabel, {d = 0.7} & Stage\" ",
 "offsets": {},
 "tags": {
 "delays": {
@@ -43,13 +43,13 @@ _sets = Array[Dictionary]([{
 "vars": PackedStringArray()
 }, {
 "actor": "Dia",
+"content": "\"Lets start with Dialogue: Its a resource, containing the writing of your... well, dialogue! You write them in a plain text file, the written dialogue then get parsed to a resource, that you can then use in your project\" ",
+"content_raw": "\"Lets start with Dialogue:{d = 0.8} Its a resource, containing the writing of your{s = 0.035}...{s}{d = 0.5} well,{d = 0.8} dialogue!{d = 1.0} You write them in a plain text file,{d = 0.9} the written dialogue then get parsed to a resource,{d = 0.9} that you can then use in your project\" ",
 "func": [],
 "func_idx": PackedInt64Array(),
 "func_pos": {},
 "has_vars": false,
-"line": "\"Lets start with Dialogue: Its a resource, containing the writing of your... well, dialogue! You write them in a plain text file, the written dialogue then get parsed to a resource, that you can then use in your project\" ",
 "line_num": 11,
-"line_raw": "\"Lets start with Dialogue:{d = 0.8} Its a resource, containing the writing of your{s = 0.035}...{s}{d = 0.5} well,{d = 0.8} dialogue!{d = 1.0} You write them in a plain text file,{d = 0.9} the written dialogue then get parsed to a resource,{d = 0.9} that you can then use in your project\" ",
 "offsets": {},
 "tags": {
 "delays": {
@@ -68,13 +68,13 @@ _sets = Array[Dictionary]([{
 "vars": PackedStringArray()
 }, {
 "actor": "Dia",
+"content": "\"And um... Thats it!... for now.\" ",
+"content_raw": "\"And {s = 0.9}um{s = 0.04}...{s} Thats it!{s = 0.035}...{s} for now.\" ",
 "func": [],
 "func_idx": PackedInt64Array(),
 "func_pos": {},
 "has_vars": false,
-"line": "\"And um... Thats it!... for now.\" ",
 "line_num": 19,
-"line_raw": "\"And {s = 0.9}um{s = 0.04}...{s} Thats it!{s = 0.035}...{s} for now.\" ",
 "offsets": {},
 "tags": {
 "delays": {},
@@ -89,13 +89,13 @@ _sets = Array[Dictionary]([{
 "vars": PackedStringArray()
 }, {
 "actor": "Dia",
+"content": "\"Most of the classes references are documented directly in the addon. In the editor, You can press F1 and look for Theatre's classes to see its documentation page.\" ",
+"content_raw": "\"Most of the classes references are documented directly in the addon.{d = 0.8} In the editor,{d = 0.8} You can press F1 and look for Theatre's classes to see its documentation page.\" ",
 "func": [],
 "func_idx": PackedInt64Array(),
 "func_pos": {},
 "has_vars": false,
-"line": "\"Most of the classes references are documented directly in the addon. In the editor, You can press F1 and look for Theatre's classes to see its documentation page.\" ",
 "line_num": 22,
-"line_raw": "\"Most of the classes references are documented directly in the addon.{d = 0.8} In the editor,{d = 0.8} You can press F1 and look for Theatre's classes to see its documentation page.\" ",
 "offsets": {},
 "tags": {
 "delays": {
@@ -107,13 +107,13 @@ _sets = Array[Dictionary]([{
 "vars": PackedStringArray()
 }, {
 "actor": "Dia",
+"content": "\"We also have online documentation page, live at nndda.github.io/Theatre\" ",
+"content_raw": "\"We also have online documentation page,{d = 0.2} live at nndda.github.io/Theatre\" ",
 "func": [],
 "func_idx": PackedInt64Array(),
 "func_pos": {},
 "has_vars": false,
-"line": "\"We also have online documentation page, live at nndda.github.io/Theatre\" ",
 "line_num": 27,
-"line_raw": "\"We also have online documentation page,{d = 0.2} live at nndda.github.io/Theatre\" ",
 "offsets": {},
 "tags": {
 "delays": {
@@ -124,13 +124,13 @@ _sets = Array[Dictionary]([{
 "vars": PackedStringArray()
 }, {
 "actor": "Dia",
+"content": "\"Stay tuned for the next updates!\" ",
+"content_raw": "\"Stay tuned for the next updates!\" ",
 "func": [],
 "func_idx": PackedInt64Array(),
 "func_pos": {},
 "has_vars": false,
-"line": "\"Stay tuned for the next updates!\" ",
 "line_num": 31,
-"line_raw": "\"Stay tuned for the next updates!\" ",
 "offsets": {},
 "tags": {
 "delays": {},

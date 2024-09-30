@@ -111,15 +111,16 @@ func _enter_tree() -> void:
     add_import_plugin(dialogue_importer)
 
 func _ready() -> void:
-    # Initialize update check
-    http_update_req = HTTPRequest.new()
-    http_update_req.timeout = 3.0
-    http_update_req.request_completed.connect(_update_response)
-    add_child(http_update_req)
+    if DisplayServer.get_name() != "headless":
+        # Initialize update check
+        http_update_req = HTTPRequest.new()
+        http_update_req.timeout = 3.0
+        http_update_req.request_completed.connect(_update_response)
+        add_child(http_update_req)
 
-    if ProjectSettings.get_setting(Config.GENERAL_AUTO_UPDATE, true):
-        await get_tree().create_timer(2.5).timeout
-        update_check()
+        if ProjectSettings.get_setting(Config.GENERAL_AUTO_UPDATE, true):
+            await get_tree().create_timer(2.5).timeout
+            update_check()
 
 func _exit_tree() -> void:
     print("🎭 Disabling Theatre...")
@@ -129,7 +130,8 @@ func _exit_tree() -> void:
     ProjectSettings.settings_changed.disconnect(Config._project_settings_changed)
 
     # Clear update check
-    http_update_req.queue_free()
+    if http_update_req != null:
+        http_update_req.queue_free()
 
     # Clear plugin submenu
     plugin_submenu.id_pressed.disconnect(tool_submenu_id_pressed)
