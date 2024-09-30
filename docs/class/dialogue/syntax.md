@@ -26,7 +26,7 @@ Ritsu:
     ```
     You can insert newlines by using [`{n}` dialogue variable.](#built-in-variables).
 
-## Actor's name
+## Actor's Name
 
 For dialogue lines that use the same actor, You can leave the following actor's name blank, leaving `:` alone. It will use the last declared actor's name.
 
@@ -112,7 +112,7 @@ Dia:
     "Great job {player}! just {item_left} more to go."
 ```
 
-### Built-in variables
+### Built-in Variables
 
 | Tags    | Description         |
 | ------- | ------------------- |
@@ -168,7 +168,7 @@ There are several built-in tags to fine-tune your Dialogue flows. Tags can have 
         "So {s = 0.4}uh...{s} {d=0.9}what are we gonna do?"
     ```
 
-## Function calls
+## Function Calls
 
 Before calling the functions in the written Dialogue, you need to set the `caller`: the `Object` from which the function will be called.
 
@@ -201,7 +201,7 @@ Dia:
     Caller.three()
 ```
 
-### Passing arguments
+### Passing Arguments
 
 You can generally pass any data type in the function.
 ```
@@ -227,7 +227,7 @@ Although, datatype constants are not supported for now.
     Player.rotate(Vector2(0, 1))
 ```
 
-### Positional function calls
+### Positional Function Calls
 
 Just like Dialogue tags, functions can also be called at specific point in the written Dialogue.
 ```
