@@ -1,0 +1,52 @@
+name: Dialogue & parser test
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+    paths:
+      - '.github/workflows/dialogue-test.yaml'
+      - 'tests/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/dialogue-test.yaml'
+      - 'tests/**'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    env:
+      GODOT_VERSION: 4.3-stable
+      GODOT_BINARY: Godot_v4.3-stable_linux.x86_64
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache Godot binary
+        id: godotbin-cache
+        uses: actions/cache@v4
+        with:
+          path: ./${{ env.GODOT_BINARY }}
+          key: ${{ env.GODOT_VERSION }}
+
+      - name: Download Godot if not cached
+        if: steps.godotbin-cache.outputs.cache-hit != 'true'
+        run: |
+          wget --no-verbose \ 
+            https://github.com/godotengine/godot/releases/download/${{ env.GODOT_VERSION }}/${{ env.GODOT_BINARY }}.zip
+          unzip -o ./${{ env.GODOT_BINARY }}.zip
+
+      - name: Run test
+        run: |
+          ./${{ env.GODOT_BINARY }} \
+          --headless \
+          --import && \
+          ./${{ env.GODOT_BINARY }} \
+          --no-header \
+          --headless \
+          --script ./tests/dialogue_test_ci.gd
