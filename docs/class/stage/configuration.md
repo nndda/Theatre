@@ -35,6 +35,9 @@ This page cover various configurations & properties for `Stage`. You can configu
 
 While you can add callers with `add_caller()`, if the function caller is a `Node`, and is accessible in the scene tree where the `Stage` at, You can reference it directly in the inspector in `caller_nodes`. And the caller name/ID will use the node's name.
 
+!!! warning "Caller name"
+    Make sure that all nodes referenced for caller in `caller_nodes` have unique names from each other.
+
 This approach is preferrable in such case. Not only that its more simpler compared to adding the caller through script(1), the caller `Node` will always be synced if it moved in the tree.
 { .annotate }
 
