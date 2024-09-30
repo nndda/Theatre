@@ -26,7 +26,7 @@ func log_fail(string : String, ln_num : int = -1) -> void:
     )
     _failed_tests += 1
 
-func _init(reference_dialogue : Dialogue, fails_only : bool = false) -> void:
+func _init(reference_dialogue : Dialogue, fails_only : bool = false):
     _fails_only = fails_only
     _ref = reference_dialogue
 
