@@ -37,8 +37,7 @@ jobs:
       - name: Download Godot if not cached
         if: steps.godotbin-cache.outputs.cache-hit != 'true'
         run: |
-          wget --no-verbose \ 
-            https://github.com/godotengine/godot/releases/download/${{ env.GODOT_VERSION }}/${{ env.GODOT_BINARY }}.zip
+          wget --no-verbose https://github.com/godotengine/godot/releases/download/${{ env.GODOT_VERSION }}/${{ env.GODOT_BINARY }}.zip
           unzip -o ./${{ env.GODOT_BINARY }}.zip
 
       - name: Run test
