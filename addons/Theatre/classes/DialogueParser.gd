@@ -402,7 +402,7 @@ static func parse_tags(string : String) -> Dictionary:
             string = string.replace(string_match, EMPTY)
 
         if tag_key_l.is_valid_int():
-            var idx = tag_key_l.to_int()
+            var idx : int = tag_key_l.to_int()
             func_pos[tag_pos] = idx
 
             if !func_idx.has(idx):
