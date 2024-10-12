@@ -3,7 +3,7 @@ Dia:
     this is a demo dialogue to demonstrate Theatre addon's core feature."
 
 :
-    "There are 3 main classes that makes part of Theatre plugin:{delay = 0.7}
+    "There are 3 main classes that makes part of Theatre plugin:{d = 0.7}
     Dialogue, {d = 0.7}
     DialogueLabel, {d = 0.7}
     & Stage"
@@ -11,7 +11,7 @@ Dia:
 :
     "Lets start with Dialogue:{d = 0.8}
     Its a resource, containing the writing of
-    your{s = 0.035}...{s}{d = 0.5} well,{d = 0.8} dialogue!{d = 1.0}
+    your{s = 0.035}...{s} {d = 0.5}well,{d = 0.8} dialogue!{d = 1.0}
     You write them in a plain text file,{d = 0.9}
     the written dialogue then get parsed to a resource,{d = 0.9}
     that you can then use in your project"
@@ -21,7 +21,7 @@ Dia:
 
 :
     "Most of the classes references are documented directly in the addon.{d = 0.8}
-    In the editor,{d = 0.8} You can press F1 and look for Theatre's classes
+    In the editor,{d = 0.8} press F1 and look for Theatre's classes
     to see its documentation page."
 
 :
