@@ -133,7 +133,7 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
                 dict[tag.get_start("tag")] = COL_tag_content
     
                 if string.contains("="):
-                    dict[tag.get_start("arg") - 1] = COL_symbol
+                    dict[tag.get_start("tag") + 1] = COL_symbol
                     dict[tag.get_start("arg")] = COL_tag_content
     
                 dict[END - 1] = COL_tag_braces
