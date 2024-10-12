@@ -1,9 +1,9 @@
 [gd_resource type="Resource" script_class="Dialogue" load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://addons/Theatre/classes/Dialogue.gd" id="1_yvcq1"]
+[ext_resource type="Script" path="res://addons/Theatre/classes/Dialogue.gd" id="1_vh82u"]
 
 [resource]
-script = ExtResource("1_yvcq1")
+script = ExtResource("1_vh82u")
 _sets = Array[Dictionary]([{
 "actor": "Dia",
 "content": "\"Welcome to the Theatre! Hi there! this is a demo dialogue to demonstrate Theatre addon's core feature.\" ",
@@ -25,7 +25,7 @@ _sets = Array[Dictionary]([{
 }, {
 "actor": "Dia",
 "content": "\"There are 3 main classes that makes part of Theatre plugin: Dialogue,  DialogueLabel,  & Stage\" ",
-"content_raw": "\"There are 3 main classes that makes part of Theatre plugin:{delay = 0.7} Dialogue, {d = 0.7} DialogueLabel, {d = 0.7} & Stage\" ",
+"content_raw": "\"There are 3 main classes that makes part of Theatre plugin:{d = 0.7} Dialogue, {d = 0.7} DialogueLabel, {d = 0.7} & Stage\" ",
 "func": [],
 "func_idx": PackedInt64Array(),
 "func_pos": {},
@@ -44,7 +44,7 @@ _sets = Array[Dictionary]([{
 }, {
 "actor": "Dia",
 "content": "\"Lets start with Dialogue: Its a resource, containing the writing of your... well, dialogue! You write them in a plain text file, the written dialogue then get parsed to a resource, that you can then use in your project\" ",
-"content_raw": "\"Lets start with Dialogue:{d = 0.8} Its a resource, containing the writing of your{s = 0.035}...{s}{d = 0.5} well,{d = 0.8} dialogue!{d = 1.0} You write them in a plain text file,{d = 0.9} the written dialogue then get parsed to a resource,{d = 0.9} that you can then use in your project\" ",
+"content_raw": "\"Lets start with Dialogue:{d = 0.8} Its a resource, containing the writing of your{s = 0.035}...{s} {d = 0.5}well,{d = 0.8} dialogue!{d = 1.0} You write them in a plain text file,{d = 0.9} the written dialogue then get parsed to a resource,{d = 0.9} that you can then use in your project\" ",
 "func": [],
 "func_idx": PackedInt64Array(),
 "func_pos": {},
@@ -54,7 +54,7 @@ _sets = Array[Dictionary]([{
 "tags": {
 "delays": {
 26: 0.8,
-76: 0.5,
+77: 0.5,
 82: 0.8,
 92: 1.0,
 129: 0.9,
@@ -89,8 +89,8 @@ _sets = Array[Dictionary]([{
 "vars": PackedStringArray()
 }, {
 "actor": "Dia",
-"content": "\"Most of the classes references are documented directly in the addon. In the editor, You can press F1 and look for Theatre's classes to see its documentation page.\" ",
-"content_raw": "\"Most of the classes references are documented directly in the addon.{d = 0.8} In the editor,{d = 0.8} You can press F1 and look for Theatre's classes to see its documentation page.\" ",
+"content": "\"Most of the classes references are documented directly in the addon. In the editor, press F1 and look for Theatre's classes to see its documentation page.\" ",
+"content_raw": "\"Most of the classes references are documented directly in the addon.{d = 0.8} In the editor,{d = 0.8} press F1 and look for Theatre's classes to see its documentation page.\" ",
 "func": [],
 "func_idx": PackedInt64Array(),
 "func_pos": {},
@@ -138,7 +138,7 @@ _sets = Array[Dictionary]([{
 },
 "vars": PackedStringArray()
 }])
-_source_path = "res://dialogue/demo_dialogue.dlg"
+_source_path = "res://tests/dialogue_test.gd:12"
 _used_variables = PackedStringArray()
 _used_function_calls = {}
 _sections = {}

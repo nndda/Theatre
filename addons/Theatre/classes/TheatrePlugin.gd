@@ -5,18 +5,11 @@ class_name TheatrePlugin
 
 class Config extends RefCounted:
     const GENERAL_AUTO_UPDATE := "theatre/general/updates/check_updates_automatically"
-    const DEBUG_SHOW_CRAWL_FOLDER := "theatre/debug/log/show_current_crawling_directory"
-    const DIALOGUE_IGNORED_DIR := "theatre/resources/dialogue/ignored_directories"
-
-    static var debug_show_crawl_dir := false
-    static var ignored_directories : PackedStringArray
 
     static func init_configs() -> void:
         print("  Initializing configs...")
         for config_item : Array in [
             [ GENERAL_AUTO_UPDATE, TYPE_BOOL, true, PROPERTY_HINT_NONE, "", ],
-            [ DEBUG_SHOW_CRAWL_FOLDER, TYPE_BOOL, false, PROPERTY_HINT_NONE, "", ],
-            [ DIALOGUE_IGNORED_DIR, TYPE_STRING, "addons", PROPERTY_HINT_NONE, "", ],
         ]:
             if ProjectSettings.has_setting(config_item[0]):
                 print("    %s already exist on ProjectSettings" % config_item[0])
@@ -36,8 +29,6 @@ class Config extends RefCounted:
     static func remove_configs() -> void:
         for config_item : String in [
             GENERAL_AUTO_UPDATE,
-            DEBUG_SHOW_CRAWL_FOLDER,
-            DIALOGUE_IGNORED_DIR,
         ]:
             ProjectSettings.set_setting(config_item, null)
 
@@ -48,20 +39,15 @@ class Config extends RefCounted:
         if err != OK:
             push_error("Error saving Theatre config: ", err)
 
-    static func _project_settings_changed() -> void:
-        debug_show_crawl_dir = ProjectSettings.get_setting(
-            DEBUG_SHOW_CRAWL_FOLDER, false
-        )
-
-        ignored_directories = (ProjectSettings.get_setting(
-            DIALOGUE_IGNORED_DIR
-        ) as String ).split(",", false)
+    #static func _project_settings_changed() -> void:
+        #pass
 
 var http_update_req : HTTPRequest
 
 var dialogue_importer : DialogueImporter
+var dialogue_syntax_highlighter : DialogueSyntaxHighlighter
 
-var editor_settings := EditorInterface.get_editor_settings()
+static var editor_settings := EditorInterface.get_editor_settings()
 var editor_resource_filesystem := EditorInterface.get_resource_filesystem()
 
 var plugin_submenu : PopupMenu = preload(
@@ -71,6 +57,7 @@ var plugin_submenu : PopupMenu = preload(
 func _enter_tree() -> void:
     plugin_submenu.hide()
     dialogue_importer = DialogueImporter.new()
+    dialogue_syntax_highlighter = DialogueSyntaxHighlighter.new()
 
     # Initialize Theatre config
     print("🎭 Theatre v%s by nnda" % get_plugin_version())
@@ -78,10 +65,14 @@ func _enter_tree() -> void:
     # Compile DialogueParser RegExes
     DialogueParser._initialize_regex()
 
+    # Initialize syntax highlighter
+    DialogueSyntaxHighlighter.initialize_colors()
+    editor_settings.settings_changed.connect(DialogueSyntaxHighlighter.initialize_colors)
+
     # Initialize project settings
     Config.init_configs()
-    ProjectSettings.settings_changed.connect(Config._project_settings_changed)
-    Config._project_settings_changed()
+    #ProjectSettings.settings_changed.connect(Config._project_settings_changed)
+    #Config._project_settings_changed()
 
     # Add `.dlg` text file extension
     var text_files_ext : String = editor_settings\
@@ -110,6 +101,9 @@ func _enter_tree() -> void:
     # Initialize Dialogue importer
     add_import_plugin(dialogue_importer)
 
+    # Register Dialogue syntax highlighter
+    EditorInterface.get_script_editor().register_syntax_highlighter(dialogue_syntax_highlighter)
+
 func _ready() -> void:
     if DisplayServer.get_name() != "headless":
         # Initialize update check
@@ -127,7 +121,7 @@ func _exit_tree() -> void:
 
     # Clear project settings
     Config.remove_configs()
-    ProjectSettings.settings_changed.disconnect(Config._project_settings_changed)
+    #ProjectSettings.settings_changed.disconnect(Config._project_settings_changed)
 
     # Clear update check
     if http_update_req != null:
@@ -140,6 +134,10 @@ func _exit_tree() -> void:
     # Clear Dialogue importer
     remove_import_plugin(dialogue_importer)
     dialogue_importer = null
+
+    # Unegister Dialogue syntax highlighter
+    EditorInterface.get_script_editor().unregister_syntax_highlighter(dialogue_syntax_highlighter)
+    dialogue_syntax_highlighter = null
 
     editor_resource_filesystem = null
 
