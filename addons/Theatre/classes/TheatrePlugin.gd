@@ -45,8 +45,9 @@ class Config extends RefCounted:
 var http_update_req : HTTPRequest
 
 var dialogue_importer : DialogueImporter
+var dialogue_syntax_highlighter : DialogueSyntaxHighlighter
 
-var editor_settings := EditorInterface.get_editor_settings()
+static var editor_settings := EditorInterface.get_editor_settings()
 var editor_resource_filesystem := EditorInterface.get_resource_filesystem()
 
 var plugin_submenu : PopupMenu = preload(
@@ -56,12 +57,17 @@ var plugin_submenu : PopupMenu = preload(
 func _enter_tree() -> void:
     plugin_submenu.hide()
     dialogue_importer = DialogueImporter.new()
+    dialogue_syntax_highlighter = DialogueSyntaxHighlighter.new()
 
     # Initialize Theatre config
     print("🎭 Theatre v%s by nnda" % get_plugin_version())
 
     # Compile DialogueParser RegExes
     DialogueParser._initialize_regex()
+
+    # Initialize syntax highlighter
+    DialogueSyntaxHighlighter.initialize_colors()
+    editor_settings.settings_changed.connect(DialogueSyntaxHighlighter.initialize_colors)
 
     # Initialize project settings
     Config.init_configs()
@@ -95,6 +101,9 @@ func _enter_tree() -> void:
     # Initialize Dialogue importer
     add_import_plugin(dialogue_importer)
 
+    # Register Dialogue syntax highlighter
+    EditorInterface.get_script_editor().register_syntax_highlighter(dialogue_syntax_highlighter)
+
 func _ready() -> void:
     if DisplayServer.get_name() != "headless":
         # Initialize update check
@@ -125,6 +134,10 @@ func _exit_tree() -> void:
     # Clear Dialogue importer
     remove_import_plugin(dialogue_importer)
     dialogue_importer = null
+
+    # Unegister Dialogue syntax highlighter
+    EditorInterface.get_script_editor().unregister_syntax_highlighter(dialogue_syntax_highlighter)
+    dialogue_syntax_highlighter = null
 
     editor_resource_filesystem = null
 
