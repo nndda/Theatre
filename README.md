@@ -12,9 +12,6 @@ Yet another <i><sub>(linear)</sub></i> dialogue system<b>/</b>addon<b>/</b>plugi
 - 😐 ....
 - 📝 And 100% written in GDScript!
 
-> [!IMPORTANT]
-> This project is still in development, and is subject to frequent, breaking changes, and bugs.
-
 <table align="center">
 <tr align="center">
 <td>
@@ -31,7 +28,7 @@ Yet another <i><sub>(linear)</sub></i> dialogue system<b>/</b>addon<b>/</b>plugi
 
 </td>
 <td>
-    
+
 ```
 Dia:
     "Welcome! {d=0.8}to the
@@ -48,6 +45,12 @@ Dia:
 </td>
 </tr>
 </table>
+
+> [!IMPORTANT]
+> This project is still in development, and is subject to frequent, breaking changes, and bugs.
+
+> [!WARNING]
+> Currently, this addon is compatible only with **`Godot 4.3`**. It will not function with earlier versions, and while it may run on **`4.4`**, some features might not work as intended.
 
 # Features
 
