@@ -5,8 +5,8 @@ extends EditorSyntaxHighlighter
 var text_edit : CodeEdit
 var text_edit_initialized := false
 
-const COL : String = "color"
-const TRANSPARENT : Color = Color(0, 0, 0, 0)
+const COL := "color"
+const TRANSPARENT := Color(0, 0, 0, 0)
 
 var string : String
 var dict : Dictionary = {}
@@ -90,7 +90,7 @@ func _get_supported_languages() -> PackedStringArray:
 func is_indented(string : String) -> bool:
     return string != string.lstrip(" \t")
 
-func _get_line_syntax_highlighting(line: int) -> Dictionary:
+func _get_line_syntax_highlighting(line : int) -> Dictionary:
     #initialize_colors() # NOTE: uncomment on development
     if !text_edit_initialized:
         initialize_text_edit()
@@ -105,7 +105,7 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 
     if is_indented(string):
         var match_func := DialogueParser._regex_func_call.search(string)
-        var match_newline_tag := null \
+        var match_newline_tag : RegExMatch = null \
             if match_func != null else DialogueParser._regex_dlg_tags_newline.search(string)
 
         if match_func != null:
