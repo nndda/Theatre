@@ -39,8 +39,8 @@ class Config extends RefCounted:
         if err != OK:
             push_error("Error saving Theatre config: ", err)
 
-    #static func _project_settings_changed() -> void:
-        #pass
+    static func _project_settings_changed() -> void:
+        DialogueSyntaxHighlighter.initialize_colors()
 
 var http_update_req : HTTPRequest
 
@@ -67,12 +67,11 @@ func _enter_tree() -> void:
 
     # Initialize syntax highlighter
     DialogueSyntaxHighlighter.initialize_colors()
-    editor_settings.settings_changed.connect(DialogueSyntaxHighlighter.initialize_colors)
 
     # Initialize project settings
     Config.init_configs()
-    #ProjectSettings.settings_changed.connect(Config._project_settings_changed)
-    #Config._project_settings_changed()
+    ProjectSettings.settings_changed.connect(Config._project_settings_changed)
+    Config._project_settings_changed()
 
     # Add `.dlg` text file extension
     var text_files_ext : String = editor_settings\
@@ -121,7 +120,7 @@ func _exit_tree() -> void:
 
     # Clear project settings
     Config.remove_configs()
-    #ProjectSettings.settings_changed.disconnect(Config._project_settings_changed)
+    ProjectSettings.settings_changed.disconnect(Config._project_settings_changed)
 
     # Clear update check
     if http_update_req != null:
