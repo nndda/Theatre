@@ -8,6 +8,15 @@ var text_edit_initialized := false
 const COL := "color"
 const TRANSPARENT := Color(0, 0, 0, 0)
 
+const COLON := DialogueParser.COLON
+const HASH := DialogueParser.HASH
+const EQUALS := "="
+
+const __NAME := "name"
+const __TAG := "tag"
+const __ARG := "arg"
+const __CALLER := "caller"
+
 var string : String
 var dict : Dictionary = {}
 
@@ -109,32 +118,31 @@ func _get_line_syntax_highlighting(line : int) -> Dictionary:
             if match_func != null else DialogueParser._regex_dlg_tags_newline.search(string)
 
         if match_func != null:
-            dict[match_func.get_start("caller")] = COL_caller
-            dict[match_func.get_start("name")] = COL_func_name
-            dict[match_func.get_start("name") - 1] = COL_symbol
-            dict[match_func.get_end("name")] = COL_symbol
-            dict[match_func.get_end("name") + 1] = COL_func_args
+            dict[match_func.get_start(__CALLER)] = COL_caller
+            dict[match_func.get_start(__NAME)] = COL_func_name
+            dict[match_func.get_start(__NAME) - 1] = COL_symbol
+            dict[match_func.get_end(__NAME)] = COL_symbol
+            dict[match_func.get_end(__NAME) + 1] = COL_func_args
             dict[match_func.get_end() - 1] = COL_symbol
             dict[match_func.get_end()] = COL_base_content
 
         elif match_newline_tag != null:
-            dict[match_newline_tag.get_start("tag")] = COL_tag_content
-            dict[match_newline_tag.get_start("arg") - 1] = COL_symbol
-            dict[match_newline_tag.get_start("arg")] = COL_tag_content
+            dict[match_newline_tag.get_start(__TAG)] = COL_tag_content
+            dict[match_newline_tag.get_start(__ARG) - 1] = COL_symbol
+            dict[match_newline_tag.get_start(__ARG)] = COL_tag_content
 
         else:
             for tag in DialogueParser._regex_dlg_tags.search_all(string):
                 var START : int = tag.get_start()
                 var END : int = tag.get_end()
 
-                if !dict.has(START):
-                    dict[START] = COL_tag_braces
+                dict[START] = COL_tag_braces
 
-                dict[tag.get_start("tag")] = COL_tag_content
+                dict[tag.get_start(__TAG)] = COL_tag_content
     
-                if string.contains("="):
-                    dict[tag.get_start("tag") + 1] = COL_symbol
-                    dict[tag.get_start("arg")] = COL_tag_content
+                if string.contains(EQUALS):
+                    dict[tag.get_start(2)] = COL_symbol
+                    dict[tag.get_start(__ARG)] = COL_tag_content
     
                 dict[END - 1] = COL_tag_braces
 
@@ -145,10 +153,9 @@ func _get_line_syntax_highlighting(line : int) -> Dictionary:
                 var START : int = bb.get_start()
                 var END : int = bb.get_end()
 
-                if !dict.has(START):
-                    dict[START] = COL_tag_braces
+                dict[START] = COL_tag_braces
 
-                dict[bb.get_start("tag")] = COL_tag_content
+                dict[bb.get_start(__TAG)] = COL_tag_content
                 dict[END - 1] = COL_tag_braces
 
                 if !dict.has(END):
@@ -157,25 +164,23 @@ func _get_line_syntax_highlighting(line : int) -> Dictionary:
     else:
         dict[0] = COL_invalid
 
-        if string.begins_with(DialogueParser.HASH):
+        if string.begins_with(HASH):
             dict[0] = COL_comment
 
         else:
-            if string.ends_with(DialogueParser.COLON):
+            if string.ends_with(COLON):
                 dict[0] = COL_actor_name_line
-                dict[string.rfind(DialogueParser.COLON)] = COL_symbol
-                text_edit.toggle_foldable_line
+                dict[string.rfind(COLON)] = COL_symbol
 
                 text_edit.set_line_background_color(line, actor_name_line_bg)
-                if string.strip_edges() == DialogueParser.COLON:
+                if string.strip_edges() == COLON:
                     text_edit.set_line_background_color(line, actor_name_line_bg_2)
 
-            elif string.begins_with(DialogueParser.COLON):
+            elif string.begins_with(COLON):
                 dict[0] = COL_section
                 text_edit.set_line_background_color(line, section_bg)
 
     # why does it need to be ordered????
-    # TODO: performance
     var dict_ordered : Dictionary = {}
 
     var dict_keys : PackedInt64Array = dict.keys()
