@@ -21,6 +21,10 @@ const REGEX_FUNC_CALL :=\
     r"(?<caller>\w+)\.(?<name>\w+)\((?<args>.*)\)$";\
     static var _regex_func_call := RegEx.create_from_string(REGEX_FUNC_CALL)
 
+const REGEX_FUNC_VARS :=\
+    r"(?<![\"\'\d])\b([a-zA-Z_]\w*)\s*\.\s*([a-zA-Z_]\w*)\b(?![\"\'\d])";\
+    static var _regex_func_vars := RegEx.create_from_string(REGEX_FUNC_VARS)
+
 const REGEX_INDENT :=\
     r"(?<=\n{1})\s+";\
     static var _regex_indent := RegEx.create_from_string(REGEX_INDENT)
@@ -53,6 +57,7 @@ const __CALLER := "caller"
 const __NAME := "name"
 const __ARGS := "args"
 const __LN_NUM := "ln_num"
+const __STANDALONE := "standalone"
 #endregion
 
 const SETS_TEMPLATE := {
@@ -105,10 +110,13 @@ const FUNC_TEMPLATE := {
     __NAME: EMPTY,
 
     # Arguments used.
-    __ARGS: [],
+    __ARGS: null,
 
     # Line number of where the function is written.
     __LN_NUM: 0,
+
+    __STANDALONE: true,
+    __VARS: [],
 }
 
 const TAG_DELAY_ALIASES : PackedStringArray = [
@@ -142,6 +150,7 @@ static func _initialize_regex() -> void:
     _regex_dlg_tags_newline = RegEx.create_from_string(REGEX_DLG_TAGS_NEWLINE)
     _regex_bbcode_tags = RegEx.create_from_string(REGEX_BBCODE_TAGS)
     _regex_func_call = RegEx.create_from_string(REGEX_FUNC_CALL)
+    _regex_func_vars = RegEx.create_from_string(REGEX_FUNC_VARS)
     _regex_indent = RegEx.create_from_string(REGEX_INDENT)
     _regex_valid_dlg = RegEx.create_from_string(REGEX_VALID_DLG)
     _regex_section = RegEx.create_from_string(REGEX_SECTION)
@@ -229,14 +238,19 @@ func _init(src : String = ""):
 
                 # Parse parameter arguments
                 var args := Expression.new()
-                var args_err := args.parse("[%s]" % args_raw)
-                if args_err != OK:
-                    printerr("Error: '%s' when parsing arguments on function %s.%s(%s) on line %d" % [
-                        error_string(args_err),
-                        func_dict[__CALLER], func_dict[__NAME], args_raw, ln_num
-                    ])
+                var args_err := args.parse("[" + args_raw + "]")
+                var var_matches := _regex_func_vars.search_all(args_raw)
 
-                func_dict[__ARGS] = args.execute() as Array
+                if var_matches.is_empty():
+                    func_dict[__ARGS] = args.execute() as Array
+
+                else:
+                    func_dict[__STANDALONE] = false
+                    func_dict[__ARGS] = "[" + args_raw + "]"
+
+                    for var_match in var_matches:
+                        func_dict[__VARS].append(var_match.get_string(1))
+
                 output[body_pos][__FUNC].append(func_dict)
             #endregion
 

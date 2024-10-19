@@ -200,21 +200,57 @@ func clear_callers() -> void:
     _caller.clear()
     _update_caller()
 
+var _expression_args := Expression.new()
 func _call_functions(f : Dictionary) -> void:
-    if allow_func:
-        if !_caller_all.has(f[DialogueParser.__CALLER]):
-            printerr("Error @%s:%d - caller '%s' doesn't exists" % [
-                current_dialogue._source_path, f[DialogueParser.__LN_NUM],
-                f[DialogueParser.__CALLER],
-            ])
-        else:
-            if !_caller_all[f[DialogueParser.__CALLER]].has_method(f[DialogueParser.__NAME]):
-                printerr("Error @%s:%d - function '%s.%s()' doesn't exists" % [
-                    current_dialogue._source_path, f[DialogueParser.__LN_NUM],
-                    f[DialogueParser.__NAME], f[DialogueParser.__CALLER]
-                ])
-            else:
-                _caller_all[f[DialogueParser.__CALLER]].callv(f[DialogueParser.__NAME], f[DialogueParser.__ARGS])
+    if !allow_func:
+        return
+
+    #region general error checks
+    if !_caller_all.has(f[DialogueParser.__CALLER]):
+        printerr("Error @%s:%d - caller '%s' doesn't exists" % [
+            current_dialogue._source_path, f[DialogueParser.__LN_NUM],
+            f[DialogueParser.__CALLER],
+        ])
+        return
+
+    if !_caller_all[f[DialogueParser.__CALLER]].has_method(f[DialogueParser.__NAME]):
+        printerr("Error @%s:%d - function '%s.%s()' doesn't exists" % [
+            current_dialogue._source_path, f[DialogueParser.__LN_NUM],
+            f[DialogueParser.__CALLER], f[DialogueParser.__NAME]
+        ])
+        return
+    #endregion
+
+    if f[DialogueParser.__STANDALONE]:
+        _caller_all[f[DialogueParser.__CALLER]].callv(f[DialogueParser.__NAME], f[DialogueParser.__ARGS])
+        return
+
+    if f[DialogueParser.__VARS].any(_func_args_inp_check_caller.bind(_caller_all.keys())):
+        printerr("Error @%s:%d - Argument caller(s) used: %s doesn't exists" % [
+            current_dialogue._source_path, f[DialogueParser.__LN_NUM],
+            f[DialogueParser.__VARS],
+        ])
+        return
+
+    var expr_err := _expression_args.parse(f[DialogueParser.__ARGS], f[DialogueParser.__VARS] as PackedStringArray)
+    var expr_args = _expression_args.execute(
+        (f[DialogueParser.__VARS] as Array[String]).map(_func_args_inp_get),
+    _caller_all[f[DialogueParser.__CALLER]])
+
+    if _expression_args.has_execute_failed() or expr_err != OK:
+        printerr("Error @%s:%d - %s" % [
+            current_dialogue._source_path, f[DialogueParser.__LN_NUM],
+            _expression_args.get_error_text(),
+        ])
+        return
+
+    _caller_all[f[DialogueParser.__CALLER]].callv(f[DialogueParser.__NAME], expr_args)
+
+func _func_args_inp_get(arg_str : String) -> Variant:
+    return _caller_all[arg_str]
+
+func _func_args_inp_check_caller(arg_str : String, arg_arr : Array) -> Variant:
+    return !arg_arr.has(arg_str)
 
 func _execute_functions() -> void:
     if allow_func:
