@@ -6,7 +6,7 @@
 <a href="https://github.com/nndda/Theatre/actions/workflows/dialogue-test.yml" target="_blank"><img src="https://img.shields.io/github/actions/workflow/status/nndda/Theatre/dialogue-test.yml?branch=main&event=push&style=flat-square&logo=github&label=Parser%20build&labelColor=%23282e33&color=%2329aa46" alt="Build status" height="20"></a>
 <a href="https://nndda.github.io/Theatre/" target="_blank"><img src="https://img.shields.io/github/actions/workflow/status/nndda/Theatre/docs_build.yaml?branch=docs&event=push&style=flat-square&logo=github&label=Docs%20build&labelColor=%23282e33&color=%2329aa46" alt="Documentation build" height="20"></a>
 
-Yet another <i><sub>(linear)</sub></i> dialogue system<b>/</b>addon<b>/</b>plugin for Godot. With features such as:
+Yet another <sub>(linear)</sub> dialogue system<b>/</b>addon<b>/</b>plugin for Godot. With features such as:
 
 - ✍️ Written in human-readable syntax.
 - 😐 ....
@@ -99,7 +99,7 @@ Dia:
 <a href="https://nndda.github.io/Theatre/class/dialogue/syntax/" target="_blank">More comprehensive Dialogue features documented here.</a>
 </p>
 
-# Quick Start
+# (Very) Quick Start
 
 Write your epic Dialogue!
 ```gdscript
