@@ -29,7 +29,7 @@ Yet another <i><sub>(linear)</sub></i> dialogue system<b>/</b>addon<b>/</b>plugi
 </td>
 <td>
 
-```
+```yaml
 Dia:
     "Welcome! {d=0.8}to the
     [fx1]Theatre[/fx1]!
@@ -57,11 +57,11 @@ Dia:
 ## Dialogue tags
 
 Fine-tune your dialogue flow with `{delay}` and `{speed}`.
-```
+```yaml
 Godette:
     "Hello!{delay = 0.7} Nice to meet you."
 ```
-```
+```yaml
 Godette:
     "Hello!
         delay=0.7
@@ -71,13 +71,13 @@ Godette:
 ## Function calls
 
 Connect your story to the game with function calls.
-```
+```yaml
 {player_name}:
     "Thanks! That feels so much better."
 
     Player.heal(20)
 ```
-```
+```yaml
 Ritsu:
     "Cheers!"
 
@@ -85,7 +85,7 @@ Ritsu:
 ```
 
 Call functions only at specific points in the Dialogue.
-```
+```yaml
 Dia:
     "Let's brighten up the room a little...{d = 1.1}
     {0}
