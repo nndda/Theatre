@@ -103,16 +103,22 @@ Dia:
 
 Write your epic Dialogue!
 ```gdscript
-# write it directly with triple quotation marks
+# Write it directly with triple quotation marks.
 var epic_dialogue = Dialogue.new("""
 
 Dia:
-    "For performance reason, I'd recommend
-    using the method below instead."
+    "Loading the Dialogue, written in a *.dlg file
+    is much better for performance."
+:
+    "It'll keep things clean and efficient."
+:
+    "Plus, you’ll have syntax highlighting
+    for better readibility."
 
 """)
 
-# alternatively, write it in a *.dlg file, and load it
+# Write it in a *.dlg file, and load it.
+# (Just use this, for the reason explained above.)
 var epic_dialogue = Dialogue.load("res://epic_dialogue.dlg")
 ```
 
