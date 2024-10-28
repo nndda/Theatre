@@ -150,7 +150,7 @@ func _characters_ticker_timeout() -> void:
     if !_func_queue.is_empty():
         if _func_queue[0] == visible_characters:
             if _current_stage.allow_func:
-                _current_stage._call_functions(
+                _current_stage._call_function(
                     _current_stage._current_dialogue_set[DialogueParser.__FUNC][
                         _current_stage._current_dialogue_set[DialogueParser.__FUNC_POS][_func_queue[0]]
                     ]
@@ -192,7 +192,7 @@ func _delay_timer_timeout() -> void:
 
 func _on_stage_skipped() -> void:
     for f in _func_queue:
-        _current_stage._call_functions(
+        _current_stage._call_function(
             _current_stage._current_dialogue_set[DialogueParser.__FUNC][
                 _current_stage._current_dialogue_set[DialogueParser.__FUNC_POS][f]
             ]

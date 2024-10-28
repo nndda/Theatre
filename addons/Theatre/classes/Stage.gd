@@ -201,7 +201,7 @@ func clear_callers() -> void:
     _update_caller()
 
 var _expression_args := Expression.new()
-func _call_functions(f : Dictionary) -> void:
+func _call_function(f : Dictionary) -> void:
     if !allow_func:
         return
 
@@ -246,10 +246,10 @@ func _call_functions(f : Dictionary) -> void:
 
     _caller_all[f[DialogueParser.__CALLER]].callv(f[DialogueParser.__NAME], expr_args)
 
-func _func_args_inp_get(arg_str : String) -> Variant:
+func _func_args_inp_get(arg_str : String) -> Object:
     return _caller_all[arg_str]
 
-func _func_args_inp_check_caller(arg_str : String, arg_arr : Array) -> Variant:
+func _func_args_inp_check_caller(arg_str : String, arg_arr : Array) -> bool:
     return !arg_arr.has(arg_str)
 
 func _execute_functions() -> void:
@@ -257,7 +257,7 @@ func _execute_functions() -> void:
         for n in _current_dialogue_set[DialogueParser.__FUNC].size():
             # do not call positional functions
             if not n in _current_dialogue_set[DialogueParser.__FUNC_IDX]:
-                _call_functions(_current_dialogue_set[DialogueParser.__FUNC][n])
+                _call_function(_current_dialogue_set[DialogueParser.__FUNC][n])
 
 #endregion
 
@@ -284,7 +284,7 @@ signal cancelled
 signal cancelled_at(line : int, line_data : Dictionary)
 
 ## Emitted when the [Dialogue] is switched using [method switch].
-signal dialogue_switched(old_dialogue, new_dialogue)
+signal dialogue_switched(old_dialogue : Dialogue, new_dialogue : Dialogue)
 
 #signal locale_changed(lang : String)
 
