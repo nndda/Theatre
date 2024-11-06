@@ -117,6 +117,9 @@ func _ready() -> void:
             await get_tree().create_timer(2.5).timeout
             update_check()
 
+func _enable_plugin() -> void:
+    reimport_dialogues()
+
 func _exit_tree() -> void:
     print("🎭 Disabling Theatre...")
 
