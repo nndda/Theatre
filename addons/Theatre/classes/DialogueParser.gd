@@ -188,7 +188,7 @@ func _init(src : String = ""):
             if dlg_raw_size < i + 1:
                 printerr("Error: actor's name exists without a dialogue body")
 
-            setsl[__ACTOR] = n_stripped.trim_suffix(COLON)
+            setsl[__ACTOR] = StringName(n_stripped.trim_suffix(COLON))
             setsl[__LINE_NUM] = ln_num
 
             if setsl[__ACTOR] == UNDERSCORE:
@@ -222,12 +222,12 @@ func _init(src : String = ""):
             if regex_func_match != null:
                 var func_dict := FUNC_TEMPLATE.duplicate(true)
 
-                func_dict[__CALLER] = regex_func_match.get_string(
+                func_dict[__CALLER] = StringName(regex_func_match.get_string(
                     regex_func_match.names[__CALLER]
-                )
-                func_dict[__NAME] = regex_func_match.get_string(
+                ))
+                func_dict[__NAME] = StringName(regex_func_match.get_string(
                     regex_func_match.names[__NAME]
-                )
+                ))
 
                 # Function arguments
                 var args_raw := regex_func_match.get_string(
@@ -251,6 +251,7 @@ func _init(src : String = ""):
                     for var_match in var_matches:
                         func_dict[__VARS].append(var_match.get_string(1))
 
+                func_dict.make_read_only()
                 output[body_pos][__FUNC].append(func_dict)
             #endregion
 
@@ -303,6 +304,7 @@ func _init(src : String = ""):
             output[n][__FUNC_POS] = parsed_tags[__FUNC_POS]
             output[n][__FUNC_IDX] = parsed_tags[__FUNC_IDX]
 
+        output[n][__FUNC].make_read_only()
         output[n][__CONTENT] = body
 
 ## Check if [param string] is indented with tabs or spaces.
