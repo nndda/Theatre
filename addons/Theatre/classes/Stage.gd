@@ -205,37 +205,41 @@ func _call_function(f : Dictionary) -> void:
     if !allow_func:
         return
 
+    var func_caller : StringName = f[DialogueParser.__CALLER]
+    var func_name : StringName = f[DialogueParser.__NAME]
+    var func_vars : Array = f[DialogueParser.__VARS]
+
     #region general error checks
-    if !_caller_all.has(f[DialogueParser.__CALLER]):
+    if !_caller_all.has(func_caller):
         printerr("Error @%s:%d - caller '%s' doesn't exists" % [
             current_dialogue._source_path, f[DialogueParser.__LN_NUM],
-            f[DialogueParser.__CALLER],
+            func_caller,
         ])
         return
 
-    if !_caller_all[f[DialogueParser.__CALLER]].has_method(f[DialogueParser.__NAME]):
+    if !_caller_all[func_caller].has_method(func_name):
         printerr("Error @%s:%d - function '%s.%s()' doesn't exists" % [
             current_dialogue._source_path, f[DialogueParser.__LN_NUM],
-            f[DialogueParser.__CALLER], f[DialogueParser.__NAME]
+            func_caller, func_name
         ])
         return
     #endregion
 
     if f[DialogueParser.__STANDALONE]:
-        _caller_all[f[DialogueParser.__CALLER]].callv(f[DialogueParser.__NAME], f[DialogueParser.__ARGS])
+        _caller_all[func_caller].callv(func_name, f[DialogueParser.__ARGS])
         return
 
-    if f[DialogueParser.__VARS].any(_func_args_inp_check_caller.bind(_caller_all.keys())):
+    if func_vars.any(_func_args_inp_check_caller.bind(_caller_all.keys())):
         printerr("Error @%s:%d - Argument caller(s) used: %s doesn't exists" % [
             current_dialogue._source_path, f[DialogueParser.__LN_NUM],
-            f[DialogueParser.__VARS],
+            func_vars,
         ])
         return
 
-    var expr_err := _expression_args.parse(f[DialogueParser.__ARGS], f[DialogueParser.__VARS] as PackedStringArray)
+    var expr_err := _expression_args.parse(f[DialogueParser.__ARGS], func_vars as PackedStringArray)
     var expr_args = _expression_args.execute(
-        (f[DialogueParser.__VARS] as Array[String]).map(_func_args_inp_get),
-    _caller_all[f[DialogueParser.__CALLER]])
+        (func_vars as Array[String]).map(_func_args_inp_get),
+    _caller_all[func_caller])
 
     if _expression_args.has_execute_failed() or expr_err != OK:
         printerr("Error @%s:%d - %s" % [
@@ -244,7 +248,7 @@ func _call_function(f : Dictionary) -> void:
         ])
         return
 
-    _caller_all[f[DialogueParser.__CALLER]].callv(f[DialogueParser.__NAME], expr_args)
+    _caller_all[func_caller].callv(func_name, expr_args)
 
 func _func_args_inp_get(arg_str : String) -> Object:
     return _caller_all[arg_str]
