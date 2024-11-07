@@ -12,7 +12,7 @@ config_version=5
 
 config/name="Theatre"
 config/description="Demo for Theatre: a text-based DIalogue plugin for Godot 4.3"
-run/main_scene="res://theatre_demo/1_intro.tscn"
+run/main_scene="res://theatre_demo/preview/preview.tscn"
 config/features=PackedStringArray("4.3")
 config/icon="res://addons/Theatre/assets/icons/Theatre.svg"
 
