@@ -56,6 +56,10 @@ func _init(dlg_src : String = ""):
         _update_used_variables()
         _update_used_function_calls()
 
+        _sections.make_read_only()
+        _sets.make_read_only()
+        _used_function_calls.make_read_only()
+
 ## Load written [Dialogue] file from [param path]. Use [method Dialogue.new] instead to create a written [Dialogue] directly in the script.
 static func load(path : String) -> Dialogue:
     return load(path) as Dialogue
