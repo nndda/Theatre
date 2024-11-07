@@ -113,9 +113,19 @@ func _get_line_syntax_highlighting(line : int) -> Dictionary:
     dict[0] = COL_base_content
 
     if is_indented(string):
+        if DialogueParser._regex_func_call == null:
+            DialogueParser._regex_func_call = RegEx.create_from_string(
+                DialogueParser.REGEX_FUNC_CALL
+            )
         var match_func := DialogueParser._regex_func_call.search(string)
-        var match_newline_tag : RegExMatch = null \
-            if match_func != null else DialogueParser._regex_dlg_tags_newline.search(string)
+        var match_newline_tag : RegExMatch = null
+
+        if match_func != null:
+            if DialogueParser._regex_dlg_tags_newline == null:
+                DialogueParser._regex_dlg_tags_newline = RegEx.create_from_string(
+                    DialogueParser.REGEX_DLG_TAGS_NEWLINE
+                )
+            match_newline_tag = DialogueParser._regex_dlg_tags_newline.search(string)
 
         if match_func != null:
             dict[match_func.get_start(__CALLER)] = COL_caller
@@ -132,6 +142,10 @@ func _get_line_syntax_highlighting(line : int) -> Dictionary:
             dict[match_newline_tag.get_start(__ARG)] = COL_tag_content
 
         else:
+            if DialogueParser._regex_dlg_tags == null:
+                DialogueParser._regex_dlg_tags = RegEx.create_from_string(
+                    DialogueParser.REGEX_DLG_TAGS
+                )
             for tag in DialogueParser._regex_dlg_tags.search_all(string):
                 var START : int = tag.get_start()
                 var END : int = tag.get_end()
@@ -149,6 +163,10 @@ func _get_line_syntax_highlighting(line : int) -> Dictionary:
                 if !dict.has(END):
                     dict[END] = COL_base_content
 
+            if DialogueParser._regex_bbcode_tags == null:
+                DialogueParser._regex_bbcode_tags = RegEx.create_from_string(
+                    DialogueParser.REGEX_BBCODE_TAGS
+                )
             for bb in DialogueParser._regex_bbcode_tags.search_all(string):
                 var START : int = bb.get_start()
                 var END : int = bb.get_end()
