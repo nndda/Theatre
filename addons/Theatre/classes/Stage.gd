@@ -165,7 +165,7 @@ func get_callers() -> Dictionary:
 ## [br][br]
 ## See also [method remove_caller], and [method clear_caller].
 func add_caller(id : String, object : Object) -> void:
-    _caller[id] = object
+    _caller[id] = weakref(object)
     if object is Node:
         object.tree_exited.connect(remove_caller.bind(id))
     _update_caller()
@@ -217,7 +217,16 @@ func _call_function(f : Dictionary) -> void:
         ])
         return
 
-    if !_caller_all[func_caller].has_method(func_name):
+    var caller_obj : Object = _caller_all[func_caller].get_ref()
+
+    if caller_obj == null:
+        printerr("Error @%s:%d - object of the caller '%s' is null" % [
+            current_dialogue._source_path, f[DialogueParser.__LN_NUM],
+            func_caller,
+        ])
+        return
+
+    if !caller_obj.has_method(func_name):
         printerr("Error @%s:%d - function '%s.%s()' doesn't exists" % [
             current_dialogue._source_path, f[DialogueParser.__LN_NUM],
             func_caller, func_name
@@ -226,7 +235,7 @@ func _call_function(f : Dictionary) -> void:
     #endregion
 
     if f[DialogueParser.__STANDALONE]:
-        _caller_all[func_caller].callv(func_name, f[DialogueParser.__ARGS])
+        caller_obj.callv(func_name, f[DialogueParser.__ARGS])
         return
 
     if func_vars.any(_func_args_inp_check_caller.bind(_caller_all.keys())):
@@ -239,7 +248,7 @@ func _call_function(f : Dictionary) -> void:
     var expr_err := _expression_args.parse(f[DialogueParser.__ARGS], func_vars as PackedStringArray)
     var expr_args = _expression_args.execute(
         (func_vars as Array[String]).map(_func_args_inp_get),
-    _caller_all[func_caller])
+    caller_obj)
 
     if _expression_args.has_execute_failed() or expr_err != OK:
         printerr("Error @%s:%d - %s" % [
@@ -248,10 +257,10 @@ func _call_function(f : Dictionary) -> void:
         ])
         return
 
-    _caller_all[func_caller].callv(func_name, expr_args)
+    caller_obj.callv(func_name, expr_args)
 
 func _func_args_inp_get(arg_str : String) -> Object:
-    return _caller_all[arg_str]
+    return _caller_all[arg_str].get_ref()
 
 func _func_args_inp_check_caller(arg_str : String, arg_arr : Array) -> bool:
     return !arg_arr.has(arg_str)
