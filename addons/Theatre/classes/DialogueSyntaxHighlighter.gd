@@ -120,7 +120,7 @@ func _get_line_syntax_highlighting(line : int) -> Dictionary:
         var match_func := DialogueParser._regex_func_call.search(string)
         var match_newline_tag : RegExMatch = null
 
-        if match_func != null:
+        if match_func == null:
             if DialogueParser._regex_dlg_tags_newline == null:
                 DialogueParser._regex_dlg_tags_newline = RegEx.create_from_string(
                     DialogueParser.REGEX_DLG_TAGS_NEWLINE
