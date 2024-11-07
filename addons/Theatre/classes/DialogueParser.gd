@@ -378,23 +378,19 @@ static func parse_tags(string : String) -> Dictionary:
         else:
             string = string.replace(bb.strings[0], EMPTY)
 
-    # TODO
     # Escaped Curly Brackets ===============================================
     # 💀💀💀💀💀💀💀💀💀💀💀
-    #var regex_curly_brackets := RegEx.new()
-    #regex_curly_brackets.compile(r"\\\{|\\\}")
-#
-    #var esc_curly_brackets : Array[Dictionary] = []
-#
-    #for cb in regex_curly_brackets.search_all(string):
-        #esc_curly_brackets.append({
-            #"pos": cb.get_start(),
-            #"chr": cb.strings[0],
-        #})
-#
-    #if !esc_curly_brackets.is_empty():
-        #esc_curly_brackets.reverse()
-        #string = regex_curly_brackets.sub(string, "-", true)
+    var regex_curly_brackets := RegEx.create_from_string(r"\\(\{|\})")
+
+    var esc_curly_brackets : Dictionary = {}
+
+    for cb in regex_curly_brackets.search_all(
+        _regex_dlg_tags.sub(string, EMPTY, true)
+        ):
+        esc_curly_brackets[cb.get_start()] = cb.strings[0]
+
+    if !esc_curly_brackets.is_empty():
+        string = regex_curly_brackets.sub(string, HASH, true)
 
     # Dialogue tags ========================================================
     var tag_pos_offset : int = 0
@@ -431,12 +427,11 @@ static func parse_tags(string : String) -> Dictionary:
 
         tag_pos_offset += string_match.length()
 
-    # TODO
     # Insert back escaped curly brackets ===================================
-    #for cb in esc_curly_brackets:
-        #string = string\
-            #.erase(cb["pos"])\
-            #.insert(cb["pos"], cb["chr"])
+    for cb in esc_curly_brackets.keys():
+        string = string\
+            .erase(cb)\
+            .insert(cb, esc_curly_brackets[cb])
 
     # Insert back BBCodes ==================================================
     string = string\
