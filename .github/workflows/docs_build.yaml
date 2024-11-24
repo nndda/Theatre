@@ -49,11 +49,11 @@ jobs:
         run: npm i -g html-minifier clean-css-cli
 
       - name: Minify CSS
-        run: find ./site/assets/stylesheets -name "*.css" ! -name "*.min.css" \
+        run: find ./assets/stylesheets -name "*.css" ! -name "*.min.css" \
               -type f -exec cleancss -o {} {} \;
 
       - name: Minify HTML
-        run: find ./site -name "*.html" -type f -exec html-minifier \
+        run: find ./ -name "*.html" -type f -exec html-minifier \
               --case-sensitive \
               --collapse-whitespace \
               --decode-entities \
@@ -63,4 +63,5 @@ jobs:
       - name: Update optimized assets
         run: |
           git add .
+          git commit -m "Optimize assets"
           git push
