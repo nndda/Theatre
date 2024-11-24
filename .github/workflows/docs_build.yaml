@@ -36,3 +36,31 @@ jobs:
 
       - run: pip install -r requirements.txt
       - run: mkdocs gh-deploy --force
+
+      - uses: actions/checkout@v4
+        with:
+          ref: 'gh-pages'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'latest'
+
+      - name: Install optimization dependencies
+        run: npm i -g html-minifier clean-css-cli
+
+      - name: Minify CSS
+        run: find ./site/assets/stylesheets -name "*.css" ! -name "*.min.css" \
+              -type f -exec cleancss -o {} {} \;
+
+      - name: Minify HTML
+        run: find ./site -name "*.html" -type f -exec html-minifier \
+              --case-sensitive \
+              --collapse-whitespace \
+              --decode-entities \
+              --remove-comments \
+              {} -o {} \;
+
+      - name: Update optimized assets
+        run: |
+          git add .
+          git push
