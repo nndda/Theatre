@@ -13,10 +13,30 @@ extends Node
 #region NOTE: Configurations & stored variables ----------------------------------------------------
 
 ## Optional [Label] node that displays actors of the current line of [member current_dialogue].
-@export var actor_label : Label = null
+@export var actor_label : Label = null:
+    set = set_actor_label,
+    get = get_actor_label
+
+func set_actor_label(node : Label) -> void:
+    actor_label = node
+    if node != null:
+        actor_label.tree_exiting.connect(set_actor_label.bind(null))
+
+func get_actor_label() -> Label:
+    return actor_label
 
 ## [DialogueLabel] node that displays the [Dialogue] line body. This is [b]required[/b] to be set before playing or running [Dialogue].
-@export var dialogue_label : DialogueLabel = null
+@export var dialogue_label : DialogueLabel = null:
+    set = set_dialogue_label,
+    get = get_dialogue_label
+
+func set_dialogue_label(node : DialogueLabel) -> void:
+    dialogue_label = node
+    if node != null:
+        dialogue_label.tree_exiting.connect(set_dialogue_label.bind(null))
+
+func get_dialogue_label() -> DialogueLabel:
+    return dialogue_label
 
 @export_group("Configurations")
 
@@ -624,14 +644,16 @@ func _enter_tree() -> void:
     if !variables.is_empty():
         _update_variables_dialogue()
 
-    await get_tree().current_scene.ready
-    for node in caller_nodes:
-        if node != null:
-            add_caller("%s" % node.name, node)
+    if !caller_nodes.is_empty():
+        await get_tree().current_scene.ready
+        for node in caller_nodes:
+            if node != null:
+                add_caller(node.name, node)
 
 func _exit_tree() -> void:
-    if dialogue_label._current_stage == self:
-        dialogue_label._current_stage = null
+    if dialogue_label != null:
+        if dialogue_label._current_stage == self:
+            dialogue_label._current_stage = null
 
     actor_label = null
     dialogue_label = null
