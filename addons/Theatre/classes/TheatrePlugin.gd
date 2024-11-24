@@ -117,6 +117,18 @@ func _ready() -> void:
             await get_tree().create_timer(2.5).timeout
             update_check()
 
+        var theatre_record := FileAccess.open("res://.godot/.theatre", FileAccess.READ_WRITE)
+
+        if theatre_record == null:
+            printerr("Error opening .theatre file: %s" % error_string(theatre_record.get_open_error()))
+        else:
+            var ver := get_plugin_version().strip_edges()
+            if theatre_record.get_as_text().strip_edges() != ver:
+                reimport_dialogues()
+                theatre_record.store_string(ver)
+
+            theatre_record.close()
+
 func _exit_tree() -> void:
     print("🎭 Disabling Theatre...")
 
