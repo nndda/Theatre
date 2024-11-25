@@ -490,10 +490,10 @@ func progress(skip_render : bool = false) -> void:
                 _progress_forward()
 
 func _progress_skip() -> void:
-    dialogue_label.clear_render()
-    dialogue_label.visible_ratio = 1.0
     skipped.emit()
     skipped_at.emit(_step, _current_dialogue_set)
+    dialogue_label.clear_render()
+    dialogue_label.visible_ratio = 1.0
 
 func _progress_forward() -> void:
     dialogue_label.clear_render()
