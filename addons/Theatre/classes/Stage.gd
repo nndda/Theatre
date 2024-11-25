@@ -358,13 +358,15 @@ func get_invalid_functions() -> Dictionary:
 
         else:
             for m in used_funcs[n]:
-                if !(_caller[n] as Object).has_method(used_funcs[n][m][DialogueParser.__NAME]):
-                    if !output.has("no_method"):
-                        output["no_method"] = []
+                if _caller[n] != null and _caller[n] is WeakRef:
+                    if _caller[n].get_ref() != null:
+                        if !(_caller[n].get_ref() as Object).has_method(used_funcs[n][m][DialogueParser.__NAME]):
+                            if !output.has("no_method"):
+                                output["no_method"] = []
 
-                    output["no_method"].append(
-                        "%s.%s" % [n, used_funcs[n][m][DialogueParser.__NAME]]
-                    )
+                            output["no_method"].append(
+                                "%s.%s" % [n, used_funcs[n][m][DialogueParser.__NAME]]
+                            )
 
     return output
 
