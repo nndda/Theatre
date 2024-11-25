@@ -197,12 +197,6 @@ func remove_caller(id : String) -> void:
     if !_caller.has(id):
         push_error("Cannot remove caller: caller '%s' doesn't exists" % id)
     else:
-        if _caller[id] is Node:
-            if (_caller[id] as Node).tree_exited\
-                .is_connected(remove_caller.bind(id)):
-                (_caller[id] as Node).tree_exited.disconnect(
-                    remove_caller.bind(id)
-                )
         _caller.erase(id)
     _update_caller()
 
@@ -210,13 +204,6 @@ func remove_caller(id : String) -> void:
 ## [br][br]
 ## See also [method add_caller], and [method remove_caller].
 func clear_callers() -> void:
-    for id : String in _caller:
-        if _caller[id] is Node:
-            if (_caller[id] as Node).tree_exited\
-                .is_connected(remove_caller.bind(id)):
-                (_caller[id] as Node).tree_exited.disconnect(
-                    remove_caller.bind(id)
-                )
     _caller.clear()
     _update_caller()
 
