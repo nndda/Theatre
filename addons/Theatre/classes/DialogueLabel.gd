@@ -16,6 +16,7 @@ extends RichTextLabel
 var _characters_draw_tick_scaled : float
 
 #region NOTE: Setup --------------------------------------------------------------------------------
+# NOTE: These are cyclic references right?
 var _current_stage : Stage:
     set = set_stage,
     get = get_stage
@@ -30,8 +31,9 @@ func get_stage() -> Stage:
 ## [b]Note:[/b] [member Stage.dialogue_label] will be set automatically when you assign
 ## a [DialogueLabel] to the [Stage] on the inspector.
 func set_stage(stage : Stage) -> void:
-    if _current_stage != null:
-        _current_stage.dialogue_label = null
+    # NOTE: ????????
+    #if _current_stage != null:
+        #_current_stage.dialogue_label = null
     if stage != null:
         _current_stage = stage
         if !_current_stage.skipped.is_connected(_on_stage_skipped):
