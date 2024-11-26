@@ -62,7 +62,7 @@ jobs:
         run: find ./assets/stylesheets -name "*.css" ! -name "*.min.css" -type f -exec cleancss -o {} {} \;
 
       - name: Minify HTML
-        run: find ./ -name "*.html" -type f -exec html-minifier --case-sensitive --conservative-collapse --decode-entities --remove-comments {} -o {} \;
+        run: find ./ -name "*.html" -type f -exec html-minifier --case-sensitive --collapse-whitespace --decode-entities --remove-comments {} -o {} \;
 
       - name: Update optimized assets
         run: |
