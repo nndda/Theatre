@@ -1,3 +1,30 @@
+@media screen {
+  [data-md-color-scheme="slate"] {
+
+/* r #fc3a78*/
+/*    #9e87b5 #884ec2*/
+/* d #3fd4f2*/
+
+    --md-code-fg-color: #c0caf5 !important;
+    --md-code-bg-color: #110f17 !important;
+    --md-code-hl-color: #3fd4f280 !important;
+    --md-code-hl-color--light: #3fd4f210 !important;
+    --md-code-hl-number-color: #d9748d !important;
+    --md-code-hl-special-color: #bb9af7 !important;
+    --md-code-hl-function-color: #fc6087 !important;
+    --md-code-hl-constant-color: #3ff2d7 !important;
+    --md-code-hl-keyword-color: #3fd4f2 !important;
+    --md-code-hl-string-color: #99f23f !important;
+    --md-code-hl-name-color: #c0caf5 !important;
+    --md-code-hl-operator-color: #f2cb3f !important;
+    --md-code-hl-punctuation-color: #fc6087 !important;
+    --md-code-hl-comment-color: #677882 !important;
+    --md-code-hl-generic-color: #c0caf5 !important;
+    --md-code-hl-variable-color: #c0caf5 !important;
+
+  }
+}
+
 .hidden {
   display: none !important;
 }
