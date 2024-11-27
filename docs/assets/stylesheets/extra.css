@@ -33,6 +33,7 @@
   margin-right: .5em;
 }
 
+/*
 .var, .func {
   font-family: monospace;
   font-weight: bold;
@@ -60,6 +61,7 @@
 .func > .params:not(:last-child):after {
   content: ",";
 }
+*/
 
 /*[data-md-color-media="(prefers-color-scheme: light)"] .main-logo*/
 /*[data-md-color-media="(prefers-color-scheme: light)"] .md-header__button.md-logo*/
@@ -84,7 +86,6 @@ a.md-tabs__link[href="class/stage/tutorials/setting-up"] {}
   display: inline-block;
   border: 1px solid var(--md-accent-fg-color);
   background: var(--md-accent-fg-color--transparent);
-/*  color: var(--md-accent-fg-color);*/
   color: var(--md-accent-bg-color--light) !important;
   padding: .1em .6em;
   margin: .25em;
