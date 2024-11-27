@@ -2,6 +2,10 @@
   display: none !important;
 }
 
+.label > .twemoji {
+  margin-right: .5em;
+}
+
 .var, .func {
   font-family: monospace;
   font-weight: bold;
