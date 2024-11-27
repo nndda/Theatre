@@ -181,6 +181,7 @@ There's also the [Minimal Theatre Setup](tutorials/minimal_setup/index.md) tutor
 
 * More about writing your `Dialogue` on [Dialogue Syntax](class/dialogue/syntax.md).
 * Configure your `Stage` on [Configuring Stage](class/stage/configuration.md).
+* Encounter any problems? Check out [Common Troubleshooting](tutorials/troubleshooting.md).
 
 ### Specific tutorials
 
