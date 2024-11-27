@@ -12,12 +12,15 @@ nav:
   - "Tutorials":
     - "tutorials/index.md"
     - "tutorials/minimal_setup/index.md"
+    - "Basics":
+      - "tutorials/basics/loading_dialogue.md"
+      - "tutorials/basics/calling_dialogue_functions.md"
     - "tutorials/dialogue_ui_toggle/index.md"
     - "tutorials/dialogue_beep/index.md"
+    - "tutorials/troubleshooting.md"
   - "Dialogue":
     - "class/dialogue/syntax.md"
-    - "Tutorials":
-      - "class/dialogue/tutorials/constructing.md"
+    - "class/dialogue/data.md"
   - "Stage":
     - "class/stage/configuration.md"
 
