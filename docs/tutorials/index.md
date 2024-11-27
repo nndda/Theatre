@@ -1,8 +1,8 @@
 # Tutorials
 
-Here are the various tutorial pages for Theatre.
+Here are the various tutorial pages for Theatre. For guides on writing Dialogues, go to the [Dialogue Syntax page](../class/dialogue/syntax.md).
 
-The tutorials here assume [_minimal Theatre setup_](minimal_setup/index.md):
+Unless otherwise specified, all tutorials here assume [_minimal Theatre setup_](minimal_setup/index.md):
 
 ```
 MyScene

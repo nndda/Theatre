@@ -1,6 +1,6 @@
 # Loading the Dialogue
 
-Load your written Dialogue with `Dialogue.load()` or `load()`, and pass the absolute path of the text file as the parameter.
+Load your written Dialogue with `Dialogue.load()` or just `load()`, and pass the absolute path of the text file as the parameter.
 
 ```gdscript
 var dlg = Dialogue.load("res://intro.dlg")
