@@ -175,7 +175,10 @@ Before calling the functions in the written Dialogue, you need to set the `calle
 You can do that using `Stage.add_caller()`.The first argument is the id that will be used in the written Dialogue. The second argument must be an `Object` class or anything that inherits that.
 
 ```gdscript
-your_stage.add_caller("Player", $Player)
+@onready var player = $Player
+
+func _ready():
+    your_stage.add_caller("Player", player)
 ```
 
 After that, you can call any script functions or built-in functions that are available in the caller.
