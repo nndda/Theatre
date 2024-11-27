@@ -20,7 +20,6 @@ nav:
     - "tutorials/troubleshooting.md"
   - "Dialogue":
     - "class/dialogue/syntax.md"
-    - "class/dialogue/data.md"
   - "Stage":
     - "class/stage/configuration.md"
 
