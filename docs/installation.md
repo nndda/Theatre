@@ -9,7 +9,7 @@ For the most up-to-date features and fixes, **download the addon directly from t
 
 ### via official releases
 
-Grab the latest release [:material-download: here](https://github.com/nndda/Theatre/archive/refs/tags/0.7.0.zip), or get it from:
+Grab the latest release [:material-download: here](https://github.com/nndda/Theatre/archive/refs/tags/0.8.0.zip), or get it from:
 
 - [:simple-godotengine: Godot Asset Library](https://godotengine.org/asset-library/asset/2332)
 - [:simple-github: GitHub](https://github.com/nndda/Theatre/releases)
