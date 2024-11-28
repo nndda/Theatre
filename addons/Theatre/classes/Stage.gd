@@ -13,10 +13,30 @@ extends Node
 #region NOTE: Configurations & stored variables ----------------------------------------------------
 
 ## Optional [Label] node that displays actors of the current line of [member current_dialogue].
-@export var actor_label : Label = null
+@export var actor_label : Label = null:
+    set = set_actor_label,
+    get = get_actor_label
+
+func set_actor_label(node : Label) -> void:
+    actor_label = node
+    if node != null:
+        actor_label.tree_exiting.connect(set_actor_label.bind(null))
+
+func get_actor_label() -> Label:
+    return actor_label
 
 ## [DialogueLabel] node that displays the [Dialogue] line body. This is [b]required[/b] to be set before playing or running [Dialogue].
-@export var dialogue_label : DialogueLabel = null
+@export var dialogue_label : DialogueLabel = null:
+    set = set_dialogue_label,
+    get = get_dialogue_label
+
+func set_dialogue_label(node : DialogueLabel) -> void:
+    dialogue_label = node
+    if node != null:
+        dialogue_label.tree_exiting.connect(set_dialogue_label.bind(null))
+
+func get_dialogue_label() -> DialogueLabel:
+    return dialogue_label
 
 @export_group("Configurations")
 
@@ -165,7 +185,7 @@ func get_callers() -> Dictionary:
 ## [br][br]
 ## See also [method remove_caller], and [method clear_caller].
 func add_caller(id : String, object : Object) -> void:
-    _caller[id] = object
+    _caller[id] = weakref(object)
     if object is Node:
         object.tree_exited.connect(remove_caller.bind(id))
     _update_caller()
@@ -177,12 +197,6 @@ func remove_caller(id : String) -> void:
     if !_caller.has(id):
         push_error("Cannot remove caller: caller '%s' doesn't exists" % id)
     else:
-        if _caller[id] is Node:
-            if (_caller[id] as Node).tree_exited\
-                .is_connected(remove_caller.bind(id)):
-                (_caller[id] as Node).tree_exited.disconnect(
-                    remove_caller.bind(id)
-                )
         _caller.erase(id)
     _update_caller()
 
@@ -190,38 +204,80 @@ func remove_caller(id : String) -> void:
 ## [br][br]
 ## See also [method add_caller], and [method remove_caller].
 func clear_callers() -> void:
-    for id : String in _caller:
-        if _caller[id] is Node:
-            if (_caller[id] as Node).tree_exited\
-                .is_connected(remove_caller.bind(id)):
-                (_caller[id] as Node).tree_exited.disconnect(
-                    remove_caller.bind(id)
-                )
     _caller.clear()
     _update_caller()
 
-func _call_functions(f : Dictionary) -> void:
-    if allow_func:
-        if !_caller_all.has(f[DialogueParser.__CALLER]):
-            printerr("Error @%s:%d - caller '%s' doesn't exists" % [
-                current_dialogue._source_path, f[DialogueParser.__LN_NUM],
-                f[DialogueParser.__CALLER],
-            ])
-        else:
-            if !_caller_all[f[DialogueParser.__CALLER]].has_method(f[DialogueParser.__NAME]):
-                printerr("Error @%s:%d - function '%s.%s()' doesn't exists" % [
-                    current_dialogue._source_path, f[DialogueParser.__LN_NUM],
-                    f[DialogueParser.__NAME], f[DialogueParser.__CALLER]
-                ])
-            else:
-                _caller_all[f[DialogueParser.__CALLER]].callv(f[DialogueParser.__NAME], f[DialogueParser.__ARGS])
+var _expression_args := Expression.new()
+func _call_function(f : Dictionary) -> void:
+    if !allow_func:
+        return
+
+    var func_caller : StringName = f[DialogueParser.__CALLER]
+    var func_name : StringName = f[DialogueParser.__NAME]
+    var func_vars : Array = f[DialogueParser.__VARS]
+
+    #region general error checks
+    if !_caller_all.has(func_caller):
+        printerr("Error @%s:%d - caller '%s' doesn't exists" % [
+            current_dialogue._source_path, f[DialogueParser.__LN_NUM],
+            func_caller,
+        ])
+        return
+
+    var caller_obj : Object = _caller_all[func_caller].get_ref()
+
+    if caller_obj == null:
+        printerr("Error @%s:%d - object of the caller '%s' is null" % [
+            current_dialogue._source_path, f[DialogueParser.__LN_NUM],
+            func_caller,
+        ])
+        return
+
+    if !caller_obj.has_method(func_name):
+        printerr("Error @%s:%d - function '%s.%s()' doesn't exists" % [
+            current_dialogue._source_path, f[DialogueParser.__LN_NUM],
+            func_caller, func_name
+        ])
+        return
+    #endregion
+
+    if f[DialogueParser.__STANDALONE]:
+        caller_obj.callv(func_name, f[DialogueParser.__ARGS])
+        return
+
+    if func_vars.any(_func_args_inp_check_caller.bind(_caller_all.keys())):
+        printerr("Error @%s:%d - Argument caller(s) used: %s doesn't exists" % [
+            current_dialogue._source_path, f[DialogueParser.__LN_NUM],
+            func_vars,
+        ])
+        return
+
+    var expr_err := _expression_args.parse(f[DialogueParser.__ARGS], func_vars as PackedStringArray)
+    var expr_args = _expression_args.execute(
+        (func_vars as Array[String]).map(_func_args_inp_get),
+    caller_obj)
+
+    if _expression_args.has_execute_failed() or expr_err != OK:
+        printerr("Error @%s:%d - %s" % [
+            current_dialogue._source_path, f[DialogueParser.__LN_NUM],
+            _expression_args.get_error_text(),
+        ])
+        return
+
+    caller_obj.callv(func_name, expr_args)
+
+func _func_args_inp_get(arg_str : String) -> Object:
+    return _caller_all[arg_str].get_ref()
+
+func _func_args_inp_check_caller(arg_str : String, arg_arr : Array) -> bool:
+    return !arg_arr.has(arg_str)
 
 func _execute_functions() -> void:
     if allow_func:
         for n in _current_dialogue_set[DialogueParser.__FUNC].size():
             # do not call positional functions
             if not n in _current_dialogue_set[DialogueParser.__FUNC_IDX]:
-                _call_functions(_current_dialogue_set[DialogueParser.__FUNC][n])
+                _call_function(_current_dialogue_set[DialogueParser.__FUNC][n])
 
 #endregion
 
@@ -248,7 +304,7 @@ signal cancelled
 signal cancelled_at(line : int, line_data : Dictionary)
 
 ## Emitted when the [Dialogue] is switched using [method switch].
-signal dialogue_switched(old_dialogue, new_dialogue)
+signal dialogue_switched(old_dialogue : Dialogue, new_dialogue : Dialogue)
 
 #signal locale_changed(lang : String)
 
@@ -302,13 +358,15 @@ func get_invalid_functions() -> Dictionary:
 
         else:
             for m in used_funcs[n]:
-                if !(_caller[n] as Object).has_method(used_funcs[n][m][DialogueParser.__NAME]):
-                    if !output.has("no_method"):
-                        output["no_method"] = []
+                if _caller[n] != null and _caller[n] is WeakRef:
+                    if _caller[n].get_ref() != null:
+                        if !(_caller[n].get_ref() as Object).has_method(used_funcs[n][m][DialogueParser.__NAME]):
+                            if !output.has("no_method"):
+                                output["no_method"] = []
 
-                    output["no_method"].append(
-                        "%s.%s" % [n, used_funcs[n][m][DialogueParser.__NAME]]
-                    )
+                            output["no_method"].append(
+                                "%s.%s" % [n, used_funcs[n][m][DialogueParser.__NAME]]
+                            )
 
     return output
 
@@ -432,10 +490,10 @@ func progress(skip_render : bool = false) -> void:
                 _progress_forward()
 
 func _progress_skip() -> void:
-    dialogue_label.clear_render()
-    dialogue_label.visible_ratio = 1.0
     skipped.emit()
     skipped_at.emit(_step, _current_dialogue_set)
+    dialogue_label.clear_render()
+    dialogue_label.visible_ratio = 1.0
 
 func _progress_forward() -> void:
     dialogue_label.clear_render()
@@ -575,14 +633,16 @@ func _enter_tree() -> void:
     if !variables.is_empty():
         _update_variables_dialogue()
 
-    await get_tree().current_scene.ready
-    for node in caller_nodes:
-        if node != null:
-            add_caller("%s" % node.name, node)
+    if !caller_nodes.is_empty():
+        await get_tree().current_scene.ready
+        for node in caller_nodes:
+            if node != null:
+                add_caller(node.name, node)
 
 func _exit_tree() -> void:
-    if dialogue_label._current_stage == self:
-        dialogue_label._current_stage = null
+    if dialogue_label != null:
+        if dialogue_label._current_stage == self:
+            dialogue_label._current_stage = null
 
     actor_label = null
     dialogue_label = null

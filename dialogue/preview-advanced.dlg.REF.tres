@@ -1,16 +1,16 @@
 [gd_resource type="Resource" script_class="Dialogue" load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://addons/Theatre/classes/Dialogue.gd" id="1_ospkt"]
+[ext_resource type="Script" path="res://addons/Theatre/classes/Dialogue.gd" id="1_ugrgg"]
 
 [resource]
-script = ExtResource("1_ospkt")
+script = ExtResource("1_ugrgg")
 _sets = Array[Dictionary]([{
-"actor": "Dia",
-"content": "\"Welcome! to the [fx1]Theatre[/fx1]! yet another text-based dialogue addon developed for Godot .\" 
+"actor": &"Dia",
+"content": "\"Welcome! to [fx1]Theatre[/fx1]! yet another text-based dialogue addon developed for Godot .\" 
 
 
 ＼(^ ▽ ^) ",
-"content_raw": "\"Welcome! {d=0.8}to the [fx1]Theatre[/fx1]! {d=0.9}yet another text-based dialogue addon {d=0.3}developed for Godot {gd_ver}.\" 
+"content_raw": "\"Welcome! {d=0.8}to [fx1]Theatre[/fx1]! {d=0.9}yet another text-based dialogue addon {d=0.3}developed for Godot {gd_ver}.\" 
 
 
 ＼(^ ▽ ^) ",
@@ -23,19 +23,19 @@ _sets = Array[Dictionary]([{
 "tags": {
 "delays": {
 10: 0.8,
-26: 0.9,
-64: 0.3
+22: 0.9,
+60: 0.3
 },
 "speeds": {}
 },
 "vars": PackedStringArray("gd_ver")
 }, {
-"actor": "Dia",
-"content": "\"The written [color=#77dfdf]Dialogue [/color]syntax is designed to be human-readable. Similar to other data format like YAML. Although, it's far more simplified and limited.\" 
+"actor": &"Dia",
+"content": "\"The written [color=77dfdf]Dialogue [/color]syntax is designed to be human-readable. Similar to other data format like [color=8ce35d]YAML[/color]. Although, it is far more simplified and limited.\" 
 
 
 (｡T ω T｡) ",
-"content_raw": "\"The written [color=#77dfdf]Dialogue [/color]syntax {d=0.25}is designed to be human-readable. {d=0.76}Similar to other data format {d=0.45}like YAML. {d=0.76}{s=0.45}Although, {d=0.5}it's far more simplified {d=0.4}{s=0.25}and limited.\" 
+"content_raw": "\"The written [color=77dfdf]Dialogue [/color]syntax {d=0.25}is designed to be human-readable. {d=0.76}Similar to other data format {d=0.45}like [color=8ce35d]YAML[/color]. {d=0.76}{s=0.45}Although, {d=0.5}it is far more simplified {d=0.4}{s=0.25}and limited.\" 
 
 
 (｡T ω T｡) ",
@@ -52,21 +52,21 @@ _sets = Array[Dictionary]([{
 92: 0.45,
 103: 0.76,
 113: 0.5,
-138: 0.4
+139: 0.4
 },
 "speeds": {
 103: 0.45,
-138: 0.25
+139: 0.25
 }
 },
 "vars": PackedStringArray()
 }, {
-"actor": "Dia",
-"content": "\"But! You can also do things like [color=#ffffaa][u]calling functions[/u] [/color]and [color=#ffffaa][u]inserting variables![/u] [/color]And that is not the only feature Theatre has to offer!\" 
+"actor": &"Dia",
+"content": "\"But! You can also do things like [color=ffffaa][u]calling functions()[/u] [/color]and [color=#ffffaa][u]inserting variables![/u] [/color]And that is not the only feature Theatre has to offer!\" 
 
 
 <(￣︶￣)> ",
-"content_raw": "{s=1.1}\"But! {d=0.9}{s=1.0}You can also do things {d=0.25}like [color=#ffffaa][u]calling functions[/u] [/color]{d=0.4}and [color=#ffffaa][u]inserting variables![/u] [/color]{d=0.65}And that is not {d=0.1}the only feature Theatre has to offer!\" 
+"content_raw": "{s=1.1}\"But! {d=0.9}{s=1.0}You can also do things {d=0.25}like [color=ffffaa][u]calling functions()[/u] [/color]{d=0.4}and [color=#ffffaa][u]inserting variables![/u] [/color]{d=0.65}And that is not {d=0.1}the only feature Theatre has to offer!\" 
 
 
 <(￣︶￣)> ",
@@ -80,9 +80,9 @@ _sets = Array[Dictionary]([{
 "delays": {
 6: 0.9,
 29: 0.25,
-52: 0.4,
-77: 0.65,
-93: 0.1
+54: 0.4,
+79: 0.65,
+95: 0.1
 },
 "speeds": {
 0: 1.1,
@@ -91,12 +91,12 @@ _sets = Array[Dictionary]([{
 },
 "vars": PackedStringArray()
 }, {
-"actor": "Dia",
-"content": "\"There's also [fx2][color=#ffffaa]Dialogue tags [/color][/fx2], which is one of the big part of the Theatre plugin. Dialogue tags allow you to fine tune your dialogue flow. You can use BBCode tags alongside Dialogue tags too!\" 
+"actor": &"Dia",
+"content": "\"There's also [fx2][color=ffffaa]\\{Dialogue tags\\} [/color][/fx2], which allows you to fine tune your dialogue flow. You can also use [color=8ce35d]\\[BBCode\\] [/color]tags alongside Dialogue tags too!\" 
 
 
 (≧ ω ≦) ",
-"content_raw": "\"There's also {s=0.23}[fx2][color=#ffffaa]Dialogue tags [/color][/fx2]{s=1.0}{d=1.05}, which is one of the big part of the Theatre plugin. {d=1.0}Dialogue tags allow you to fine tune your dialogue flow. {d=0.7}You can use BBCode tags {d=0.25}alongside Dialogue tags too!\" 
+"content_raw": "\"There's also {s=0.23}[fx2][color=ffffaa]\\{Dialogue tags\\} [/color][/fx2]{s=1.0}{d=1.05}, which allows you to fine tune your dialogue flow. {d=0.7}You can also use [color=8ce35d]\\[BBCode\\] [/color]tags {d=0.25}alongside Dialogue tags too!\" 
 
 
 (≧ ω ≦) ",
@@ -108,14 +108,13 @@ _sets = Array[Dictionary]([{
 "offsets": {},
 "tags": {
 "delays": {
-28: 1.05,
-82: 1.0,
-139: 0.7,
-163: 0.25
+30: 1.05,
+82: 0.7,
+113: 0.25
 },
 "speeds": {
 14: 0.23,
-28: 1.0
+30: 1.0
 }
 },
 "vars": PackedStringArray()

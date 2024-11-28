@@ -39,8 +39,8 @@ class Config extends RefCounted:
         if err != OK:
             push_error("Error saving Theatre config: ", err)
 
-    #static func _project_settings_changed() -> void:
-        #pass
+    static func _project_settings_changed() -> void:
+        DialogueSyntaxHighlighter.initialize_colors()
 
 var http_update_req : HTTPRequest
 
@@ -49,6 +49,8 @@ var dialogue_syntax_highlighter : DialogueSyntaxHighlighter
 
 static var editor_settings := EditorInterface.get_editor_settings()
 var editor_resource_filesystem := EditorInterface.get_resource_filesystem()
+
+const REGEX_IMPORTED_DLG := r"^.+\.dlg-[A-Fa-f0-9]+\."
 
 var plugin_submenu : PopupMenu = preload(
     "res://addons/Theatre/components/tool_submenu.tscn"
@@ -67,12 +69,11 @@ func _enter_tree() -> void:
 
     # Initialize syntax highlighter
     DialogueSyntaxHighlighter.initialize_colors()
-    editor_settings.settings_changed.connect(DialogueSyntaxHighlighter.initialize_colors)
 
     # Initialize project settings
     Config.init_configs()
-    #ProjectSettings.settings_changed.connect(Config._project_settings_changed)
-    #Config._project_settings_changed()
+    ProjectSettings.settings_changed.connect(Config._project_settings_changed)
+    Config._project_settings_changed()
 
     # Add `.dlg` text file extension
     var text_files_ext : String = editor_settings\
@@ -116,12 +117,24 @@ func _ready() -> void:
             await get_tree().create_timer(2.5).timeout
             update_check()
 
+        var theatre_record := FileAccess.open("res://.godot/.theatre", FileAccess.READ_WRITE)
+
+        if theatre_record == null:
+            printerr("Error opening .theatre file: %s" % error_string(theatre_record.get_open_error()))
+        else:
+            var ver := get_plugin_version().strip_edges()
+            if theatre_record.get_as_text().strip_edges() != ver:
+                reimport_dialogues()
+                theatre_record.store_string(ver)
+
+            theatre_record.close()
+
 func _exit_tree() -> void:
     print("🎭 Disabling Theatre...")
 
     # Clear project settings
     Config.remove_configs()
-    #ProjectSettings.settings_changed.disconnect(Config._project_settings_changed)
+    ProjectSettings.settings_changed.disconnect(Config._project_settings_changed)
 
     # Clear update check
     if http_update_req != null:
@@ -165,8 +178,19 @@ func _handles(object: Object) -> bool:
 
 func tool_submenu_id_pressed(id : int) -> void:
     match id:
+        1:
+            reimport_dialogues()
         5:
             update_check()
+
+func reimport_dialogues() -> void:
+    const IMPORTED_PATH := "res://.godot/imported/"
+    if DirAccess.dir_exists_absolute(IMPORTED_PATH):
+        for file in DirAccess.get_files_at(IMPORTED_PATH):
+            if RegEx.create_from_string(REGEX_IMPORTED_DLG).search(file) != null:
+                DirAccess.remove_absolute(IMPORTED_PATH + file)
+
+        editor_resource_filesystem.scan()
 
 func update_check() -> void:
     print("  Checking for updates...")

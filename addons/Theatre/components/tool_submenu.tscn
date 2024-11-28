@@ -4,10 +4,12 @@
 
 [node name="TheatreToolSubmenu" type="PopupMenu"]
 title = "🎭 Theatre"
-size = Vector2i(245, 151)
+size = Vector2i(757, 473)
 visible = true
 unfocusable = true
-item_count = 1
-item_0/text = "Check for updates"
-item_0/id = 5
+item_count = 2
+item_0/text = "♻️ Reimport Dialogue resources"
+item_0/id = 1
+item_1/text = "🌐 Check for updates"
+item_1/id = 5
 script = ExtResource("1_g2vws")
