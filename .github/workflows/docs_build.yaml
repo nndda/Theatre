@@ -37,35 +37,35 @@ jobs:
       - run: pip install -r requirements.txt
       - run: mkdocs gh-deploy --force
 
-  optimize:
-    runs-on: ubuntu-latest
-    needs: 'deploy'
+  # optimize:
+  #   runs-on: ubuntu-latest
+  #   needs: 'deploy'
 
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: 'gh-pages'
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         ref: 'gh-pages'
 
-      - name: Configure Git Credentials
-        run: |
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+  #     - name: Configure Git Credentials
+  #       run: |
+  #         git config user.name github-actions[bot]
+  #         git config user.email 41898282+github-actions[bot]@users.noreply.github.com
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 'latest'
+  #     - uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 'latest'
 
-      - name: Install optimization dependencies
-        run: npm i -g html-minifier clean-css-cli
+  #     - name: Install optimization dependencies
+  #       run: npm i -g html-minifier clean-css-cli
 
-      - name: Minify CSS
-        run: find ./assets/stylesheets -name "*.css" ! -name "*.min.css" -type f -exec cleancss -o {} {} \;
+  #     - name: Minify CSS
+  #       run: find ./assets/stylesheets -name "*.css" ! -name "*.min.css" -type f -exec cleancss -o {} {} \;
 
-      - name: Minify HTML
-        run: find ./ -name "*.html" -type f -exec html-minifier --case-sensitive --collapse-whitespace --decode-entities --remove-comments {} -o {} \;
+  #     - name: Minify HTML
+  #       run: find ./ -name "*.html" -type f -exec html-minifier --case-sensitive --collapse-whitespace --decode-entities --remove-comments {} -o {} \;
 
-      - name: Update optimized assets
-        run: |
-          git add .
-          git commit -m "Optimize assets"
-          git push
+  #     - name: Update optimized assets
+  #       run: |
+  #         git add .
+  #         git commit -m "Optimize assets"
+  #         git push
