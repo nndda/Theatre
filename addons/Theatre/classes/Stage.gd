@@ -134,6 +134,10 @@ var _variables_all : Dictionary = {}
 ## [br][br]
 ## See also [method merge_variables], and [method remove_variable], and [method clear_variables].
 func set_variable(var_name : String, value : Variant) -> void:
+    if var_name in DialogueParser.BUILT_IN_TAGS:
+        push_error("Failed to set variable: built-in variable '%s' already exists" % var_name)
+        return
+
     variables[var_name] = value
     _update_variables_dialogue()
 
@@ -147,6 +151,14 @@ func get_variables() -> Dictionary:
 ## [br][br]
 ## See also [method set_variable], [method remove_variable], and [method clear_variables].
 func merge_variables(vars : Dictionary) -> void:
+    for n in vars.keys():
+        if n in DialogueParser.BUILT_IN_TAGS:
+            push_error(
+                "Failed to set multiple variables: user-defined variables can't be any of %s"
+                % DialogueParser.BUILT_IN_TAGS
+            )
+            return
+
     variables.merge(vars, true)
     _update_variables_dialogue()
 
