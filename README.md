@@ -6,14 +6,11 @@
 <a href="https://github.com/nndda/Theatre/actions/workflows/dialogue-test.yml" target="_blank"><img src="https://img.shields.io/github/actions/workflow/status/nndda/Theatre/dialogue-test.yml?branch=main&event=push&style=flat-square&logo=github&label=Parser%20build&labelColor=%23282e33&color=%2329aa46" alt="Build status" height="20"></a>
 <a href="https://nndda.github.io/Theatre/" target="_blank"><img src="https://img.shields.io/github/actions/workflow/status/nndda/Theatre/docs_build.yaml?branch=docs&event=push&style=flat-square&logo=github&label=Docs%20build&labelColor=%23282e33&color=%2329aa46" alt="Documentation build" height="20"></a>
 
-Yet another <i><sub>(linear)</sub></i> dialogue system<b>/</b>addon<b>/</b>plugin for Godot. With features such as:
+Yet another <sub>(linear)</sub> dialogue system<b>/</b>addon<b>/</b>plugin for Godot. With features such as:
 
 - ✍️ Written in human-readable syntax.
 - 😐 ....
 - 📝 And 100% written in GDScript!
-
-> [!IMPORTANT]
-> This project is still in development, and is subject to frequent, breaking changes, and bugs.
 
 <table align="center">
 <tr align="center">
@@ -27,12 +24,12 @@ Yet another <i><sub>(linear)</sub></i> dialogue system<b>/</b>addon<b>/</b>plugi
 <tr>
 <td>
 
-<img src="https://github.com/user-attachments/assets/5bbefeed-61bb-4b9d-89a0-69d8300a3c08" alt="Theatre in action" width="372">
+<img src="https://github.com/user-attachments/assets/5bbefeed-61bb-4b9d-89a0-69d8300a3c08" alt="Theatre in action" width="368">
 
 </td>
 <td>
-    
-```
+
+```yaml
 Dia:
     "Welcome! {d=0.8}to the
     [fx1]Theatre[/fx1]!
@@ -49,16 +46,22 @@ Dia:
 </tr>
 </table>
 
+> [!IMPORTANT]
+> This project is still in development, and is subject to frequent, breaking changes, and bugs.
+
+> [!WARNING]
+> Currently, this addon is compatible only with **`Godot 4.3`**. It will not function with earlier versions, and while it may run on **`4.4`**, some features might not work as intended.
+
 # Features
 
 ## Dialogue tags
 
 Fine-tune your dialogue flow with `{delay}` and `{speed}`.
-```
+```yaml
 Godette:
     "Hello!{delay = 0.7} Nice to meet you."
 ```
-```
+```yaml
 Godette:
     "Hello!
         delay=0.7
@@ -68,13 +71,13 @@ Godette:
 ## Function calls
 
 Connect your story to the game with function calls.
-```
+```yaml
 {player_name}:
     "Thanks! That feels so much better."
 
     Player.heal(20)
 ```
-```
+```yaml
 Ritsu:
     "Cheers!"
 
@@ -82,7 +85,7 @@ Ritsu:
 ```
 
 Call functions only at specific points in the Dialogue.
-```
+```yaml
 Dia:
     "Let's brighten up the room a little...{d = 1.1}
     {0}
@@ -96,20 +99,26 @@ Dia:
 <a href="https://nndda.github.io/Theatre/class/dialogue/syntax/" target="_blank">More comprehensive Dialogue features documented here.</a>
 </p>
 
-# Quick Start
+# (Very) Quick Start
 
 Write your epic Dialogue!
 ```gdscript
-# write it directly with triple quotation marks
+# Write it directly with triple quotation marks.
 var epic_dialogue = Dialogue.new("""
 
 Dia:
-    "For performance reason, I'd recommend
-    using the method below instead."
+    "Loading the Dialogue, written in a *.dlg file
+    is much better for performance."
+:
+    "It'll keep things clean and efficient."
+:
+    "Plus, you’ll have syntax highlighting
+    for better readibility."
 
 """)
 
-# alternatively, write it in a *.dlg file, and load it
+# Write it in a *.dlg file, and load it.
+# (Just use this, for the reason explained above.)
 var epic_dialogue = Dialogue.load("res://epic_dialogue.dlg")
 ```
 
