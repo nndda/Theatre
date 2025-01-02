@@ -87,7 +87,7 @@ const SETS_TEMPLATE := {
 
     # Positional function calls.
     __FUNC_POS: {},
-        # Position:     Function index.
+        # Position:     [Function index...].
 
     # Function index tags.
     __FUNC_IDX: [],
@@ -413,9 +413,19 @@ static func parse_tags(string : String) -> Dictionary:
         if !(tag_key_l in VARS_BUILT_IN_KEYS):
             string = string.replace(string_match, EMPTY)
 
+        # Position-based function calls.
         if tag_key_l.is_valid_int():
             var idx : int = tag_key_l.to_int()
-            func_pos[tag_pos] = idx
+
+            # If its in the same position after {delay}, offset by +1.
+            # So that it will be called after the rendering continued.
+            if tags[__TAGS_DELAYS].has(tag_pos):
+                tag_pos += 1
+
+            if func_pos.has(tag_pos):
+                func_pos[tag_pos].append(idx)
+            else:
+                func_pos[tag_pos] = [idx]
 
             if !func_idx.has(idx):
                 func_idx.append(idx)

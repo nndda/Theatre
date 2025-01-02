@@ -165,14 +165,14 @@ func resume_render() -> void:
     _characters_ticker.paused = rendering_paused
 
 func _characters_ticker_timeout() -> void:
+    # Positional function tag
     if _func_count < 0:
         if _func_queue[_func_count] == visible_characters:
             if _current_stage.allow_func:
-                _current_stage._call_function(
-                    _current_dialogue_set[DialogueParser.__FUNC][
-                        _current_dialogue_set[DialogueParser.__FUNC_POS][visible_characters]
-                    ]
-                )
+                for i : int in _current_dialogue_set[DialogueParser.__FUNC_POS][visible_characters]:
+                    _current_stage._call_function(
+                        _current_dialogue_set[DialogueParser.__FUNC][i]
+                    )
             _func_count += 1
 
     if _delay_count < 0:
@@ -211,11 +211,10 @@ func _delay_timer_timeout() -> void:
 func _on_stage_skipped() -> void:
     var arr_size : int = _func_queue.size()
     for f in _func_queue.slice(arr_size - absi(_func_count), arr_size):
-        _current_stage._call_function(
-            _current_dialogue_set[DialogueParser.__FUNC][
-                _current_dialogue_set[DialogueParser.__FUNC_POS][f]
-            ]
-        )
+        for i : int in _current_dialogue_set[DialogueParser.__FUNC_POS][f]:
+            _current_stage._call_function(
+                _current_dialogue_set[DialogueParser.__FUNC][i]
+            )
     text_rendered.emit(text)
 #endregion
 
