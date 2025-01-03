@@ -4,13 +4,19 @@ class_name DialogueParser
 var output : Array[Dictionary] = []
 var sections : Dictionary = {}
 
+# Source path from Dialouge._source_path for debugging purposes.
 var _source_path : String
 
 #region RegExes
+# Match Dialogue tags: {delay=1.0} {d = 1.0} {foo} {bar}
+# But not: \{foo\} \{d=1.0\}
 const REGEX_DLG_TAGS :=\
     r"(?<!\\)\{\s*(?<tag>\w+)\s*(\=\s*(?<arg>.+?)\s*)*(?<!\\)\}";\
     static var _regex_dlg_tags := RegEx.create_from_string(REGEX_DLG_TAGS)
 
+# Match Dialogue tags newline syntax:
+#       d=1.0
+#       delay=1.0
 const REGEX_DLG_TAGS_NEWLINE :=\
     r"^\s*(?<tag>\w+)\=((?<arg>.+))*$";\
     static var _regex_dlg_tags_newline := RegEx.create_from_string(REGEX_DLG_TAGS_NEWLINE)
@@ -19,14 +25,22 @@ const REGEX_BBCODE_TAGS :=\
     r"[\[\/]+?(?<tag>\w+)[^\[\]]*?\]";\
     static var _regex_bbcode_tags := RegEx.create_from_string(REGEX_BBCODE_TAGS)
 
+# Match variables assignments:
+#       Scope.name = value
 const REGEX_VARS_SET :=\
     r"(?<scope>\w+)\.(?<name>\w+)\s*\=\s*(?<val>.+)$";\
     static var _regex_vars_set := RegEx.create_from_string(REGEX_VARS_SET)
 
+# Match function calls:
+#       Scope.name(args)
 const REGEX_FUNC_CALL :=\
     r"(?<caller>\w+)\.(?<name>\w+)\((?<args>.*)\)$";\
     static var _regex_func_call := RegEx.create_from_string(REGEX_FUNC_CALL)
 
+# Match object/property access in function arguments or variables expressions:
+#       Scope.name = Object.value
+#       Scope.name(Object.value)
+#           -> Object.value
 const REGEX_FUNC_VARS :=\
     r"(?<![\"\'\d])\b([a-zA-Z_]\w*)\s*\.\s*([a-zA-Z_]\w*)\b(?![\"\'\d])";\
     static var _regex_func_vars := RegEx.create_from_string(REGEX_FUNC_VARS)
@@ -68,6 +82,7 @@ const __LN_NUM := "ln_num"
 const __STANDALONE := "standalone"
 #endregion
 
+## Dictionary template for each Dialogue line.
 const SETS_TEMPLATE := {
     # Actor's name.
     __ACTOR: EMPTY,
@@ -110,6 +125,7 @@ const SETS_TEMPLATE := {
     __VARS: [],
 }
 
+## Function call Dictionary template.
 const FUNC_TEMPLATE := {
     # Function's caller name/id.
     __CALLER: EMPTY,
@@ -127,6 +143,7 @@ const FUNC_TEMPLATE := {
     __VARS: [],
 }
 
+#region Built in tags and variables
 const TAG_DELAY_ALIASES : PackedStringArray = [
     "DELAY", "WAIT", "D", "W"
 ]
@@ -141,6 +158,7 @@ const BUILT_IN_TAGS : PackedStringArray = (
     TAG_SPEED_ALIASES +
     VARS_BUILT_IN_KEYS
 )
+#endregion
 
 const NEWLINE := "\n"
 const SPACE := " "
@@ -152,6 +170,7 @@ const HASH := "#"
 const INDENT_2 := "  "
 const INDENT_4 := "    "
 
+#region RegEx init NOTE: sometimes the RegExes returns null
 static var _regex_initialized := false
 static func _initialize_regex() -> void:
     _regex_dlg_tags = RegEx.create_from_string(REGEX_DLG_TAGS)
@@ -163,6 +182,7 @@ static func _initialize_regex() -> void:
     _regex_indent = RegEx.create_from_string(REGEX_INDENT)
     _regex_valid_dlg = RegEx.create_from_string(REGEX_VALID_DLG)
     _regex_section = RegEx.create_from_string(REGEX_SECTION)
+#endregion
 
 func _init(src : String = "", src_path : String = ""):
     # WHY???

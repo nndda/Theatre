@@ -116,6 +116,7 @@ func start_render() -> void:
         _current_stage.speed_scale_global / _current_stage.speed_scale
     _characters_ticker.start(_characters_draw_tick_scaled)
 
+    # Set & count Dialogue tags queues
     _delay_queue = _current_dialogue_set[DialogueParser.__TAGS][DialogueParser.__TAGS_DELAYS].keys()
     _delay_count = -_delay_queue.size()
     _speed_queue = _current_dialogue_set[DialogueParser.__TAGS][DialogueParser.__TAGS_SPEEDS].keys()
@@ -165,14 +166,19 @@ func resume_render() -> void:
     _characters_ticker.paused = rendering_paused
 
 func _characters_ticker_timeout() -> void:
+    #region Handle Dialogue tags
+    # {delay} tag
     if _delay_count < 0:
         if _delay_queue[_delay_count] == visible_characters:
+            # Stop the rendering
+            # Rendering will be continued on _delay_timer_timeout()
             _characters_ticker.stop()
             _delay_timer.start(
                 _current_dialogue_set[DialogueParser.__TAGS][DialogueParser.__TAGS_DELAYS][visible_characters]
             )
             return
 
+    # {speed} tag
     if _speed_count < 0:
         if _speed_queue[_speed_count] == visible_characters:
             _characters_ticker.wait_time = _characters_draw_tick_scaled /\
@@ -180,6 +186,7 @@ func _characters_ticker_timeout() -> void:
                 _current_dialogue_set[DialogueParser.__TAGS][DialogueParser.__TAGS_SPEEDS][visible_characters]
             _characters_ticker.start()
             _speed_count += 1
+    #endregion
 
     visible_characters += 1
 
