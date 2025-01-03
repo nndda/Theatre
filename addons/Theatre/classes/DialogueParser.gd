@@ -8,7 +8,7 @@ var _source_path : String
 
 #region RegExes
 const REGEX_DLG_TAGS :=\
-    r"\{\s*(?<tag>\w+)\s*(\=\s*(?<arg>.+?)\s*)*\}";\
+    r"(?<!\\)\{\s*(?<tag>\w+)\s*(\=\s*(?<arg>.+?)\s*)*(?<!\\)\}";\
     static var _regex_dlg_tags := RegEx.create_from_string(REGEX_DLG_TAGS)
 
 const REGEX_DLG_TAGS_NEWLINE :=\
