@@ -127,6 +127,7 @@ func _update_variables_dialogue() -> void:
 const _VARIABLES_BUILT_IN : Dictionary = {
     "n" : "\n",
     "spc" : " ",
+    "eq" : "=",
 }
 var _variables_all : Dictionary = {}
 

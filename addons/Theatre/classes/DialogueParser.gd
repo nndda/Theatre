@@ -134,7 +134,7 @@ const TAG_SPEED_ALIASES : PackedStringArray = [
     "SPEED", "SPD", "S"
 ]
 
-const VARS_BUILT_IN_KEYS : PackedStringArray = ["n", "spc"]
+const VARS_BUILT_IN_KEYS : PackedStringArray = ["n", "spc", "eq"]
 
 const BUILT_IN_TAGS : PackedStringArray = (
     TAG_DELAY_ALIASES +
