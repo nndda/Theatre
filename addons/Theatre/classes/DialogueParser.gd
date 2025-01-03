@@ -500,9 +500,7 @@ static func parse_tags(string : String) -> Dictionary:
         if TAG_DELAY_ALIASES.has(tag_key):
             tags[__TAGS_DELAYS][tag_pos] = float(tag_value)
         elif TAG_SPEED_ALIASES.has(tag_key):
-            tags[__TAGS_SPEEDS][tag_pos] = float(
-                1.0 if tag_value.is_empty() else tag_value
-            )
+            tags[__TAGS_SPEEDS][tag_pos] = 1.0 if tag_value.is_empty() else float(tag_value)
 
         if !(tag_key_l in VARS_BUILT_IN_KEYS):
             string = string.replace(string_match, EMPTY)
