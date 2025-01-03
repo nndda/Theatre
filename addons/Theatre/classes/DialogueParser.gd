@@ -157,6 +157,7 @@ static func _initialize_regex() -> void:
     _regex_dlg_tags = RegEx.create_from_string(REGEX_DLG_TAGS)
     _regex_dlg_tags_newline = RegEx.create_from_string(REGEX_DLG_TAGS_NEWLINE)
     _regex_bbcode_tags = RegEx.create_from_string(REGEX_BBCODE_TAGS)
+    _regex_vars_set = RegEx.create_from_string(REGEX_VARS_SET)
     _regex_func_call = RegEx.create_from_string(REGEX_FUNC_CALL)
     _regex_func_vars = RegEx.create_from_string(REGEX_FUNC_VARS)
     _regex_indent = RegEx.create_from_string(REGEX_INDENT)
