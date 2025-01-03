@@ -253,6 +253,9 @@ func _init(src : String = ""):
 
                 func_dict.make_read_only()
                 output[body_pos][__FUNC].append(func_dict)
+
+                output[body_pos][__CONTENT_RAW] += "{%d}" % (output[body_pos][__FUNC].size() - 1)
+                output[body_pos][__CONTENT] += output[body_pos][__CONTENT_RAW]
             #endregion
 
             #region NOTE: Newline Dialogue tags ----------------------------------------------------
@@ -416,6 +419,9 @@ static func parse_tags(string : String) -> Dictionary:
         # Position-based function calls.
         if tag_key_l.is_valid_int():
             var idx : int = tag_key_l.to_int()
+
+            if tag_pos == 0:
+                tag_pos = 1
 
             # If its in the same position after {delay}, offset by +1.
             # So that it will be called after the rendering continued.
