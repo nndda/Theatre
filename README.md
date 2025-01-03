@@ -72,27 +72,22 @@ Godette:
 
 Connect your story to the game with function calls.
 ```yaml
-{player_name}:
-    "Thanks! That feels so much better."
-
-    Player.heal(20)
+Ritsu:
+    Portrait.set("ritsu_smile.png")
+    "Cheers!"
 ```
 ```yaml
-Ritsu:
-    "Cheers!"
-
-    Portrait.set("ritsu_smile.png")
+{player_name}:
+    Player.heal(20)
+    "Thanks! That feels so much better."
 ```
 
 Call functions only at specific points in the Dialogue.
 ```yaml
 Dia:
     "Let's brighten up the room a little...{d = 1.1}
-    {0}
+        Background.set_brightness(1.0)
     there we go."
-
-# Call this function using its index: {0}
-    Background.set_brightness(1.0)
 ```
 
 <p align="center">
