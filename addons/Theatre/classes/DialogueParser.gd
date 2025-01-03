@@ -34,7 +34,7 @@ const REGEX_VARS_SET :=\
 # Match function calls:
 #       Scope.name(args)
 const REGEX_FUNC_CALL :=\
-    r"(?<caller>\w+)\.(?<name>\w+)\((?<args>.*)\)$";\
+    r"(?<scope>\w+)\.(?<name>\w+)\((?<args>.*)\)$";\
     static var _regex_func_call := RegEx.create_from_string(REGEX_FUNC_CALL)
 
 # Match object/property access in function arguments or variables expressions:
@@ -74,7 +74,6 @@ const __HAS_VARS := "has_vars"
 const __VAL := "val"
 const __VARS := "vars"
 
-const __CALLER := "caller"
 const __SCOPE := "scope"
 const __NAME := "name"
 const __ARGS := "args"
@@ -127,8 +126,8 @@ const SETS_TEMPLATE := {
 
 ## Function call Dictionary template.
 const FUNC_TEMPLATE := {
-    # Function's caller name/id.
-    __CALLER: EMPTY,
+    # Function's scope name/id.
+    __SCOPE: EMPTY,
 
     # Function name.
     __NAME: EMPTY,
@@ -263,8 +262,8 @@ func _init(src : String = "", src_path : String = ""):
             if regex_func_match != null:
                 var func_dict := FUNC_TEMPLATE.duplicate(true)
 
-                func_dict[__CALLER] = StringName(regex_func_match.get_string(
-                    regex_func_match.names[__CALLER]
+                func_dict[__SCOPE] = StringName(regex_func_match.get_string(
+                    regex_func_match.names[__SCOPE]
                 ))
                 func_dict[__NAME] = StringName(regex_func_match.get_string(
                     regex_func_match.names[__NAME]
@@ -306,7 +305,7 @@ func _init(src : String = "", src_path : String = ""):
             elif regex_vars_match != null:
                 var func_dict := FUNC_TEMPLATE.duplicate(true)
 
-                func_dict[__CALLER] = StringName(regex_vars_match.get_string(
+                func_dict[__SCOPE] = StringName(regex_vars_match.get_string(
                     regex_vars_match.names[__SCOPE]
                 ))
                 func_dict[__NAME] = &"set"

@@ -115,10 +115,10 @@ func get_sections() -> Dictionary:
 func _update_used_function_calls() -> void:
     for n : Dictionary in _sets:
         for m : Dictionary in n[DialogueParser.__FUNC]:
-            if !_used_function_calls.has(m[DialogueParser.__CALLER]):
-                _used_function_calls[m[DialogueParser.__CALLER]] = {}
+            if !_used_function_calls.has(m[DialogueParser.__SCOPE]):
+                _used_function_calls[m[DialogueParser.__SCOPE]] = {}
 
-            _used_function_calls[m[DialogueParser.__CALLER]][m[DialogueParser.__LN_NUM]] = {
+            _used_function_calls[m[DialogueParser.__SCOPE]][m[DialogueParser.__LN_NUM]] = {
                 DialogueParser.__NAME: m[DialogueParser.__NAME],
                 DialogueParser.__ARGS: m[DialogueParser.__ARGS],
             }

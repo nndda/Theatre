@@ -85,7 +85,7 @@ static var speed_scale_global : float = 1.0
                         current_dialogue, n, variables
                     )
 
-@export_storage var _caller : Dictionary = {}
+@export_storage var _scope : Dictionary = {}
 
 #endregion
 
@@ -180,86 +180,86 @@ func clear_variables() -> void:
 #endregion
 
 #region NOTE: Function calls related ---------------------------------------------------------------
-## Node-based callers that are in the scene tree.
-@export var caller_nodes : Array[Node] = []
+## Node-based scopes that are in the scene tree.
+@export var scope_nodes : Array[Node] = []
 
-static var _caller_built_in : Dictionary = {}
-var _caller_all : Dictionary = {}
+static var _scope_built_in : Dictionary = {}
+var _scope_all : Dictionary = {}
 
-func _update_caller() -> void:
-    _caller_all = _caller.merged(_caller_built_in, true)
+func _update_scope() -> void:
+    _scope_all = _scope.merged(_scope_built_in, true)
 
-## Return user-defined callers that will be used in the written [Dialogue].
-func get_callers() -> Dictionary:
-    return _caller
+## Return user-defined scopes that will be used in the written [Dialogue].
+func get_scopes() -> Dictionary:
+    return _scope
 
-## Add function caller used in the written [Dialogue].
+## Add function scope used in the written [Dialogue].
 ## If [param object] is a [Node], it will be removed automatically when its freed.
 ## [br][br]
-## See also [method remove_caller], and [method clear_caller].
-func add_caller(id : String, object : Object) -> void:
-    _caller[id] = weakref(object)
+## See also [method remove_scope], and [method clear_scope].
+func add_scope(id : String, object : Object) -> void:
+    _scope[id] = weakref(object)
     if object is Node:
-        object.tree_exited.connect(remove_caller.bind(id))
-    _update_caller()
+        object.tree_exited.connect(remove_scope.bind(id))
+    _update_scope()
 
-## Remove function caller used in the written [Dialogue].
+## Remove function scope used in the written [Dialogue].
 ## [br][br]
-## See also [method add_caller], and [method clear_caller].
-func remove_caller(id : String) -> void:
-    if !_caller.has(id):
-        push_error("Cannot remove caller: caller '%s' doesn't exists" % id)
+## See also [method add_scope], and [method clear_scope].
+func remove_scope(id : String) -> void:
+    if !_scope.has(id):
+        push_error("Cannot remove scope: scope '%s' doesn't exists" % id)
     else:
-        _caller.erase(id)
-    _update_caller()
+        _scope.erase(id)
+    _update_scope()
 
-## Remove all function callers.
+## Remove all function scopes.
 ## [br][br]
-## See also [method add_caller], and [method remove_caller].
-func clear_callers() -> void:
-    _caller.clear()
-    _update_caller()
+## See also [method add_scope], and [method remove_scope].
+func clear_scopes() -> void:
+    _scope.clear()
+    _update_scope()
 
 var _expression_args := Expression.new()
 func _call_function(f : Dictionary) -> void:
     if !allow_func:
         return
 
-    var func_caller : StringName = f[DialogueParser.__CALLER]
+    var func_scope : StringName = f[DialogueParser.__SCOPE]
     var func_name : StringName = f[DialogueParser.__NAME]
     var func_vars : Array = f[DialogueParser.__VARS]
 
     #region general error checks
-    if !_caller_all.has(func_caller):
-        push_error("Error @%s:%d - caller '%s' doesn't exists" % [
+    if !_scope_all.has(func_scope):
+        push_error("Error @%s:%d - scope '%s' doesn't exists" % [
             current_dialogue._source_path, f[DialogueParser.__LN_NUM],
-            func_caller,
+            func_scope,
         ])
         return
 
-    var caller_obj : Object = _caller_all[func_caller].get_ref()
+    var scope_obj : Object = _scope_all[func_scope].get_ref()
 
-    if caller_obj == null:
-        push_error("Error @%s:%d - object of the caller '%s' is null" % [
+    if scope_obj == null:
+        push_error("Error @%s:%d - object of the scope '%s' is null" % [
             current_dialogue._source_path, f[DialogueParser.__LN_NUM],
-            func_caller,
+            func_scope,
         ])
         return
 
-    if !caller_obj.has_method(func_name):
+    if !scope_obj.has_method(func_name):
         push_error("Error @%s:%d - function '%s.%s()' doesn't exists" % [
             current_dialogue._source_path, f[DialogueParser.__LN_NUM],
-            func_caller, func_name
+            func_scope, func_name
         ])
         return
     #endregion
 
     if f[DialogueParser.__STANDALONE]:
-        caller_obj.callv(func_name, f[DialogueParser.__ARGS])
+        scope_obj.callv(func_name, f[DialogueParser.__ARGS])
         return
 
-    if func_vars.any(_func_args_inp_check_caller.bind(_caller_all.keys())):
-        push_error("Error @%s:%d - argument caller(s) used: %s doesn't exists" % [
+    if func_vars.any(_func_args_inp_check_scope.bind(_scope_all.keys())):
+        push_error("Error @%s:%d - argument scope(s) used: %s doesn't exists" % [
             current_dialogue._source_path, f[DialogueParser.__LN_NUM],
             func_vars,
         ])
@@ -268,7 +268,7 @@ func _call_function(f : Dictionary) -> void:
     var expr_err := _expression_args.parse(f[DialogueParser.__ARGS], func_vars as PackedStringArray)
     var expr_args = _expression_args.execute(
         (func_vars as Array[String]).map(_func_args_inp_get),
-    caller_obj)
+    scope_obj)
 
     if _expression_args.has_execute_failed() or expr_err != OK:
         push_error("Error @%s:%d - %s" % [
@@ -277,12 +277,12 @@ func _call_function(f : Dictionary) -> void:
         ])
         return
 
-    caller_obj.callv(func_name, expr_args)
+    scope_obj.callv(func_name, expr_args)
 
 func _func_args_inp_get(arg_str : String) -> Object:
-    return _caller_all[arg_str].get_ref()
+    return _scope_all[arg_str].get_ref()
 
-func _func_args_inp_check_caller(arg_str : String, arg_arr : Array) -> bool:
+func _func_args_inp_check_scope(arg_str : String, arg_arr : Array) -> bool:
     return !arg_arr.has(arg_str)
 
 func _execute_functions() -> void:
@@ -360,20 +360,20 @@ func get_invalid_functions() -> Dictionary:
 
     var output : Dictionary = {}
     var used_funcs := current_dialogue.get_function_calls()
-    var curr_caller := _caller.keys()
+    var curr_scope := _scope.keys()
 
     for n in used_funcs:
-        if not n in curr_caller:
-            if !output.has("no_caller"):
-                output["no_caller"] = []
+        if not n in curr_scope:
+            if !output.has("no_scope"):
+                output["no_scope"] = []
 
-            output["no_caller"].append(n)
+            output["no_scope"].append(n)
 
         else:
             for m in used_funcs[n]:
-                if _caller[n] != null and _caller[n] is WeakRef:
-                    if _caller[n].get_ref() != null:
-                        if !(_caller[n].get_ref() as Object).has_method(used_funcs[n][m][DialogueParser.__NAME]):
+                if _scope[n] != null and _scope[n] is WeakRef:
+                    if _scope[n].get_ref() != null:
+                        if !(_scope[n].get_ref() as Object).has_method(used_funcs[n][m][DialogueParser.__NAME]):
                             if !output.has("no_method"):
                                 output["no_method"] = []
 
@@ -636,8 +636,8 @@ func _update_display() -> void:
 #endregion
 
 func _enter_tree() -> void:
-    _update_caller()
-    add_caller("Stage", self)
+    _update_scope()
+    add_scope("Stage", self)
 
     if dialogue_label != null:
         dialogue_label._current_stage = self
@@ -645,11 +645,11 @@ func _enter_tree() -> void:
     if !variables.is_empty():
         _update_variables_dialogue()
 
-    if !caller_nodes.is_empty():
+    if !scope_nodes.is_empty():
         await get_tree().current_scene.ready
-        for node in caller_nodes:
+        for node in scope_nodes:
             if node != null:
-                add_caller(node.name, node)
+                add_scope(node.name, node)
 
 func _exit_tree() -> void:
     if dialogue_label != null:
@@ -660,6 +660,6 @@ func _exit_tree() -> void:
     dialogue_label = null
     current_dialogue = null
 
-    caller_nodes.clear()
+    scope_nodes.clear()
     clear_variables()
-    clear_callers()
+    clear_scopes()

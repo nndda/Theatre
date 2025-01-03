@@ -15,7 +15,6 @@ const EQUALS := "="
 const __NAME := "name"
 const __TAG := "tag"
 const __ARG := "arg"
-const __CALLER := "caller"
 const __SCOPE := "scope"
 const __VAL := "val"
 
@@ -30,7 +29,7 @@ static var symbol : Color
 static var comment : Color
 static var tag_content : Color
 static var tag_braces : Color
-static var caller : Color
+static var scope : Color
 static var func_name : Color
 static var func_args : Color
 static var section : Color
@@ -43,7 +42,7 @@ static var COL_symbol : Dictionary
 static var COL_comment : Dictionary
 static var COL_tag_content : Dictionary
 static var COL_tag_braces : Dictionary
-static var COL_caller : Dictionary
+static var COL_scope : Dictionary
 static var COL_func_name : Dictionary
 static var COL_func_args : Dictionary
 static var COL_section : Dictionary
@@ -60,7 +59,7 @@ static func initialize_colors() -> void:
     comment = editor_settings.get_setting("text_editor/theme/highlighting/comment_color")
     tag_content = editor_settings.get_setting("text_editor/theme/highlighting/user_type_color")
     tag_braces = Color(editor_settings.get_setting("text_editor/theme/highlighting/user_type_color"), 0.65)
-    caller = editor_settings.get_setting("text_editor/theme/highlighting/engine_type_color")
+    scope = editor_settings.get_setting("text_editor/theme/highlighting/engine_type_color")
     func_name = editor_settings.get_setting("text_editor/theme/highlighting/function_color")
     func_args = editor_settings.get_setting("text_editor/theme/highlighting/string_color")
     section = editor_settings.get_setting("text_editor/theme/highlighting/keyword_color")
@@ -72,7 +71,7 @@ static func initialize_colors() -> void:
     COL_comment = {COL: comment}
     COL_tag_content = {COL: tag_content}
     COL_tag_braces = {COL: tag_braces}
-    COL_caller = {COL: caller}
+    COL_scope = {COL: scope}
     COL_func_name = {COL: func_name}
     COL_func_args = {COL: func_args}
     COL_section = {COL: section}
@@ -125,7 +124,7 @@ func _get_line_syntax_highlighting(line : int) -> Dictionary:
         var match_newline_tag : RegExMatch = null
 
         if match_func != null:
-            dict[match_func.get_start(__CALLER)] = COL_caller
+            dict[match_func.get_start(__SCOPE)] = COL_scope
             dict[match_func.get_start(__NAME)] = COL_func_name
             dict[match_func.get_start(__NAME) - 1] = COL_symbol
             dict[match_func.get_end(__NAME)] = COL_symbol
@@ -140,7 +139,7 @@ func _get_line_syntax_highlighting(line : int) -> Dictionary:
             match_vars = DialogueParser._regex_vars_set.search(string)
 
         if match_vars != null:
-            dict[match_vars.get_start(__SCOPE)] = COL_caller
+            dict[match_vars.get_start(__SCOPE)] = COL_scope
             dict[match_vars.get_start(__NAME)] = COL_func_name
             dict[match_vars.get_start(__NAME) - 1] = COL_symbol
             dict[match_vars.get_end(__NAME)] = COL_symbol
