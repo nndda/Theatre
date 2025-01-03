@@ -16,6 +16,8 @@ const __NAME := "name"
 const __TAG := "tag"
 const __ARG := "arg"
 const __CALLER := "caller"
+const __SCOPE := "scope"
+const __VAL := "val"
 
 var string : String
 var dict : Dictionary = {}
@@ -118,14 +120,18 @@ func _get_line_syntax_highlighting(line : int) -> Dictionary:
                 DialogueParser.REGEX_FUNC_CALL
             )
         var match_func := DialogueParser._regex_func_call.search(string)
-        var match_newline_tag : RegExMatch = null
 
-        if match_func == null:
-            if DialogueParser._regex_dlg_tags_newline == null:
-                DialogueParser._regex_dlg_tags_newline = RegEx.create_from_string(
-                    DialogueParser.REGEX_DLG_TAGS_NEWLINE
-                )
-            match_newline_tag = DialogueParser._regex_dlg_tags_newline.search(string)
+        if DialogueParser._regex_vars_set == null:
+            DialogueParser._regex_vars_set = RegEx.create_from_string(
+                DialogueParser.REGEX_VARS_SET
+            )
+        var match_vars := DialogueParser._regex_vars_set.search(string)
+
+        if DialogueParser._regex_dlg_tags_newline == null:
+            DialogueParser._regex_dlg_tags_newline = RegEx.create_from_string(
+                DialogueParser.REGEX_DLG_TAGS_NEWLINE
+            )
+        var match_newline_tag := DialogueParser._regex_dlg_tags_newline.search(string)
 
         if match_func != null:
             dict[match_func.get_start(__CALLER)] = COL_caller
@@ -135,6 +141,14 @@ func _get_line_syntax_highlighting(line : int) -> Dictionary:
             dict[match_func.get_end(__NAME) + 1] = COL_func_args
             dict[match_func.get_end() - 1] = COL_symbol
             dict[match_func.get_end()] = COL_base_content
+
+        elif match_vars != null:
+            dict[match_vars.get_start(__SCOPE)] = COL_caller
+            dict[match_vars.get_start(__NAME)] = COL_func_name
+            dict[match_vars.get_start(__NAME) - 1] = COL_symbol
+            dict[match_vars.get_end(__NAME)] = COL_symbol
+            dict[match_vars.get_start(__VAL)] = COL_func_args
+            dict[match_vars.get_end()] = COL_base_content
 
         elif match_newline_tag != null:
             dict[match_newline_tag.get_start(__TAG)] = COL_tag_content

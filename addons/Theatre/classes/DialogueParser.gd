@@ -19,6 +19,10 @@ const REGEX_BBCODE_TAGS :=\
     r"[\[\/]+?(?<tag>\w+)[^\[\]]*?\]";\
     static var _regex_bbcode_tags := RegEx.create_from_string(REGEX_BBCODE_TAGS)
 
+const REGEX_VARS_SET :=\
+    r"(?<scope>\w+)\.(?<name>\w+)\s*\=\s*(?<val>.+)$";\
+    static var _regex_vars_set := RegEx.create_from_string(REGEX_VARS_SET)
+
 const REGEX_FUNC_CALL :=\
     r"(?<caller>\w+)\.(?<name>\w+)\((?<args>.*)\)$";\
     static var _regex_func_call := RegEx.create_from_string(REGEX_FUNC_CALL)
@@ -53,9 +57,11 @@ const __FUNC_POS := "func_pos"
 const __FUNC_IDX := "func_idx"
 const __OFFSETS := "offsets"
 const __HAS_VARS := "has_vars"
+const __VAL := "val"
 const __VARS := "vars"
 
 const __CALLER := "caller"
+const __SCOPE := "scope"
 const __NAME := "name"
 const __ARGS := "args"
 const __LN_NUM := "ln_num"
