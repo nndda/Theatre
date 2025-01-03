@@ -212,7 +212,10 @@ func _init(src : String = "", src_path : String = ""):
 
         var current_processed_string : String
 
-        if is_valid_line and !is_indented(n) and n_stripped.ends_with(COLON):
+        if is_valid_line \
+            and !is_indented(n) \
+            and n_stripped.ends_with(COLON):
+
             #region NOTE: Create new Dialogue line -------------------------------------------------
             var setsl := SETS_TEMPLATE.duplicate(true)
             newline_stack = 0
