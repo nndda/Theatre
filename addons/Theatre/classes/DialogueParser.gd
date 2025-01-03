@@ -427,6 +427,9 @@ static func parse_tags(string : String) -> Dictionary:
 
     var bbcode_pos_offset : int = 0
 
+    # Escaped Equal Sign ===================================================
+    string = string.replace("\\=", "=")
+
     # Strip and log BBCode tags
     for bb in _regex_bbcode_tags.search_all(_regex_dlg_tags.sub(string, EMPTY, true)):
         var bb_start : int = bb.get_start() - bbcode_pos_offset
