@@ -43,8 +43,9 @@ func _import(
     if dlg_file == null:
         return FileAccess.get_open_error()
 
-    var dlg := Dialogue.new(dlg_file.get_as_text())
+    var dlg := Dialogue.new()
     dlg._source_path = source_file
+    dlg._from_string(dlg_file.get_as_text())
 
     return ResourceSaver.save( dlg,
         save_path + "." + _get_save_extension()

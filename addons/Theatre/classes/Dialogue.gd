@@ -32,6 +32,10 @@ extends Resource
 
 #region NOTE: Loader/constructor -------------------------------------------------------------------
 func _init(dlg_src : String = ""):
+    if !dlg_src.is_empty():
+        _from_string(dlg_src)
+
+func _from_string(dlg_src : String = "") -> void:
     var parser : DialogueParser
 
     if dlg_src.is_empty():
@@ -49,7 +53,8 @@ func _init(dlg_src : String = ""):
 
         parser = DialogueParser.new(
             # BUG
-            DialogueParser.normalize_indentation(dlg_src)
+            DialogueParser.normalize_indentation(dlg_src),
+            _source_path
         )
         _sections = parser.sections
         _sets = parser.output

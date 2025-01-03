@@ -230,7 +230,7 @@ func _call_function(f : Dictionary) -> void:
 
     #region general error checks
     if !_caller_all.has(func_caller):
-        printerr("Error @%s:%d - caller '%s' doesn't exists" % [
+        push_error("Error @%s:%d - caller '%s' doesn't exists" % [
             current_dialogue._source_path, f[DialogueParser.__LN_NUM],
             func_caller,
         ])
@@ -239,14 +239,14 @@ func _call_function(f : Dictionary) -> void:
     var caller_obj : Object = _caller_all[func_caller].get_ref()
 
     if caller_obj == null:
-        printerr("Error @%s:%d - object of the caller '%s' is null" % [
+        push_error("Error @%s:%d - object of the caller '%s' is null" % [
             current_dialogue._source_path, f[DialogueParser.__LN_NUM],
             func_caller,
         ])
         return
 
     if !caller_obj.has_method(func_name):
-        printerr("Error @%s:%d - function '%s.%s()' doesn't exists" % [
+        push_error("Error @%s:%d - function '%s.%s()' doesn't exists" % [
             current_dialogue._source_path, f[DialogueParser.__LN_NUM],
             func_caller, func_name
         ])
@@ -258,7 +258,7 @@ func _call_function(f : Dictionary) -> void:
         return
 
     if func_vars.any(_func_args_inp_check_caller.bind(_caller_all.keys())):
-        printerr("Error @%s:%d - Argument caller(s) used: %s doesn't exists" % [
+        push_error("Error @%s:%d - argument caller(s) used: %s doesn't exists" % [
             current_dialogue._source_path, f[DialogueParser.__LN_NUM],
             func_vars,
         ])
@@ -270,7 +270,7 @@ func _call_function(f : Dictionary) -> void:
     caller_obj)
 
     if _expression_args.has_execute_failed() or expr_err != OK:
-        printerr("Error @%s:%d - %s" % [
+        push_error("Error @%s:%d - %s" % [
             current_dialogue._source_path, f[DialogueParser.__LN_NUM],
             _expression_args.get_error_text(),
         ])

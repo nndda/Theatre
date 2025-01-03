@@ -4,6 +4,8 @@ class_name DialogueParser
 var output : Array[Dictionary] = []
 var sections : Dictionary = {}
 
+var _source_path : String
+
 #region RegExes
 const REGEX_DLG_TAGS :=\
     r"\{\s*(?<tag>\w+)\s*(\=\s*(?<arg>.+?)\s*)*\}";\
@@ -155,11 +157,14 @@ static func _initialize_regex() -> void:
     _regex_valid_dlg = RegEx.create_from_string(REGEX_VALID_DLG)
     _regex_section = RegEx.create_from_string(REGEX_SECTION)
 
-func _init(src : String = ""):
+func _init(src : String = "", src_path : String = ""):
     # WHY???
     if !_regex_initialized:
         _initialize_regex()
         _regex_initialized = true
+
+    if !src_path.is_empty():
+        _source_path = src_path
 
     var dlg_raw : PackedStringArray = src.split(NEWLINE)
 
@@ -185,17 +190,18 @@ func _init(src : String = ""):
             newline_stack = 0
             dlg_line_stack += 1
 
+            setsl[__LINE_NUM] = ln_num
+
             if dlg_raw_size < i + 1:
-                printerr("Error: actor's name exists without a dialogue body")
+                push_error("Error @%s:%d - actor's name exists without a dialogue body" % [_source_path, ln_num])
 
             setsl[__ACTOR] = StringName(n_stripped.trim_suffix(COLON))
-            setsl[__LINE_NUM] = ln_num
 
             if setsl[__ACTOR] == UNDERSCORE:
                 setsl[__ACTOR] = EMPTY
             elif setsl[__ACTOR].is_empty():
                 if body_pos < 0:
-                    printerr("Warning: missing initial actor's name on line %d" % ln_num)
+                    push_error("Error @%s - missing initial actor's name" % _source_path)
                 else:
                     setsl[__ACTOR] = output[body_pos][__ACTOR]
 
@@ -242,7 +248,10 @@ func _init(src : String = ""):
                 var var_matches := _regex_func_vars.search_all(args_raw)
 
                 if var_matches.is_empty():
-                    func_dict[__ARGS] = args.execute() as Array
+                    func_dict[__ARGS] = args.execute()
+
+                    if args.has_execute_failed():
+                        push_error("Error @%s:%d - %s" % [_source_path, ln_num, args.get_error_text()])
 
                 else:
                     func_dict[__STANDALONE] = false
@@ -288,8 +297,8 @@ func _init(src : String = ""):
         var body : String
 
         if output[n][__CONTENT_RAW].is_empty():
-            printerr("Warning: empty dialogue body for '%s' on line %d" % [
-                output[n][__ACTOR], output[n][__LINE_NUM]
+            push_error("Error @%s:%d - empty dialogue body for actor '%s'" % [
+                _source_path, output[n][__LINE_NUM], output[n][__ACTOR]
             ])
 
         else:
