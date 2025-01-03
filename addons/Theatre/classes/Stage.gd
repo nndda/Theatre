@@ -192,6 +192,9 @@ func _update_scope() -> void:
 ## Return user-defined scopes that will be used in the written [Dialogue].
 func get_scopes() -> Dictionary:
     return _scope
+## @deprecated: Use [method get_scopes] instead.
+func get_callers() -> Dictionary:
+    return get_scopes()
 
 ## Add function scope used in the written [Dialogue].
 ## If [param object] is a [Node], it will be removed automatically when its freed.
@@ -202,6 +205,10 @@ func add_scope(id : String, object : Object) -> void:
     if object is Node:
         object.tree_exited.connect(remove_scope.bind(id))
     _update_scope()
+## @deprecated: Use [method add_scope] instead.
+func add_caller(id : String, object : Object) -> void:
+    add_scope(id, object)
+
 
 ## Remove function scope used in the written [Dialogue].
 ## [br][br]
@@ -212,6 +219,9 @@ func remove_scope(id : String) -> void:
     else:
         _scope.erase(id)
     _update_scope()
+## @deprecated: Use [method remove_scope] instead.
+func remove_caller(id: String) -> void:
+    remove_scope(id)
 
 ## Remove all function scopes.
 ## [br][br]
@@ -219,6 +229,9 @@ func remove_scope(id : String) -> void:
 func clear_scopes() -> void:
     _scope.clear()
     _update_scope()
+## @deprecated: Use [method clear_scopes] instead.
+func clear_callers() -> void:
+    clear_scopes()
 
 var _expression_args := Expression.new()
 func _call_function(f : Dictionary) -> void:
