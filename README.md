@@ -54,39 +54,41 @@ Dia:
 
 # Features
 
-## Dialogue tags
+## Dialogue Tags
 
 Fine-tune your dialogue flow with `{delay}` and `{speed}`.
 ```yaml
 Godette:
     "Hello!{delay = 0.7} Nice to meet you."
 ```
+
+## Set Properties
+
+Manipulate properties &amp; variables.
 ```yaml
-Godette:
-    "Hello!
-        delay=0.7
-    Nice to meet you."
+Ritsu:
+    UI.portrait = "ritsu_smile.png"
+    "Cheers!"
 ```
 
-## Function calls
+## Function Calls
 
 Connect your story to the game with function calls.
 ```yaml
-Ritsu:
-    Portrait.set("ritsu_smile.png")
-    "Cheers!"
-```
-```yaml
-{player_name}:
+{player}:
     Player.heal(20)
     "Thanks! That feels so much better."
 ```
 
-Call functions only at specific points in the Dialogue.
+---
+
+Call functions or set properties/variables only at specific points in the Dialogue.
 ```yaml
 Dia:
     "Let's brighten up the room a little...{d = 1.1}
         Background.set_brightness(1.0)
+# or
+        Background.brightness = 1.0
     there we go."
 ```
 
