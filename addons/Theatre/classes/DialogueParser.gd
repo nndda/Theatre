@@ -180,6 +180,7 @@ func _init(src : String = "", src_path : String = ""):
     var dlg_line_stack : int = 0
 
     var regex_func_match : RegExMatch
+    var regex_vars_match : RegExMatch
 
     # Per raw string line
     for i in dlg_raw_size:
@@ -229,6 +230,10 @@ func _init(src : String = "", src_path : String = ""):
         elif is_valid_line and !output.is_empty():
             current_processed_string = dlg_raw[i].strip_edges()
             regex_func_match = _regex_func_call.search(current_processed_string)
+            regex_vars_match = null
+
+            if regex_func_match == null:
+                regex_vars_match = _regex_vars_set.search(current_processed_string)
 
             #region NOTE: Function calls -----------------------------------------------------------
             if regex_func_match != null:
@@ -264,6 +269,50 @@ func _init(src : String = "", src_path : String = ""):
                     func_dict[__ARGS] = "[" + args_raw + "]"
 
                     for var_match in var_matches:
+                        func_dict[__VARS].append(var_match.get_string(1))
+
+                func_dict.make_read_only()
+                output[body_pos][__FUNC].append(func_dict)
+
+                output[body_pos][__CONTENT_RAW] += "{%d}" % (output[body_pos][__FUNC].size() - 1)
+                output[body_pos][__CONTENT] += output[body_pos][__CONTENT_RAW]
+            #endregion
+
+            #region NOTE: Variables setter
+            elif regex_vars_match != null:
+                var func_dict := FUNC_TEMPLATE.duplicate(true)
+
+                func_dict[__CALLER] = StringName(regex_vars_match.get_string(
+                    regex_vars_match.names[__SCOPE]
+                ))
+                func_dict[__NAME] = &"set"
+                func_dict[__LN_NUM] = ln_num
+
+                var prop_name := "StringName(\"" + (regex_vars_match.get_string(
+                    regex_vars_match.names[__NAME]
+                )) + "\")"
+
+                # Value
+                var val_raw := regex_vars_match.get_string(
+                    regex_vars_match.names[__VAL]
+                )
+                
+                # Parse value
+                var val := Expression.new()
+                var val_err := val.parse("[" + prop_name + ", (" + val_raw + ")]")
+                var val_obj_matches := _regex_func_vars.search_all(val_raw)
+
+                if val_obj_matches.is_empty():
+                    func_dict[__ARGS] = val.execute()
+
+                    if val.has_execute_failed():
+                        push_error("Error @%s:%d - %s" % [_source_path, ln_num, val.get_error_text()])
+
+                else:
+                    func_dict[__STANDALONE] = false
+                    func_dict[__ARGS] = "[" + prop_name + ", (" + val_raw + ")]"
+
+                    for var_match in val_obj_matches:
                         func_dict[__VARS].append(var_match.get_string(1))
 
                 func_dict.make_read_only()
