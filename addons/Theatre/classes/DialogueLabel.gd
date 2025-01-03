@@ -60,13 +60,11 @@ func _enter_tree() -> void:
         _delay_timer.autostart = false
         _delay_timer.one_shot = true
         _delay_timer.timeout.connect(_delay_timer_timeout)
-        #call_deferred(&"add_child", _delay_timer)
         add_child(_delay_timer)
 
         _characters_ticker.autostart = false
         _characters_ticker.one_shot = false
         _characters_ticker.timeout.connect(_characters_ticker_timeout)
-        #call_deferred(&"add_child", _characters_ticker)
         add_child(_characters_ticker)
 #endregion
 
@@ -224,9 +222,3 @@ func _on_stage_skipped() -> void:
             )
     text_rendered.emit(text)
 #endregion
-
-func _exit_tree() -> void:
-    if !Engine.is_editor_hint():
-        _delay_queue.clear()
-        _speed_queue.clear()
-        _func_queue.clear()

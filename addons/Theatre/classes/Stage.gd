@@ -485,7 +485,6 @@ func progress(skip_render : bool = false) -> void:
         _at_end = _step + 1 >= _current_dialogue_length
 
         # TODO: optimize this conditional trees
-        #if dialogue_label.visible_ratio < 1.0:
         if dialogue_label._is_rendering:
             if !skip_render:
                 if allow_skip:
