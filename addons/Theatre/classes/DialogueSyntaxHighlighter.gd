@@ -17,6 +17,7 @@ const __TAG := "tag"
 const __ARG := "arg"
 const __SCOPE := "scope"
 const __VAL := "val"
+const __SYM := "sym"
 
 var string : String
 var dict : Dictionary = {}
@@ -169,10 +170,10 @@ func _get_line_syntax_highlighting(line : int) -> Dictionary:
                 dict[START] = COL_tag_braces
 
                 dict[tag.get_start(__TAG)] = COL_tag_content
-    
-                if string.contains(EQUALS):
-                    dict[tag.get_start(2)] = COL_symbol
-                    dict[tag.get_start(__ARG)] = COL_tag_content
+
+                if !tag.get_string(__SYM).is_empty():
+                    dict[tag.get_start(__SYM)] = COL_symbol
+                    dict[tag.get_end(__SYM)] = COL_tag_content
     
                 dict[END - 1] = COL_tag_braces
 

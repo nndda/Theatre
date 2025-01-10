@@ -8,10 +8,10 @@ var sections : Dictionary = {}
 var _source_path : String
 
 #region RegExes
-# Match Dialogue tags: {delay=1.0} {d = 1.0} {foo} {bar}
-# But not: \{foo\} \{d=1.0\}
+# Match Dialogue tags: {delay=1.0} {d = 1.0} {foo} {bar} {foo.bar}
+# But not: \{foo\} \{foo} {foo\}
 const REGEX_DLG_TAGS :=\
-    r"(?<!\\)\{\s*(?<tag>\w+)\s*(\=\s*(?<arg>.+?)\s*)*(?<!\\)\}";\
+    r"(?<!\\)(?:\\\\)*\{\s*(?<tag>\w+)\s*(?<sym>\=|\.)?\s*(?<val>(?:[^\\\{\}]|\\[\{\}])*?)\s*(?<!\\)\}";\
     static var _regex_dlg_tags := RegEx.create_from_string(REGEX_DLG_TAGS)
 
 # Match Dialogue tags newline syntax:
@@ -73,6 +73,7 @@ const __OFFSETS := "offsets"
 const __HAS_VARS := "has_vars"
 const __VAL := "val"
 const __VARS := "vars"
+const __SYM := "sym"
 
 const __SCOPE := "scope"
 const __NAME := "name"
@@ -492,17 +493,10 @@ static func parse_tags(string : String) -> Dictionary:
         var string_match := b.strings[0]
 
         var tag_pos : int = b.get_start() - tag_pos_offset
-        var tag_key := b.get_string("tag").to_upper()
         var tag_key_l := b.get_string("tag")
-        var tag_value := b.get_string("arg")
-
-        if TAG_DELAY_ALIASES.has(tag_key):
-            tags[__TAGS_DELAYS][tag_pos] = float(tag_value)
-        elif TAG_SPEED_ALIASES.has(tag_key):
-            tags[__TAGS_SPEEDS][tag_pos] = 1.0 if tag_value.is_empty() else float(tag_value)
-
-        if !(tag_key_l in VARS_BUILT_IN_KEYS):
-            string = string.replace(string_match, EMPTY)
+        var tag_key := tag_key_l.to_upper()
+        var tag_value := b.get_string(__VAL)
+        var tag_sym := b.get_string(__SYM)
 
         # Position-based function calls.
         if tag_key_l.is_valid_int():
@@ -524,10 +518,24 @@ static func parse_tags(string : String) -> Dictionary:
             if !func_idx.has(idx):
                 func_idx.append(idx)
 
-        if !BUILT_IN_TAGS.has(tag_key) and\
-            !(tag_key_l in vars) and\
-            !tag_key_l.is_valid_int():
+        elif tag_sym == ".":
+            pass
+
+        #elif tag_sym == "=": # NOTE: conflicting with the {s} shorthand alias to reset the rendering speed.
+        #region NOTE: built in tags.
+        elif TAG_DELAY_ALIASES.has(tag_key):
+            tags[__TAGS_DELAYS][tag_pos] = float(tag_value)
+
+        elif TAG_SPEED_ALIASES.has(tag_key):
+            tags[__TAGS_SPEEDS][tag_pos] = 1.0 if tag_value.is_empty() else tag_value.to_float()
+        #endregion
+
+        # User defined variables.
+        elif tag_key_l not in vars:
             vars.append(tag_key_l)
+
+        if tag_key_l not in VARS_BUILT_IN_KEYS:
+            string = string.replace(string_match, EMPTY)
 
         tag_pos_offset += string_match.length()
 
