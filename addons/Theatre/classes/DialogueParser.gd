@@ -406,12 +406,28 @@ func _init(src : String = "", src_path : String = ""):
 
                     if BB_ALIASES_TAGS.has(tag):
                         start = bb.get_start("tag")
-                        content_str = content_str\
-                            .erase(start, tag.length())\
+                        content_str = content_str \
+                            .erase(start, tag.length()) \
                             .insert(start, BB_ALIASES[tag])
-
-                output[n][__CONTENT_RAW] = content_str
             #endregion
+
+            #region NOTE: Escaped square brackets
+            match_bb = RegEx.create_from_string(r"(\\\[|\\\])").search_all(content_str)
+            if !match_bb.is_empty():
+                match_bb.reverse()
+                var bracket : String
+                var start : int
+
+                for br in match_bb:
+                    bracket = "[lb]" if br.strings[0] == r"\[" else "[rb]"
+                    start = br.get_start()
+
+                    content_str = content_str \
+                        .erase(start, 2) \
+                        .insert(start, bracket)
+            #endregion
+
+            output[n][__CONTENT_RAW] = content_str
 
             var parsed_tags := parse_tags(content_str)
 
@@ -476,10 +492,6 @@ static func parse_tags(string : String) -> Dictionary:
 
     # BBCode ===============================================================
     var bb_data : Array[Dictionary] = []
-    string = string\
-        .replace(r"\[", r"[lb]")\
-        .replace(r"\]", r"[rb]")
-
     var bbcode_pos_offset : int = 0
 
     # Escaped Equal Sign ===================================================
