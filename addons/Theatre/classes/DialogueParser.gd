@@ -22,7 +22,7 @@ const REGEX_DLG_TAGS_NEWLINE :=\
     static var _regex_dlg_tags_newline := RegEx.create_from_string(REGEX_DLG_TAGS_NEWLINE)
 
 const REGEX_BBCODE_TAGS :=\
-    r"[\[\/]+?(?<tag>\w+)[^\[\]]*?\]";\
+    r"(?<!\\)\[\/?(?<tag>\w+)[^\[\]]*?(?<!\\)\]";\
     static var _regex_bbcode_tags := RegEx.create_from_string(REGEX_BBCODE_TAGS)
 
 # Match variables assignments:
