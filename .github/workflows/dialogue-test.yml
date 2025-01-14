@@ -12,7 +12,7 @@ on:
       - 'dialogue/**.dlg'
       - 'dialogue/**.REF.tres'
       - 'tests/class/**'
-      - 'tests/**_ci.js'
+      - 'tests/**_ci.gd'
   pull_request:
     branches:
       - main
@@ -23,7 +23,7 @@ on:
       - 'dialogue/**.dlg'
       - 'dialogue/**.REF.tres'
       - 'tests/class/**'
-      - 'tests/**_ci.js'
+      - 'tests/**_ci.gd'
   workflow_dispatch:
 
 jobs:
