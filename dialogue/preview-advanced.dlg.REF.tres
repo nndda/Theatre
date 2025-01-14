@@ -1,9 +1,9 @@
 [gd_resource type="Resource" script_class="Dialogue" load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://addons/Theatre/classes/Dialogue.gd" id="1_ugrgg"]
+[ext_resource type="Script" path="res://addons/Theatre/classes/Dialogue.gd" id="1_40wax"]
 
 [resource]
-script = ExtResource("1_ugrgg")
+script = ExtResource("1_40wax")
 _sets = Array[Dictionary]([{
 "actor": &"Dia",
 "content": "\"Welcome! to [fx1]Theatre[/fx1]! yet another text-based dialogue addon developed for Godot .\" 
@@ -92,11 +92,11 @@ _sets = Array[Dictionary]([{
 "vars": PackedStringArray()
 }, {
 "actor": &"Dia",
-"content": "\"There's also [fx2][color=ffffaa]\\{Dialogue tags\\} [/color][/fx2], which allows you to fine tune your dialogue flow. You can also use [color=8ce35d]\\[BBCode\\] [/color]tags alongside Dialogue tags too!\" 
+"content": "\"There's also [fx2][color=ffffaa]\\{Dialogue tags\\} [/color][/fx2], which allows you to fine tune your dialogue flow. You can also use [color=8ce35d][lb]BBCode[rb] [/color]tags alongside Dialogue tags too!\" 
 
 
 (≧ ω ≦) ",
-"content_raw": "\"There's also {s=0.23}[fx2][color=ffffaa]\\{Dialogue tags\\} [/color][/fx2]{s=1.0}{d=1.05}, which allows you to fine tune your dialogue flow. {d=0.7}You can also use [color=8ce35d]\\[BBCode\\] [/color]tags {d=0.25}alongside Dialogue tags too!\" 
+"content_raw": "\"There's also {s=0.23}[fx2][color=ffffaa]\\{Dialogue tags\\} [/color][/fx2]{s=1.0}{d=1.05}, which allows you to fine tune your dialogue flow. {d=0.7}You can also use [color=8ce35d][lb]BBCode[rb] [/color]tags {d=0.25}alongside Dialogue tags too!\" 
 
 
 (≧ ω ≦) ",
