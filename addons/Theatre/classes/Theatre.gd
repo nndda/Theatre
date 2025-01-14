@@ -13,6 +13,7 @@ func _enter_tree() -> void:
 
     var tree := get_tree()
 
+    # TODO: move these to Stage class instead
     for singleton in Engine.get_singleton_list():
         Stage._scope_built_in[singleton] = Engine.get_singleton(singleton)
 
