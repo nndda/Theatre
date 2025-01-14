@@ -158,6 +158,17 @@ const BUILT_IN_TAGS : PackedStringArray = (
     TAG_SPEED_ALIASES +
     VARS_BUILT_IN_KEYS
 )
+
+const BB_ALIASES := {
+    "bg": "bgcolor",
+    "fg": "fgcolor",
+    "col": "color",
+    "c": "color",
+}
+
+const BB_ALIASES_TAGS : PackedStringArray = [
+    "bg", "fg", "col", "c"
+]
 #endregion
 
 const NEWLINE := "\n"
@@ -374,20 +385,41 @@ func _init(src : String = "", src_path : String = ""):
     # Per dialogue line
     for n in output.size():
         var body : String
+        var content_str : String = output[n][__CONTENT_RAW]
 
-        if output[n][__CONTENT_RAW].is_empty():
+        if content_str.is_empty():
             push_error("Error @%s:%d - empty dialogue body for actor '%s'" % [
                 _source_path, output[n][__LINE_NUM], output[n][__ACTOR]
             ])
 
         else:
-            var parsed_tags := parse_tags(output[n][__CONTENT_RAW])
+            #region NOTE: Resolve BBCode aliases
+            var match_bb := _regex_bbcode_tags.search_all(content_str)
+
+            if !match_bb.is_empty():
+                match_bb.reverse()
+                var tag : String
+                var start : int
+
+                for bb in match_bb:
+                    tag = bb.get_string("tag")
+
+                    if BB_ALIASES_TAGS.has(tag):
+                        start = bb.get_start("tag")
+                        content_str = content_str\
+                            .erase(start, tag.length())\
+                            .insert(start, BB_ALIASES[tag])
+
+                output[n][__CONTENT_RAW] = content_str
+            #endregion
+
+            var parsed_tags := parse_tags(content_str)
 
             for tag : String in SETS_TEMPLATE[__TAGS].keys():
                 output[n][__TAGS][tag].merge(parsed_tags[__TAGS][tag])
 
-            body = output[n][__CONTENT_RAW]
-            for tag in _regex_dlg_tags.search_all(output[n][__CONTENT_RAW]):
+            body = content_str
+            for tag in _regex_dlg_tags.search_all(content_str):
                 body = body.replace(tag.strings[0], EMPTY)
 
             output[n][__VARS] = parsed_tags[__VARS]
