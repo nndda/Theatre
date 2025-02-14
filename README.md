@@ -2,9 +2,12 @@
 
 <img src="/addons/Theatre/assets/icons/Theatre.svg" alt="Theatre logo" height="160" align="right">
 
-<a href="https://godotengine.org/"><img src="https://img.shields.io/badge/4.3-white?style=flat-square&logo=godotengine&logoColor=white&label=Godot&labelColor=%232e5f84&color=white" alt="Godot 4.3" height="20"></a>
-<a href="https://github.com/nndda/Theatre/actions/workflows/dialogue-test.yml"><img src="https://img.shields.io/github/actions/workflow/status/nndda/Theatre/dialogue-test.yml?branch=main&event=push&style=flat-square&logo=github&label=Parser%20build&labelColor=%23282e33&color=%2329aa46" alt="Build status" height="20"></a>
-<a href="https://nndda.github.io/Theatre/"><img src="https://img.shields.io/github/actions/workflow/status/nndda/Theatre/docs_build.yaml?branch=docs&event=push&style=flat-square&logo=github&label=Docs%20build&labelColor=%23282e33&color=%2329aa46" alt="Documentation build" height="20"></a>
+<a href="https://godotengine.org/">
+<img src="https://img.shields.io/badge/4.3-white?style=flat-square&logo=godotengine&logoColor=white&label=Godot&labelColor=%232f5069&color=%233e4c57" alt="Godot 4.3" height="20"></a>
+<a href="https://github.com/nndda/Theatre/actions/workflows/dialogue-test.yml">
+<img src="https://img.shields.io/github/actions/workflow/status/nndda/Theatre/dialogue-test.yml?branch=main&event=push&style=flat-square&logo=github&label=Parser%20build&labelColor=%23252b30&color=%23306b3d" alt="Build status" height="20"></a>
+<a href="https://nndda.github.io/Theatre/">
+<img src="https://img.shields.io/website?style=flat-square&logo=github&label=Docs&labelColor=%23252b30&color=%23306b3d&up_message=online&url=http%3A//nndda.github.io/Theatre" alt="Documentation build" height="20"></a>
 
 Yet another <sub>(linear)</sub> dialogue system<b>/</b>addon<b>/</b>plugin for Godot. With features such as:
 
