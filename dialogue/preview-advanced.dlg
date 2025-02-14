@@ -1,9 +1,9 @@
 Dia:
-    "Welcome! {d=0.8}to
+    "Welcome! {d=.8}to
     [fx1]Theatre[/fx1]!
-        d=0.9
+        d=.9
     yet another text-based dialogue addon
-        d=0.3
+        d=.3
     developed for Godot {gd_ver}."
 
 
@@ -11,24 +11,24 @@ Dia:
 
 :
     "The written
-    [color=77dfdf]
+    [c=77dfdf]
         Dialogue
-    [/color]
+    [/c]
     syntax
-        d=0.25
+        d=.25
     is designed
     to be human-readable.
-        d=0.76
+        d=.76
     Similar to other data format
-        d=0.45
-    like [color=8ce35d]YAML[/color].
-        d=0.76
-        s=0.45
+        d=.45
+    like [c=8ce35d]YAML[/c].
+        d=.76
+        s=.45
     Although,
-        d=0.5
+        d=.5
     it is far more simplified
-        d=0.4
-        s=0.25
+        d=.4
+        s=.25
     and limited."
 
 
@@ -37,22 +37,22 @@ Dia:
 :
         s=1.1
     "But!
-        d=0.9
-        s=1.0
+        d=.9
+        s=1
     You can also do things
-        d=0.25
+        d=.25
     like
-    [color=ffffaa]
+    [c=ffffaa]
         [u]calling functions()[/u]
-    [/color]
-        d=0.4
+    [/c]
+        d=.4
     and
-    [color=#ffffaa]
+    [c=#ffffaa]
         [u]inserting variables![/u]
-    [/color]
-        d=0.65
+    [/c]
+        d=.65
     And that is not
-        d=0.1
+        d=.1
     the only feature Theatre has to offer!"
 
 
@@ -60,23 +60,22 @@ Dia:
 
 :
     "There's also
-        s=0.23
+        s=.23
     [fx2]
-        [color=ffffaa]
+        [c=ffffaa]
             \{Dialogue tags\}
-        [/color]
+        [/c]
     [/fx2]
-        s=1.0
+        s=1
         d=1.05
     , which allows you to fine tune your dialogue flow.
-        d=0.7
+        d=.7
     You can also use
-        [color=8ce35d]
-# TODO
+        [c=8ce35d]
             \[BBCode\]
-        [/color]
+        [/c]
     tags
-        d=0.25
+        d=.25
     alongside Dialogue tags too!"
 
 

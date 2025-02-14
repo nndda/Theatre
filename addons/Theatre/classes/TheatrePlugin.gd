@@ -117,10 +117,10 @@ func _ready() -> void:
             await get_tree().create_timer(2.5).timeout
             update_check()
 
-        var theatre_record := FileAccess.open("res://.godot/.theatre", FileAccess.READ_WRITE)
+        var theatre_record := FileAccess.open("res://.godot/.theatre", FileAccess.WRITE_READ)
 
         if theatre_record == null:
-            printerr("Error opening .theatre file: %s" % error_string(theatre_record.get_open_error()))
+            push_error("Error opening .theatre file: ", error_string(FileAccess.get_open_error()))
         else:
             var ver := get_plugin_version().strip_edges()
             if theatre_record.get_as_text().strip_edges() != ver:

@@ -32,6 +32,10 @@ extends Resource
 
 #region NOTE: Loader/constructor -------------------------------------------------------------------
 func _init(dlg_src : String = ""):
+    if !dlg_src.is_empty():
+        _from_string(dlg_src)
+
+func _from_string(dlg_src : String = "") -> void:
     var parser : DialogueParser
 
     if dlg_src.is_empty():
@@ -49,7 +53,8 @@ func _init(dlg_src : String = ""):
 
         parser = DialogueParser.new(
             # BUG
-            DialogueParser.normalize_indentation(dlg_src)
+            DialogueParser.normalize_indentation(dlg_src),
+            _source_path
         )
         _sections = parser.sections
         _sets = parser.output
@@ -110,10 +115,10 @@ func get_sections() -> Dictionary:
 func _update_used_function_calls() -> void:
     for n : Dictionary in _sets:
         for m : Dictionary in n[DialogueParser.__FUNC]:
-            if !_used_function_calls.has(m[DialogueParser.__CALLER]):
-                _used_function_calls[m[DialogueParser.__CALLER]] = {}
+            if !_used_function_calls.has(m[DialogueParser.__SCOPE]):
+                _used_function_calls[m[DialogueParser.__SCOPE]] = {}
 
-            _used_function_calls[m[DialogueParser.__CALLER]][m[DialogueParser.__LN_NUM]] = {
+            _used_function_calls[m[DialogueParser.__SCOPE]][m[DialogueParser.__LN_NUM]] = {
                 DialogueParser.__NAME: m[DialogueParser.__NAME],
                 DialogueParser.__ARGS: m[DialogueParser.__ARGS],
             }

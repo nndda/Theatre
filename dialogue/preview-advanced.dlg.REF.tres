@@ -1,16 +1,16 @@
 [gd_resource type="Resource" script_class="Dialogue" load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://addons/Theatre/classes/Dialogue.gd" id="1_ugrgg"]
+[ext_resource type="Script" path="res://addons/Theatre/classes/Dialogue.gd" id="1_8a74v"]
 
 [resource]
-script = ExtResource("1_ugrgg")
+script = ExtResource("1_8a74v")
 _sets = Array[Dictionary]([{
 "actor": &"Dia",
 "content": "\"Welcome! to [fx1]Theatre[/fx1]! yet another text-based dialogue addon developed for Godot .\" 
 
 
 ＼(^ ▽ ^) ",
-"content_raw": "\"Welcome! {d=0.8}to [fx1]Theatre[/fx1]! {d=0.9}yet another text-based dialogue addon {d=0.3}developed for Godot {gd_ver}.\" 
+"content_raw": "\"Welcome! {d=.8}to [fx1]Theatre[/fx1]! {d=.9}yet another text-based dialogue addon {d=.3}developed for Godot {gd_ver}.\" 
 
 
 ＼(^ ▽ ^) ",
@@ -35,7 +35,7 @@ _sets = Array[Dictionary]([{
 
 
 (｡T ω T｡) ",
-"content_raw": "\"The written [color=77dfdf]Dialogue [/color]syntax {d=0.25}is designed to be human-readable. {d=0.76}Similar to other data format {d=0.45}like [color=8ce35d]YAML[/color]. {d=0.76}{s=0.45}Although, {d=0.5}it is far more simplified {d=0.4}{s=0.25}and limited.\" 
+"content_raw": "\"The written [color=77dfdf]Dialogue [/color]syntax {d=.25}is designed to be human-readable. {d=.76}Similar to other data format {d=.45}like [color=8ce35d]YAML[/color]. {d=.76}{s=.45}Although, {d=.5}it is far more simplified {d=.4}{s=.25}and limited.\" 
 
 
 (｡T ω T｡) ",
@@ -66,7 +66,7 @@ _sets = Array[Dictionary]([{
 
 
 <(￣︶￣)> ",
-"content_raw": "{s=1.1}\"But! {d=0.9}{s=1.0}You can also do things {d=0.25}like [color=ffffaa][u]calling functions()[/u] [/color]{d=0.4}and [color=#ffffaa][u]inserting variables![/u] [/color]{d=0.65}And that is not {d=0.1}the only feature Theatre has to offer!\" 
+"content_raw": "{s=1.1}\"But! {d=.9}{s=1}You can also do things {d=.25}like [color=ffffaa][u]calling functions()[/u] [/color]{d=.4}and [color=#ffffaa][u]inserting variables![/u] [/color]{d=.65}And that is not {d=.1}the only feature Theatre has to offer!\" 
 
 
 <(￣︶￣)> ",
@@ -92,11 +92,11 @@ _sets = Array[Dictionary]([{
 "vars": PackedStringArray()
 }, {
 "actor": &"Dia",
-"content": "\"There's also [fx2][color=ffffaa]\\{Dialogue tags\\} [/color][/fx2], which allows you to fine tune your dialogue flow. You can also use [color=8ce35d]\\[BBCode\\] [/color]tags alongside Dialogue tags too!\" 
+"content": "\"There's also [fx2][color=ffffaa]\\{Dialogue tags\\} [/color][/fx2], which allows you to fine tune your dialogue flow. You can also use [color=8ce35d][lb]BBCode[rb] [/color]tags alongside Dialogue tags too!\" 
 
 
 (≧ ω ≦) ",
-"content_raw": "\"There's also {s=0.23}[fx2][color=ffffaa]\\{Dialogue tags\\} [/color][/fx2]{s=1.0}{d=1.05}, which allows you to fine tune your dialogue flow. {d=0.7}You can also use [color=8ce35d]\\[BBCode\\] [/color]tags {d=0.25}alongside Dialogue tags too!\" 
+"content_raw": "\"There's also {s=.23}[fx2][color=ffffaa]\\{Dialogue tags\\} [/color][/fx2]{s=1}{d=1.05}, which allows you to fine tune your dialogue flow. {d=.7}You can also use [color=8ce35d][lb]BBCode[rb] [/color]tags {d=.25}alongside Dialogue tags too!\" 
 
 
 (≧ ω ≦) ",

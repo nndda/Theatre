@@ -60,13 +60,11 @@ func _enter_tree() -> void:
         _delay_timer.autostart = false
         _delay_timer.one_shot = true
         _delay_timer.timeout.connect(_delay_timer_timeout)
-        #call_deferred(&"add_child", _delay_timer)
         add_child(_delay_timer)
 
         _characters_ticker.autostart = false
         _characters_ticker.one_shot = false
         _characters_ticker.timeout.connect(_characters_ticker_timeout)
-        #call_deferred(&"add_child", _characters_ticker)
         add_child(_characters_ticker)
 #endregion
 
@@ -116,6 +114,7 @@ func start_render() -> void:
         _current_stage.speed_scale_global / _current_stage.speed_scale
     _characters_ticker.start(_characters_draw_tick_scaled)
 
+    # Set & count Dialogue tags queues
     _delay_queue = _current_dialogue_set[DialogueParser.__TAGS][DialogueParser.__TAGS_DELAYS].keys()
     _delay_count = -_delay_queue.size()
     _speed_queue = _current_dialogue_set[DialogueParser.__TAGS][DialogueParser.__TAGS_SPEEDS].keys()
@@ -165,24 +164,19 @@ func resume_render() -> void:
     _characters_ticker.paused = rendering_paused
 
 func _characters_ticker_timeout() -> void:
-    if _func_count < 0:
-        if _func_queue[_func_count] == visible_characters:
-            if _current_stage.allow_func:
-                _current_stage._call_function(
-                    _current_dialogue_set[DialogueParser.__FUNC][
-                        _current_dialogue_set[DialogueParser.__FUNC_POS][visible_characters]
-                    ]
-                )
-            _func_count += 1
-
+    #region Handle Dialogue tags
+    # {delay} tag
     if _delay_count < 0:
         if _delay_queue[_delay_count] == visible_characters:
+            # Stop the rendering
+            # Rendering will be continued on _delay_timer_timeout()
             _characters_ticker.stop()
             _delay_timer.start(
                 _current_dialogue_set[DialogueParser.__TAGS][DialogueParser.__TAGS_DELAYS][visible_characters]
             )
             return
 
+    # {speed} tag
     if _speed_count < 0:
         if _speed_queue[_speed_count] == visible_characters:
             _characters_ticker.wait_time = _characters_draw_tick_scaled /\
@@ -190,8 +184,19 @@ func _characters_ticker_timeout() -> void:
                 _current_dialogue_set[DialogueParser.__TAGS][DialogueParser.__TAGS_SPEEDS][visible_characters]
             _characters_ticker.start()
             _speed_count += 1
+    #endregion
 
     visible_characters += 1
+
+    # Positional function tag
+    if _func_count < 0:
+        if _func_queue[_func_count] == visible_characters:
+            if _current_stage.allow_func:
+                for i : int in _current_dialogue_set[DialogueParser.__FUNC_POS][visible_characters]:
+                    _current_stage._call_function(
+                        _current_dialogue_set[DialogueParser.__FUNC][i]
+                    )
+            _func_count += 1
 
     if visible_ratio >= 1.0:
         _characters_ticker.stop()
@@ -211,16 +216,9 @@ func _delay_timer_timeout() -> void:
 func _on_stage_skipped() -> void:
     var arr_size : int = _func_queue.size()
     for f in _func_queue.slice(arr_size - absi(_func_count), arr_size):
-        _current_stage._call_function(
-            _current_dialogue_set[DialogueParser.__FUNC][
-                _current_dialogue_set[DialogueParser.__FUNC_POS][f]
-            ]
-        )
+        for i : int in _current_dialogue_set[DialogueParser.__FUNC_POS][f]:
+            _current_stage._call_function(
+                _current_dialogue_set[DialogueParser.__FUNC][i]
+            )
     text_rendered.emit(text)
 #endregion
-
-func _exit_tree() -> void:
-    if !Engine.is_editor_hint():
-        _delay_queue.clear()
-        _speed_queue.clear()
-        _func_queue.clear()
