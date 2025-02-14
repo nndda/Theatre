@@ -118,6 +118,7 @@ Dia:
 | ------- | ------------------- |
 | `{n}`   | Newline |
 | `{spc}`   | Space |
+| `{eq}`   | Equal sign `=` |
 
 !!! warning
     You can't use names for variables that are used by Theatre. This includes:
@@ -168,50 +169,89 @@ There are several built-in tags to fine-tune your Dialogue flows. Tags can have 
         "So {s = 0.4}uh...{s} {d=0.9}what are we gonna do?"
     ```
 
-## Function Calls
+## Calling Functions & Changing Properties
 
-Before calling the functions in the written Dialogue, you need to set the `caller`: the `Object` from which the function will be called.
+### Scopes
 
-You can do that using `Stage.add_caller()`.The first argument is the id that will be used in the written Dialogue. The second argument must be an `Object` class or anything that inherits that.
+Before calling functions or changing any properties in the written Dialogue, you need to set the `scope`: the `Object` from which the functions will be called, or its properties to be changed from within the written Dialogue.
+
+Use `Stage.add_scope()` to add a scope to a `Stage`.The first argument is the id that will be used in the written Dialogue. The second argument must be an `Object` class or anything that inherits that. Name the scope's id, the way you would name a variable or a class in GDScript.
 
 ```gdscript
 @onready var player = $Player
 
 func _ready():
-    your_stage.add_caller("Player", player)
+    your_stage.add_scope("Player", player)
 ```
 
-After that, you can call any script functions or built-in functions that are available in the caller.
-```
-{player_name}:
-    "Thanks, that feels so much better"
-    Player.heals(25)
-```
-
-If the caller is a `Node` or inherits `Node`, it will be removed automatically from the Stage if its freed. You can also remove caller manually with `Stage.remove_caller()`.
+Add multiple scopes at once, using `Stage.merge_scoped()`, that takes a Dictionary format instead:
 
 ```gdscript
-your_stage.remove_caller("Player")
+func _ready():
+    your_stage.merge_scopes({
+        "Player": $Player,
+        "UI": $UI,
+        "Global": Global
+    })
+```
+
+!!! note
+    You should set the scopes before starting any Dialogues.
+
+If the scope is a `Node` or inherits `Node`, it will be removed automatically from the `Stage` if its freed. You can also remove scope manually using `Stage.remove_scope()`.
+
+```gdscript
+your_stage.remove_scope("Player")
+```
+
+Removes all scopes of a `Stage` using `Stage.clear_scopes()`:
+
+```gdscript
+your_stage.clear_scopes()
+```
+
+### Syntax
+
+After setting up the scopes, you can call any functions, or manipulate properties that are available in the scope.
+
+```
+{player_name}:
+    Player.heals(25)
+    "Thanks, that feels so much better."
+```
+```
+Ritsu:
+    UI.portrait = "ritsu_smile.png"
+    "Cheers!"
+```
+```
+Ritsu:
+    Global.friendship_lv = Global.friendship_lv + 1
+    "Yay!"
 ```
 
 All functions on a Dialogue line are called with the order they are written. The following Dialogue will call `one()`, `two()`, and `three()` subsequently.
+
 ```
 Dia:
-    "You can call as many function as you want"
-
-    Caller.one()
-    Caller.two()
-    Caller.three()
+    Scope.one()
+    Scope.two()
+    Scope.three()
+    "You can call as many functions as you want."
 ```
 
-### Passing Arguments
+### Arguments & Expressions
 
-You can generally pass any data type in the function.
+You can generally pass any data type as the function calls arguments, or as the property's value.
 ```
 Ritsu:
-    "Cheers!"
-
-    Portrait.set("res://ritsu_smile.png")
+    Inventory.add([ 'apple_pie', 'cupcake', 'muffin' ])
+    "Don't eat all of them at once~!"
+```
+```
+Thief:
+    Inventory.items = []
+    "I'll be taking that >:)"
 ```
 
 You can also write expressions.
@@ -219,13 +259,13 @@ You can also write expressions.
     Sprite.jump(pow(15, 2) * Vector2(0, -1))
 ```
 
-Although, datatype constants are not supported for now.
+Although, built-in constants are not supported for now.
 ```
-# Not supported:
+# ❌ Not supported:
     Button.set_color(Color.BLUE)
     Player.rotate(Vector.RIGHT)
 
-# Use these instead:
+# ✅ Use these instead:
     Button.set_color(Color("#0000FF"))
     Player.rotate(Vector2(0, 1))
 ```
@@ -234,61 +274,86 @@ Although, datatype constants are not supported for now.
     Write function calls (including all of its arguments) in a single line only!
 
     ```
-    # Not supported:
+    # ❌ Not supported:
         Portrait.set(
             "res://ritsu_angy.png"
         )
 
-    # Write function in a single line:
+    # ✅ Write function in a single line:
         Portrait.set("res://ritsu_smile.png")
     ```
 
-### Positional Function Calls
+### Positions
 
-Just like Dialogue tags, functions can also be called at specific point in the written Dialogue.
+Functions will be called, and properties will be set, when the `Dialogue` has rendered/reached the exact positions they were written on:
+
+```
+Actor:
+    Scope.foo()
+    "..."
+    Scope.bar()
+```
+
+In the `Dialogue` line above, the `foo()` function will be called immediately after the `Dialogue` progressed to this line. And the `bar()` function will be called after the whole `Dialogue` line has fully been rendered. The same also applies to setting properties.
+
+You can also place them in the middle of the `Dialogue` content.
+
 ```
 Dia:
     "Let me brighten up the room a little...{d = 1.1}
-    {0}
+        Background.set_brightness(1.0)
     there we go."
-
-    Background.set_brightness(1.0)
 ```
-
-The `{0}` tag indicates that it will call the first function: `Background.set_brightness(1.2)`. Use zero based index to call functions, based on their order.
-
-```
-# {0}
-    Caller.one()
-# {1}
-    Caller.two()
-# {2}
-    Caller.three()
-```
-
-The rest of the functions that are not called at a specific position will be called immediately.
-
 ```
 Ritsu:
-    "Such a lovely weather today!{d=0.9}
-    {1}
-        delay=1.5
-    {2}
-    I spoke too soon...."
-
-#   {0}
     Portrait.set("ritsu_smile.png")
 
-#   {1}
-    Environment.set_weather("storm")
-
-#   {2}
-    Portrait.set("ritsu_pissed.png")
+    "Such a lovely weather today!{d = 1.5}
+        Environment.set_weather("storm")
+        delay=1.5
+        Portrait.set("ritsu_pissed.png")
+    nevermind..."
 ```
 
 ## BBCodes
 
-Dialogue has partial supports for BBCodes: the `[img]` tag are not supported for now. `DialogueLabel` will _always_ have the `bbcode_enabled` property set to `true`. You can use BBCodes alongside variables and dialogue tags too.
+!!! warning
+    Dialogue has partial supports for BBCodes: the `[img]` tag are not supported for now.
+
+You can use BBCodes alongside variables and dialogue tags. `DialogueLabel` will _always_ have the `bbcode_enabled` property set to `true`.
+
+There's also several shorthand aliases for BBCode tags:
+
+| Shorthand    | BBCode tag         |
+| ------------ | ------------------ |
+| `[c]`, `[col]` | `[color]` |
+| `[bg]` | `[bgcolor]` |
+| `[fg]` | `[fgcolor]` |
+| `\[` | `[lb]` |
+| `\]` | `[rb]` |
+
+The escaped square brackets: `\[` and `\]`, are actually shorthands for `[rb]` and `[lb]`. So, rather than writing:
+
+```
+Dia:
+    "There are three main classes of the Theatre plugin:
+    [color=blue]Dialogue[/color],
+    [color=green]DialogueLabel[/color], &
+    [color=red]Stage[/color],
+    "
+```
+
+You can write:
+
+```
+Dia:
+    "There are three main classes of the Theatre plugin:
+    [c=blue]Dialogue[/c],
+    [c=green]DialogueLabel[/c], &
+    [c=red]Stage[/c],
+    "
+```
+
 
 ## Sections
 
