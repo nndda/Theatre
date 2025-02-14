@@ -26,7 +26,7 @@ Yet another Godot dialogue addon.
 
 <p markdown>
 
-[:material-download: v0.8.0](https://github.com/nndda/Theatre/archive/refs/tags/0.8.0.zip "Download Theatre."){ .label }
+[:material-download: v0.8.0](https://github.com/nndda/Theatre/archive/refs/tags/0.9.0.zip "Download Theatre."){ .label }
 
 [:simple-godotengine: Godot 4.3](https://godotengine.org/ "Compatible with Godot 4.3 or above."){ .label }
 
