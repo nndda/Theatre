@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=3 uid="uid://ctrohnpqthbtr"]
 
-[ext_resource type="Script" path="res://addons/Theatre/classes/DialogueLabel.gd" id="1_kg1di"]
-[ext_resource type="Script" path="res://addons/Theatre/classes/Stage.gd" id="1_le2th"]
-[ext_resource type="Script" path="res://theatre_demo/base/demo_script.gd" id="3_lo6tw"]
+[ext_resource type="Script" uid="uid://c3yxlqjl2h54p" path="res://addons/Theatre/classes/DialogueLabel.gd" id="1_kg1di"]
+[ext_resource type="Script" uid="uid://c4jlgtq7rblbj" path="res://addons/Theatre/classes/Stage.gd" id="1_le2th"]
+[ext_resource type="Script" uid="uid://b25r1f2tovefa" path="res://theatre_demo/base/demo_script.gd" id="3_lo6tw"]
 
 [node name="DemoScene" type="Control"]
 layout_mode = 3

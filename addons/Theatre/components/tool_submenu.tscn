@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://capvb4718qfui"]
 
-[ext_resource type="Script" path="res://addons/Theatre/components/tool_submenu.gd" id="1_g2vws"]
+[ext_resource type="Script" uid="uid://dpg08h4h7jbvu" path="res://addons/Theatre/components/tool_submenu.gd" id="1_g2vws"]
 
 [node name="TheatreToolSubmenu" type="PopupMenu"]
 title = "🎭 Theatre"

@@ -1,6 +1,6 @@
-[gd_resource type="Resource" script_class="Dialogue" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="Dialogue" load_steps=2 format=3 uid="uid://bii1euuuskp56"]
 
-[ext_resource type="Script" path="res://addons/Theatre/classes/Dialogue.gd" id="1_3l6i0"]
+[ext_resource type="Script" uid="uid://c0dctnc0k5xsa" path="res://addons/Theatre/classes/Dialogue.gd" id="1_3l6i0"]
 
 [resource]
 script = ExtResource("1_3l6i0")
@@ -139,6 +139,6 @@ _sets = Array[Dictionary]([{
 "vars": PackedStringArray()
 }])
 _source_path = "res://dialogue/demo_dialogue.dlg"
-_used_variables = PackedStringArray()
+_used_variables = []
 _used_function_calls = {}
 _sections = {}
