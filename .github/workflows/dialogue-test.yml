@@ -1,4 +1,4 @@
-name: Dialogue & parser test
+name: Dialogue Test
 
 on:
   push:
@@ -53,9 +53,10 @@ jobs:
       - name: Run test
         run: |
           ./${{ env.GODOT_BINARY }} \
-          --headless \
-          --import && \
+            --headless \
+            --import \
+              && \
           ./${{ env.GODOT_BINARY }} \
-          --no-header \
-          --headless \
-          --script ./tests/dialogue_test_ci.gd
+            --no-header \
+            --headless \
+            --script ./tests/dialogue_test_ci.gd
