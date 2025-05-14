@@ -13,7 +13,7 @@ config_version=5
 config/name="Theatre"
 config/description="Demo for Theatre: a text-based DIalogue plugin for Godot 4.3"
 run/main_scene="res://theatre_demo/preview/preview.tscn"
-config/features=PackedStringArray("4.3")
+config/features=PackedStringArray("4.4")
 config/icon="res://addons/Theatre/assets/icons/Theatre.svg"
 
 [autoload]
@@ -28,9 +28,9 @@ window/vsync/vsync_mode=0
 
 [editor]
 
-script/search_in_file_extensions=PackedStringArray("gd", "gdshader", "dlg")
 movie_writer/disable_vsync=true
 movie_writer/fps=25
+script/search_in_file_extensions=PackedStringArray("gd", "gdshader", "dlg")
 
 [editor_plugins]
 
