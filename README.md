@@ -52,9 +52,6 @@ Dia:
 > [!IMPORTANT]
 > This project is still in development and is subject to frequent breaking changes, and bugs. Check out the [Issues](https://github.com/nndda/Theatre/issues) page for known bugs &amp; issues, and [Common Troubleshooting](https://nndda.github.io/Theatre/tutorials/troubleshooting/) documentation page if you encounter any issues.
 
-> [!WARNING]
-> Currently, this addon is compatible only with **`Godot 4.3`**. It will not function with earlier versions, and while it may run on **`4.4`**, some features might not work as intended.
-
 # Features
 
 ## Dialogue Tags
