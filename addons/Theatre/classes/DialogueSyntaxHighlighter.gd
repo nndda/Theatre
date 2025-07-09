@@ -1,5 +1,4 @@
 @tool
-class_name DialogueSyntaxHighlighter
 extends EditorSyntaxHighlighter
 
 var text_edit : CodeEdit

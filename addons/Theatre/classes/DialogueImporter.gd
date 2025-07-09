@@ -1,6 +1,5 @@
 @tool
 extends EditorImportPlugin
-class_name DialogueImporter
 
 func _get_import_options(path: String, preset_index: int) -> Array[Dictionary]:
     return []

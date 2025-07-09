@@ -44,7 +44,10 @@ class TheatreConfig extends RefCounted:
 
 var http_update_req : HTTPRequest
 
+const DialogueImporter = preload("res://addons/Theatre/classes/DialogueImporter.gd")
 var dialogue_importer : DialogueImporter
+
+const DialogueSyntaxHighlighter = preload("res://addons/Theatre/classes/DialogueSyntaxHighlighter.gd")
 var dialogue_syntax_highlighter : DialogueSyntaxHighlighter
 
 static var editor_settings := EditorInterface.get_editor_settings()
