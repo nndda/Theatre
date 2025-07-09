@@ -3,7 +3,7 @@
 extends EditorPlugin
 class_name TheatrePlugin
 
-class Config extends RefCounted:
+class TheatreConfig extends RefCounted:
     const GENERAL_AUTO_UPDATE := "theatre/general/updates/check_updates_automatically"
 
     static func init_configs() -> void:
@@ -71,9 +71,9 @@ func _enter_tree() -> void:
     DialogueSyntaxHighlighter.initialize_colors()
 
     # Initialize project settings
-    Config.init_configs()
-    ProjectSettings.settings_changed.connect(Config._project_settings_changed)
-    Config._project_settings_changed()
+    TheatreConfig.init_configs()
+    ProjectSettings.settings_changed.connect(TheatreConfig._project_settings_changed)
+    TheatreConfig._project_settings_changed()
 
     # Add `.dlg` text file extension
     var text_files_ext : String = editor_settings\
@@ -113,7 +113,7 @@ func _ready() -> void:
         http_update_req.request_completed.connect(_update_response)
         add_child(http_update_req)
 
-        if ProjectSettings.get_setting(Config.GENERAL_AUTO_UPDATE, true):
+        if ProjectSettings.get_setting(TheatreConfig.GENERAL_AUTO_UPDATE, true):
             await get_tree().create_timer(2.5).timeout
             update_check()
 
@@ -133,8 +133,8 @@ func _exit_tree() -> void:
     print("🎭 Disabling Theatre...")
 
     # Clear project settings
-    Config.remove_configs()
-    ProjectSettings.settings_changed.disconnect(Config._project_settings_changed)
+    TheatreConfig.remove_configs()
+    ProjectSettings.settings_changed.disconnect(TheatreConfig._project_settings_changed)
 
     # Clear update check
     if http_update_req != null:
