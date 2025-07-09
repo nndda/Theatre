@@ -50,6 +50,8 @@ func _validate_property(property: Dictionary) -> void:
         property["usage"] = PROPERTY_USAGE_NO_EDITOR
 
 func _enter_tree() -> void:
+    visible_characters_behavior = TextServer.VC_CHARS_AFTER_SHAPING
+
     if !Engine.is_editor_hint():
         _delay_timer = Timer.new()
         _characters_ticker = Timer.new()
