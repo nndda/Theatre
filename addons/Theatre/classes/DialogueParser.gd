@@ -608,7 +608,7 @@ static func parse_tags(string : String) -> Dictionary:
 
 # Temporary solution when using variables and tags at the same time
 # Might not be performant when dealing with real-time variables
-## Format Dialogue body at [param pos] position with [member Stage.variables], and update the positions of the built-in tags.
+## Format Dialogue body at [param pos] position with [member TheatreStage.variables], and update the positions of the built-in tags.
 ## Return the formatted string.
 static func update_tags_position(dlg : Dialogue, pos : int, vars : Dictionary) -> void:
     var dlg_str : String = dlg._sets[pos][__CONTENT_RAW].format(vars)

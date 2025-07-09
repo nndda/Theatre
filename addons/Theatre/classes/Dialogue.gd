@@ -97,7 +97,7 @@ func get_word_count(variables : Dictionary = {}) -> int:
     return RegEx \
     .create_from_string(r"\w+") \
     .search_all(_strip(
-        variables.merged(Stage._VARIABLES_BUILT_IN),
+        variables.merged(TheatreStage._VARIABLES_BUILT_IN),
         true, true
     )).size()
 

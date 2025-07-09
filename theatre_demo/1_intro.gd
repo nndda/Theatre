@@ -13,11 +13,11 @@ var epic_dialogue = Dialogue.load('res://dialogue/demo_dialogue.dlg')
 # In your scene, make sure you have:
 # a Label and a DialogueLabel node.
 
-# Add Stage node to your scene,
+# Add TheatreStage node to your scene,
 # and reference it in a variable.
-@onready var your_stage = $Stage
+@onready var your_stage = $TheatreStage
 
-# Click on your Stage node,
+# Click on your TheatreStage node,
 # and view the inspector.
 
 # Assign the Label node to 'actor_label' property
@@ -29,13 +29,13 @@ func _input(event):
     # Enter / Space key
     if event.is_action_pressed('ui_accept'):
         your_stage.progress()
-        # Call Stage.progress() to progress your Dialogue
+        # Call TheatreStage.progress() to progress your Dialogue
 
 # Now, everytime 'ui_accept' key is pressed,
 # the Dialogue should progress.
 
 func _ready() -> void:
     # After that, you can then trigger
-    # the Stage to start the Dialogue
-    # using Stage.start()
+    # the TheatreStage to start the Dialogue
+    # using TheatreStage.start()
     your_stage.start(epic_dialogue)

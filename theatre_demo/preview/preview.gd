@@ -4,7 +4,7 @@ extends Control
 # NOTE: Want to see demo scene instead?
 # Check out res://theatre_demo/1_intro.tscn
 
-@export var stage : Stage
+@export var stage : TheatreStage
 @export var progress_bar : ProgressBar
 @export var progress_label : RichTextLabel
 var progress_label_tween : Tween

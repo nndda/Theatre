@@ -17,20 +17,20 @@ var _characters_draw_tick_scaled : float
 
 #region NOTE: Setup --------------------------------------------------------------------------------
 # NOTE: These are cyclic references right?
-var _current_stage : Stage:
+var _current_stage : TheatreStage:
     set = set_stage,
     get = get_stage
 
-## Returns the [Stage] that is currently controling the [DialogueLabel].
-func get_stage() -> Stage:
+## Returns the [TheatreStage] that is currently controling the [DialogueLabel].
+func get_stage() -> TheatreStage:
     return _current_stage
 
-## Set the [Stage] that will be used to control the [DialogueLabel]. If there's already a [Stage]
-## set, this will remove the previous [member Stage.dialogue_label].
+## Set the [TheatreStage] that will be used to control the [DialogueLabel]. If there's already a [TheatreStage]
+## set, this will remove the previous [member TheatreStage.dialogue_label].
 ## [br][br]
-## [b]Note:[/b] [member Stage.dialogue_label] will be set automatically when you assign
-## a [DialogueLabel] to the [Stage] on the inspector.
-func set_stage(stage : Stage) -> void:
+## [b]Note:[/b] [member TheatreStage.dialogue_label] will be set automatically when you assign
+## a [DialogueLabel] to the [TheatreStage] on the inspector.
+func set_stage(stage : TheatreStage) -> void:
     # NOTE: ????????
     #if _current_stage != null:
         #_current_stage.dialogue_label = null

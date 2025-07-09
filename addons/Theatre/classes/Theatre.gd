@@ -13,13 +13,13 @@ func _enter_tree() -> void:
 
     var tree := get_tree()
 
-    # TODO: move these to Stage class instead
+    # TODO: move these to TheatreStage class instead
     for singleton in Engine.get_singleton_list():
-        Stage._scope_built_in[singleton] = Engine.get_singleton(singleton)
+        TheatreStage._scope_built_in[singleton] = Engine.get_singleton(singleton)
 
     for autoload in tree.root.get_children():
         if autoload != tree.current_scene:
-            Stage._scope_built_in["%s" % autoload.name] = autoload
+            TheatreStage._scope_built_in["%s" % autoload.name] = autoload
 
 func print_silly() -> void:
     print("silly :p")
