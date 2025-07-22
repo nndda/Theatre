@@ -1,3 +1,5 @@
+include/
+
 # Uncompressed tutorial assets
 docs/tutorials/**/tutorials/
 
