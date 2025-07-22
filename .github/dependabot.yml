@@ -6,3 +6,9 @@ updates:
       interval: "weekly"
     versioning-strategy: auto
     target-branch: "docs"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    target-branch: "main"
