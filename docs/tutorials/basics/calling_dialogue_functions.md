@@ -4,9 +4,9 @@
 Dia:
     "You can call functions from written Dialogues.
     Provided that there's the Object
-    to call said functions: the caller."
+    to call said functions: the scope."
 :
-    "Let's use a simple ColorRect node as a caller."
+    "Let's use a simple ColorRect node as a scope."
 :
     "And we'll modify its properties
     using its various setter functions."
@@ -30,7 +30,7 @@ Dia:
     @onready var color_rect = $ColorRect
     ```
 
-0. Register it as a caller in the `Stage`, using `add_caller()`.
+0. Register it as a scope in the `Stage`, using `add_scope()`.
 
     ```gdscript hl_lines="13"
     extends Control
@@ -45,12 +45,12 @@ Dia:
             stage.progress()
 
     func _ready():
-        stage.add_caller("ColorRect", color_rect)
+        stage.add_scope("ColorRect", color_rect)
         stage.start(dlg)
     ```
-    `add_caller()` requires 2 arguments:
+    `add_scope()` requires 2 arguments:
 
-    * The ID/name of the caller object to be used in the written Dialogue.
+    * The ID/name of the scope object to be used in the written Dialogue.
     * The object itself.
 
 0. We are ready to call functions on our `ColorRect`. We'll append to the Dialogue above.
@@ -89,6 +89,6 @@ func _input(event):
         stage.progress()
 
 func _ready():
-    stage.add_caller("ColorRect", color_rect)
+    stage.add_scope("ColorRect", color_rect)
     stage.start(dlg)
 ```
