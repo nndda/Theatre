@@ -33,11 +33,11 @@ Save it as `*.dlg` file. Here we'll save the file as `res://intro.dlg`. Now that
 
 ### Nodes & UI
 
-Create a new `2D` or `User Interface` scene. We'll use `User Interface` scene, which use `Control` node for the scene's root. And add the following nodes: `Stage`, `Label`, and `DialogueLabel`.
+Create a new `2D` or `User Interface` scene. We'll use `User Interface` scene, which use `Control` node for the scene's root. And add the following nodes: `TheatreStage`, `Label`, and `DialogueLabel`.
 
 <div class="grid cards" markdown>
 
-- ![Stage, Label, and DialogueLabel](quickstart/nodes_1.png){ .center }
+- ![TheatreStage, Label, and DialogueLabel](quickstart/nodes_1.png){ .center }
 
 </div>
 
@@ -45,7 +45,7 @@ To tidy things up a little, add `PanelContainer`, and `VBoxContainer` inside it.
 
 <div class="grid cards" markdown>
 
-- ![Stage, Label, and DialogueLabel](quickstart/nodes_2.png){ .center }
+- ![TheatreStage, Label, and DialogueLabel](quickstart/nodes_2.png){ .center }
 
 </div>
 
@@ -55,7 +55,7 @@ And lastly, make sure that `fit_content` is set to `true` on `DialogueLabel`.
 
 <div class="grid cards" markdown>
 
-- ![Stage, Label, and DialogueLabel](quickstart/dialogue_label-fit_content.png){ .center }
+- ![TheatreStage, Label, and DialogueLabel](quickstart/dialogue_label-fit_content.png){ .center }
 
 </div>
 
@@ -72,10 +72,10 @@ Create a variable with `@export` annotation to reference the `Stage` node made p
 ```gdscript hl_lines="3"
 extends Control
 
-@export var my_stage : Stage
+@export var my_stage : TheatreStage
 ```
 
-Click the scene's root node, go to the inspector, and assign the `Stage` node to `my_stage`.
+Click the scene's root node, go to the inspector, and assign the `TheatreStage` node to `my_stage`.
 
 <div class="grid cards" markdown>
 
@@ -85,11 +85,11 @@ Click the scene's root node, go to the inspector, and assign the `Stage` node to
 
 </div>
 
-Click the `Stage` node, and head over to the inspector dock. Reference the `Label` and `DialogueLabel` node that were made before.
+Click the `TheatreStage` node, and head over to the inspector dock. Reference the `Label` and `DialogueLabel` node that were made before.
 
 <div class="grid cards" markdown>
 
-- ![Label and DialogueLabel node assigned on the Stage inspector](tutorials/minimal_setup/stage_required_nodes.png){ .center }
+- ![Label and DialogueLabel node assigned on the TheatreStage inspector](tutorials/minimal_setup/stage_required_nodes.png){ .center }
 
 </div>
 
@@ -106,7 +106,7 @@ extends Control
 
 var epic_dialogue = Dialogue.load('res://intro.dlg')
 
-@export var my_stage : Stage
+@export var my_stage : TheatreStage
 ```
 
 Call `start()` method on `my_stage`, and pass the `epic_dialogue` as the argument to start it.
@@ -116,7 +116,7 @@ extends Control
 
 var epic_dialogue = Dialogue.load('res://intro.dlg')
 
-@export var my_stage : Stage
+@export var my_stage : TheatreStage
 
 func _ready():
     my_stage.start(epic_dialogue)
@@ -133,7 +133,7 @@ extends Control
 
 var epic_dialogue = Dialogue.load('res://intro.dlg')
 
-@export var my_stage : Stage
+@export var my_stage : TheatreStage
 
 func _ready():
     my_stage.start(epic_dialogue)
@@ -153,7 +153,7 @@ Here is how the scene and script should looks like:
 
 ```
 MyScene
-  ├─ Stage
+  ├─ TheatreStage
   └─ PanelContainer
         └─ VBoxContainer
             ├─ Label
@@ -165,7 +165,7 @@ extends Control
 
 var epic_dialogue = Dialogue.load('res://intro.dlg')
 
-@export var my_stage : Stage
+@export var my_stage : TheatreStage
 
 func _ready():
     my_stage.start(epic_dialogue)

@@ -90,7 +90,7 @@ Ritsu:
     "O-okay?... hello {player}!"
 ```
 
-Define the variable using `Stage.set_variable()`.
+Define the variable using `TheatreStage.set_variable()`.
 
 ```gdscript
 your_stage.set_variable(
@@ -98,7 +98,7 @@ your_stage.set_variable(
 )
 ```
 
-You can also define multiple variables using `Stage.merge_variables` with a `Dictionary`.
+You can also define multiple variables using `TheatreStage.merge_variables` with a `Dictionary`.
 
 ```gdscript
 your_stage.merge_variables({
@@ -175,7 +175,7 @@ There are several built-in tags to fine-tune your Dialogue flows. Tags can have 
 
 Before calling functions or changing any properties in the written Dialogue, you need to set the `scope`: the `Object` from which the functions will be called, or its properties to be changed from within the written Dialogue.
 
-Use `Stage.add_scope()` to add a scope to a `Stage`.The first argument is the id that will be used in the written Dialogue. The second argument must be an `Object` class or anything that inherits that. Name the scope's id, the way you would name a variable or a class in GDScript.
+Use `TheatreStage.add_scope()` to add a scope to a `TheatreStage`.The first argument is the id that will be used in the written Dialogue. The second argument must be an `Object` class or anything that inherits that. Name the scope's id, the way you would name a variable or a class in GDScript.
 
 ```gdscript
 @onready var player = $Player
@@ -184,7 +184,7 @@ func _ready():
     your_stage.add_scope("Player", player)
 ```
 
-Add multiple scopes at once, using `Stage.merge_scoped()`, that takes a Dictionary format instead:
+Add multiple scopes at once, using `TheatreStage.merge_scoped()`, that takes a Dictionary format instead:
 
 ```gdscript
 func _ready():
@@ -198,13 +198,13 @@ func _ready():
 !!! note
     You should set the scopes before starting any Dialogues.
 
-If the scope is a `Node` or inherits `Node`, it will be removed automatically from the `Stage` if its freed. You can also remove scope manually using `Stage.remove_scope()`.
+If the scope is a `Node` or inherits `Node`, it will be removed automatically from the `TheatreStage` if its freed. You can also remove scope manually using `TheatreStage.remove_scope()`.
 
 ```gdscript
 your_stage.remove_scope("Player")
 ```
 
-Removes all scopes of a `Stage` using `Stage.clear_scopes()`:
+Removes all scopes of a `TheatreStage` using `TheatreStage.clear_scopes()`:
 
 ```gdscript
 your_stage.clear_scopes()
@@ -339,7 +339,7 @@ Dia:
     "There are three main classes of the Theatre plugin:
     [color=blue]Dialogue[/color],
     [color=green]DialogueLabel[/color], &
-    [color=red]Stage[/color],
+    [color=red]TheatreStage[/color],
     "
 ```
 
@@ -350,7 +350,7 @@ Dia:
     "There are three main classes of the Theatre plugin:
     [c=blue]Dialogue[/c],
     [c=green]DialogueLabel[/c], &
-    [c=red]Stage[/c],
+    [c=red]TheatreStage[/c],
     "
 ```
 

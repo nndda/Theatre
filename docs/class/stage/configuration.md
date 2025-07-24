@@ -6,7 +6,7 @@
     }
 </style>
 
-This page cover various configurations & properties for `Stage`. You can configure `Stage` through inspector, or in script.
+This page cover various configurations & properties for `TheatreStage`. You can configure `TheatreStage` through inspector, or in script.
 
 `DialogueLabel` node is required to run a `Dialogue`. Unlike `actor_label`, which is optional.
 
@@ -33,7 +33,7 @@ This page cover various configurations & properties for `Stage`. You can configu
 
 ### `caller_nodes`
 
-While you can add callers with `add_caller()`, if the function caller is a `Node`, and is accessible in the scene tree where the `Stage` at, You can reference it directly in the inspector in `caller_nodes`. And the caller name/ID will use the node's name.
+While you can add callers with `add_caller()`, if the function caller is a `Node`, and is accessible in the scene tree where the `TheatreStage` at, You can reference it directly in the inspector in `caller_nodes`. And the caller name/ID will use the node's name.
 
 !!! warning "Caller name"
     Make sure that all nodes referenced for caller in `caller_nodes` have unique names from each other.

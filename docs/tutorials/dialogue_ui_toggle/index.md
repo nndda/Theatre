@@ -15,13 +15,13 @@ Dia:
 ```
 
 !!! info "TL;DR"
-    Utilize `Stage`'s signals: `started`, `finished`, and `cancelled` to call `hide()`/`show()` methods on the dialogue UI.
+    Utilize `TheatreStage`'s signals: `started`, `finished`, and `cancelled` to call `hide()`/`show()` methods on the dialogue UI.
 
 Before we begin, let's add a 'start dialogue' button, so we don't have to restart the scene everytime the dialogue ended.
 
 0. Add a `Button`, and we'll rename it to `StartButton`. Adjust its text, size, and position to your liking.
 
-0. Set the `focus_mode` properto to none. To avoid accidental button press when progressing the dialogue.
+0. Set the `focus_mode` property to none. To avoid accidental button press when progressing the dialogue.
 
     <div class="grid cards" markdown>
 
@@ -29,7 +29,7 @@ Before we begin, let's add a 'start dialogue' button, so we don't have to restar
 
     </div>
 
-0. Connect the `pressed` signal of the button to a method. In that method, call the `Stage`'s `start()` method. It should looks something like this:
+0. Connect the `pressed` signal of the button to a method. In that method, call the `TheatreStage`'s `start()` method. It should looks something like this:
 
     ```gdscript
     func _on_start_button_pressed():
@@ -75,7 +75,7 @@ Before we begin, let's add a 'start dialogue' button, so we don't have to restar
 
     <br>
 
-0. Click your `Stage` node, head over to the `Node`'s Signals dock, and connect the signals `started`, `finished`, and `cancelled` to the 2 methods created previously. More specifically:
+0. Click your `TheatreStage` node, head over to the `Node`'s Signals dock, and connect the signals `started`, `finished`, and `cancelled` to the 2 methods created previously. More specifically:
 
     <style>.md-typeset__scrollwrap{ text-align: center; }</style>
 
@@ -86,7 +86,7 @@ Before we begin, let's add a 'start dialogue' button, so we don't have to restar
 
     <div class="grid cards" markdown>
 
-    - ![Stage signals: started, progressed, cancelled, connected to the script.](signals_correctly_connected.png){ .center }
+    - ![TheatreStage signals: started, progressed, cancelled, connected to the script.](signals_correctly_connected.png){ .center }
 
     </div>
 
@@ -96,7 +96,7 @@ Before we begin, let's add a 'start dialogue' button, so we don't have to restar
 
 ``` hl_lines="7"
 MyScene
-  ├─ Stage
+  ├─ TheatreStage
   ├─ PanelContainer
   │     └─ VBoxContainer
   │         ├─ Label
@@ -109,7 +109,7 @@ extends Control
 
 var dlg : Dialogue # Load/create Dialogue here
 
-@export var stage : Stage
+@export var my_stage : TheatreStage
 @export var dialogue_container : PanelContainer
 
 func _input(event):

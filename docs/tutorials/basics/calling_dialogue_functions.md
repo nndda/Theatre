@@ -16,7 +16,7 @@ Dia:
 
     ``` hl_lines="7"
     MyScene
-      ├─ Stage
+      ├─ TheatreStage
       ├─ PanelContainer
       │     └─ VBoxContainer
       │         ├─ Label
@@ -37,7 +37,7 @@ Dia:
 
     var dlg : Dialogue # Load/create Dialogue here
 
-    @export var stage : Stage
+    @export var stage : TheatreStage
     @onready var color_rect = $ColorRect
 
     func _input(event):
@@ -68,7 +68,7 @@ Dia:
 
 ``` hl_lines="7"
 MyScene
-  ├─ Stage
+  ├─ TheatreStage
   ├─ PanelContainer
   │     └─ VBoxContainer
   │         ├─ Label
@@ -81,7 +81,7 @@ extends Control
 
 var dlg : Dialogue # Load/create Dialogue here
 
-@export var stage : Stage
+@export var stage : TheatreStage
 @onready var color_rect = $ColorRect
 
 func _input(event):

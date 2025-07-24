@@ -65,7 +65,7 @@ Dia:
 
 ``` hl_lines="7"
 MyScene
-  ├─ Stage
+  ├─ TheatreStage
   ├─ PanelContainer
   │     └─ VBoxContainer
   │         ├─ Label
@@ -78,7 +78,7 @@ extends Control
 
 var dlg : Dialogue # Load/create Dialogue here
 
-@export var stage : Stage
+@export var my_stage : TheatreStage
 @export var beep_player : AudioStreamPlayer
 
 func _input(event):

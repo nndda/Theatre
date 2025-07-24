@@ -28,18 +28,18 @@ This article cover the basic minimal setup for Theatre, like the one created in 
 
     <br>
 
-3. Attach a script to the scene and create a new `Stage` variable with `@export`.
+3. Attach a script to the scene and create a new `TheatreStage` object variable with `@export`.
 
     ```gdscript hl_lines="3"
     extends Control
 
-    @export var stage : Stage
+    @export var my_stage : TheatreStage
 
     ```
 
     <br>
 
-4. Go to the inspector, and assign the `Stage` node to `stage`.
+4. Go to the inspector, and assign the `TheatreStage` node to `stage`.
 
     <div class="grid cards" markdown>
 
@@ -51,26 +51,26 @@ This article cover the basic minimal setup for Theatre, like the one created in 
 
     <br>
 
-5. Click the `Stage` node, go to the inspector, and assign the `Label` to `actor_label`, and `DialogueLabel` to `dialogue_label`.
+5. Click the `TheatreStage` node, go to the inspector, and assign the `Label` to `actor_label`, and `DialogueLabel` to `dialogue_label`.
 
     <div class="grid cards" markdown>
 
-    - ![Label and DialogueLabel node assigned on the Stage inspector](stage_required_nodes.png){ .center }
+    - ![Label and DialogueLabel node assigned on the TheatreStage inspector](stage_required_nodes.png){ .center }
 
     </div>
 
     <br>
 
-6. Use input event to progress the `Stage`.
+6. Use input event to progress the `TheatreStage`.
 
     ```gdscript hl_lines="5 6 7"
     extends Control
 
-    @export var stage : Stage
+    @export var my_stage : TheatreStage
 
     func _input(event):
         if event.is_action_pressed("ui_accept"):
-            stage.progress()
+            my_stage.progress()
     ```
 
     <br>
@@ -82,14 +82,14 @@ This article cover the basic minimal setup for Theatre, like the one created in 
 
     var dlg : Dialogue # Load/create Dialogue here
 
-    @export var stage : Stage
+    @export var my_stage : TheatreStage
 
     func _input(event):
         if event.is_action_pressed("ui_accept"):
-            stage.progress()
+            my_stage.progress()
 
     func _ready():
-        stage.start(dlg)
+        my_stage.start(dlg)
     ```
 
    <br>
@@ -98,7 +98,7 @@ This article cover the basic minimal setup for Theatre, like the one created in 
 
 ```
 MyScene
-  ├─ Stage
+  ├─ TheatreStage
   └─ PanelContainer
         └─ VBoxContainer
             ├─ Label
@@ -110,14 +110,14 @@ extends Control
 
 var dlg : Dialogue # Load/create Dialogue here
 
-@export var stage : Stage
+@export var my_stage : TheatreStage
 
 func _input(event):
     if event.is_action_pressed("ui_accept"):
-        stage.progress()
+        my_stage.progress()
 
 func _ready():
-    stage.start(dlg)
+    my_stage.start(dlg)
 ```
 
 <br>

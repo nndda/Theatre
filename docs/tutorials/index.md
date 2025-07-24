@@ -6,7 +6,7 @@ Unless otherwise specified, all tutorials here assume [_minimal Theatre setup_](
 
 ```
 MyScene
-  ├─ Stage
+  ├─ TheatreStage
   └─ PanelContainer
         └─ VBoxContainer
             ├─ Label
@@ -18,7 +18,7 @@ extends Control
 
 var dlg : Dialogue # Load/create Dialogue here
 
-@export var stage : Stage
+@export var stage : TheatreStage
 
 func _input(event):
     if event.is_action_pressed("ui_accept"):
