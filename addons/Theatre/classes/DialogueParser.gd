@@ -152,6 +152,7 @@ const TAG_SPEED_ALIASES : PackedStringArray = [
 ]
 
 const VARS_BUILT_IN_KEYS : PackedStringArray = ["n", "spc", "eq"]
+const VAR_BUILT_IN_NEWLINE : String = "{n}"
 
 const BUILT_IN_TAGS : PackedStringArray = (
     TAG_DELAY_ALIASES +
@@ -375,7 +376,10 @@ func _init(src : String = "", src_path : String = ""):
                     newline_stack += 1
                 var dlg_body := NEWLINE.repeat(newline_stack)\
                     + current_processed_string\
-                    + SPACE
+                    + (
+                        EMPTY if current_processed_string.ends_with(VAR_BUILT_IN_NEWLINE)
+                        else SPACE
+                    )
                 newline_stack = 0
 
                 # Append Dialogue body
