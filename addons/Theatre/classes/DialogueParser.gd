@@ -50,7 +50,7 @@ const REGEX_INDENT :=\
     static var _regex_indent := RegEx.create_from_string(REGEX_INDENT)
 
 const REGEX_VALID_DLG :=\
-    r"\n+\w+\:\n+\s+\w+";\
+    r"(?m)\w+:\n\s+(.[^\s])+?";\
     static var _regex_valid_dlg := RegEx.create_from_string(REGEX_VALID_DLG)
 
 const REGEX_SECTION :=\
@@ -465,7 +465,7 @@ func is_indented(string : String) -> bool:
 static func is_valid_source(string : String) -> bool:
     if _regex_valid_dlg == null:
         _regex_valid_dlg = RegEx.create_from_string(REGEX_VALID_DLG)
-    return _regex_valid_dlg.search(string) == null
+    return _regex_valid_dlg.search(string) != null
 
 # BUG
 ## Normalize indentation of the Dialogue raw string.
@@ -481,10 +481,7 @@ static func normalize_indentation(string : String) -> String:
             indents.append(len)
 
     if indents.max() > 0:
-        var spc : String
-        for n in indents.min():
-            spc += SPACE
-        string = string.replacen(NEWLINE + spc, NEWLINE)
+        string = string.replacen(NEWLINE + SPACE.repeat(indents.min()), NEWLINE)
 
     return string
 
