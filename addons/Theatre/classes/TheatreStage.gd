@@ -79,7 +79,7 @@ static var speed_scale_global : float = 1.0
     set(new_dlg):
         current_dialogue = new_dlg
         if !is_playing():
-            if !variables.is_empty() and new_dlg != null:
+            if new_dlg != null:
                 for n in current_dialogue._sets.size():
                     DialogueParser.update_tags_position(
                         current_dialogue, n, variables
@@ -656,8 +656,7 @@ func _enter_tree() -> void:
         print("assigning stage to dlg label")
         dialogue_label._current_stage = self
 
-    if !variables.is_empty():
-        _update_variables_dialogue()
+    _update_variables_dialogue()
 
     if !scope_nodes.is_empty():
         await get_tree().current_scene.ready
