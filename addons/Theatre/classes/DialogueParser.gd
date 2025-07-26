@@ -465,7 +465,7 @@ func is_indented(string : String) -> bool:
 static func is_valid_source(string : String) -> bool:
     if _regex_valid_dlg == null:
         _regex_valid_dlg = RegEx.create_from_string(REGEX_VALID_DLG)
-    return _regex_valid_dlg.search(string) == null
+    return _regex_valid_dlg.search(string) != null
 
 # BUG
 ## Normalize indentation of the Dialogue raw string.
