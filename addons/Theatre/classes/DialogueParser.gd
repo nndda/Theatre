@@ -50,7 +50,7 @@ const REGEX_INDENT :=\
     static var _regex_indent := RegEx.create_from_string(REGEX_INDENT)
 
 const REGEX_VALID_DLG :=\
-    r"\n+\w+\:\n+\s+\w+";\
+    r"(?m)\w+:\n\s+(.[^\s])+?";\
     static var _regex_valid_dlg := RegEx.create_from_string(REGEX_VALID_DLG)
 
 const REGEX_SECTION :=\
