@@ -109,7 +109,6 @@ func _set_variables(new_var : Dictionary) -> void:
 func _update_variables_dialogue() -> void:
     _variables_all.clear()
     _variables_all.merge(variables, true)
-    _variables_all.merge(_VARIABLES_BUILT_IN, true)
     if current_dialogue != null:
         var stepn := clampi(_step, 0, current_dialogue._sets.size())
         # NOTE, BUG: NOT COMPATIBLE WHEN CHANGING VARIABLE REAL-TIME
@@ -124,11 +123,6 @@ func _update_variables_dialogue() -> void:
             if dialogue_label != null:
                 dialogue_label.rerender()
 
-const _VARIABLES_BUILT_IN : Dictionary = {
-    "n" : "\n",
-    "spc" : " ",
-    "eq" : "=",
-}
 var _variables_all : Dictionary = {}
 
 ## Set a variable used in the written [Dialogue].

@@ -150,15 +150,19 @@ const TAG_DELAY_ALIASES : PackedStringArray = [
 const TAG_SPEED_ALIASES : PackedStringArray = [
     "SPEED", "SPD", "S"
 ]
-
 const VARS_BUILT_IN_KEYS : PackedStringArray = ["n", "spc", "eq"]
-const VAR_BUILT_IN_NEWLINE : String = "{n}"
 
 const BUILT_IN_TAGS : PackedStringArray = (
     TAG_DELAY_ALIASES +
     TAG_SPEED_ALIASES +
     VARS_BUILT_IN_KEYS
 )
+
+const VARS_BUILT_IN : Dictionary[String, String] = {
+    "n" : "\n",
+    "spc" : " ",
+    "eq" : "=",
+}
 
 const BB_ALIASES := {
     "bg": "bgcolor",
@@ -372,12 +376,15 @@ func _init(src : String = "", src_path : String = ""):
 
             # Dialogue text body
             else:
+                # Bake built-in variables
+                current_processed_string = current_processed_string.format(VARS_BUILT_IN)
+
                 if newline_stack > 0:
                     newline_stack += 1
                 var dlg_body := NEWLINE.repeat(newline_stack)\
                     + current_processed_string\
                     + (
-                        EMPTY if current_processed_string.ends_with(VAR_BUILT_IN_NEWLINE)
+                        EMPTY if current_processed_string.ends_with(NEWLINE)
                         else SPACE
                     )
                 newline_stack = 0
@@ -582,8 +589,7 @@ static func parse_tags(string : String) -> Dictionary:
         elif tag_key_l not in vars:
             vars.append(tag_key_l)
 
-        if tag_key_l not in VARS_BUILT_IN_KEYS:
-            string = string.replace(string_match, EMPTY)
+        string = string.replace(string_match, EMPTY)
 
         tag_pos_offset += string_match.length()
 
