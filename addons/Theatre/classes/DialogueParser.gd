@@ -481,10 +481,7 @@ static func normalize_indentation(string : String) -> String:
             indents.append(len)
 
     if indents.max() > 0:
-        var spc : String
-        for n in indents.min():
-            spc += SPACE
-        string = string.replacen(NEWLINE + spc, NEWLINE)
+        string = string.replacen(NEWLINE + SPACE.repeat(indents.min()), NEWLINE)
 
     return string
 
