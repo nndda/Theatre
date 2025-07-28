@@ -149,7 +149,7 @@ Select the `Stage` node, and reference the `Label` & `DialogueLabel` node to dis
 <td>
 
 ```gdscript
-@onready var my_stage : Stage = $Stage
+@onready var my_stage : TheatreStage = $TheatreStage
 
 func _ready():
     my_stage.actor_label =\
