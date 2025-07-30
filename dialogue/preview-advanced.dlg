@@ -43,17 +43,15 @@ Dia:
         d=.25
     like
     [c=ffffaa]
-        [u]calling functions()[/u]
+        [u]calling [c=white]functions[/c]()[/u]
     [/c]
         d=.4
     and
-    [c=#ffffaa]
-        [u]inserting variables![/u]
-    [/c]
+    [c=#ffffaa][u]
+        inserting \{[c=white]variables[/c]\}!
+    [/u][/c]
         d=.65
-    And that is not
-        d=.1
-    the only feature Theatre has to offer!"
+    And that is not the only feature Theatre has to offer!"
 
 
     <(￣︶￣)>
