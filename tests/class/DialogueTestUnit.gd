@@ -80,7 +80,7 @@ func _test_vars(target_data : Dictionary, ref_data : Dictionary) -> void:
                     log_pass("%s == %s" % [ref_data[DialogueParser.Key.VARS][var_n], target_data[DialogueParser.Key.VARS][var_n]])
 
 func _test_tags(target_data : Dictionary, ref_data : Dictionary) -> void:
-    for tag : String in ref_data[DialogueParser.Key.TAGS].keys():
+    for tag : int in ref_data[DialogueParser.Key.TAGS].keys():
         var target_tag_data : Dictionary = target_data[DialogueParser.Key.TAGS][tag]
         var ref_tag_data : Dictionary = ref_data[DialogueParser.Key.TAGS][tag]
 
