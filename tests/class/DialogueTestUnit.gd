@@ -48,11 +48,11 @@ func test(target : Dialogue) -> void:
             var target_data : Dictionary = target_sets[n]
             var ref_data : Dictionary = ref_sets[n]
 
-            if target_data["content"] != ref_data["content"]:
-                log_fail("Inconsistent 'content' at: %d" % n, target_data[DialogueParser.__LINE_NUM])
+            if target_data[DialogueParser.Key.CONTENT] != ref_data[DialogueParser.Key.CONTENT]:
+                log_fail("Inconsistent 'content' at: %d" % n, target_data[DialogueParser.Key.LINE_NUM])
 
-            if target_data["content_raw"] != ref_data["content_raw"]:
-                log_fail("Inconsistent 'content_raw' at: %d" % n, target_data[DialogueParser.__LINE_NUM])
+            if target_data[DialogueParser.Key.CONTENT_RAW] != ref_data[DialogueParser.Key.CONTENT_RAW]:
+                log_fail("Inconsistent 'content_raw' at: %d" % n, target_data[DialogueParser.Key.LINE_NUM])
 
             _test_vars(target_data, ref_data)
             _test_tags(target_data, ref_data)
@@ -60,8 +60,8 @@ func test(target : Dialogue) -> void:
     _test_finished()
 
 func _test_vars(target_data : Dictionary, ref_data : Dictionary) -> void:
-    var target_vars : PackedStringArray = target_data[DialogueParser.__VARS]
-    var ref_vars : PackedStringArray = ref_data[DialogueParser.__VARS]
+    var target_vars : PackedStringArray = target_data[DialogueParser.Key.VARS]
+    var ref_vars : PackedStringArray = ref_data[DialogueParser.Key.VARS]
 
     target_vars.sort()
     ref_vars.sort()
@@ -69,20 +69,20 @@ func _test_vars(target_data : Dictionary, ref_data : Dictionary) -> void:
     if !ref_vars.is_empty():
         log_start("Testing variables...")
         if target_vars.is_empty():
-            log_fail("expected variables: %s" % str(ref_data[DialogueParser.__VARS]), target_data[DialogueParser.__LINE_NUM])
+            log_fail("expected variables: %s" % str(ref_data[DialogueParser.Key.VARS]), target_data[DialogueParser.Key.LINE_NUM])
         elif target_vars.size() != ref_vars.size():
-            log_fail("variable size mismatch: %d != %d" % [target_vars.size(), ref_vars.size()], target_data[DialogueParser.__LINE_NUM])
+            log_fail("variable size mismatch: %d != %d" % [target_vars.size(), ref_vars.size()], target_data[DialogueParser.Key.LINE_NUM])
         else:
             for var_n : int in ref_vars.size():
-                if ref_data[DialogueParser.__VARS][var_n] != target_data[DialogueParser.__VARS][var_n]:
-                    log_fail("value mismatch: %s != %s" % [ref_data[DialogueParser.__VARS][var_n], target_data[DialogueParser.__VARS][var_n]], target_data[DialogueParser.__LINE_NUM])
+                if ref_data[DialogueParser.Key.VARS][var_n] != target_data[DialogueParser.Key.VARS][var_n]:
+                    log_fail("value mismatch: %s != %s" % [ref_data[DialogueParser.Key.VARS][var_n], target_data[DialogueParser.Key.VARS][var_n]], target_data[DialogueParser.Key.LINE_NUM])
                 else:
-                    log_pass("%s == %s" % [ref_data[DialogueParser.__VARS][var_n], target_data[DialogueParser.__VARS][var_n]])
+                    log_pass("%s == %s" % [ref_data[DialogueParser.Key.VARS][var_n], target_data[DialogueParser.Key.VARS][var_n]])
 
 func _test_tags(target_data : Dictionary, ref_data : Dictionary) -> void:
-    for tag : String in ref_data[DialogueParser.__TAGS].keys():
-        var target_tag_data : Dictionary = target_data[DialogueParser.__TAGS][tag]
-        var ref_tag_data : Dictionary = ref_data[DialogueParser.__TAGS][tag]
+    for tag : String in ref_data[DialogueParser.Key.TAGS].keys():
+        var target_tag_data : Dictionary = target_data[DialogueParser.Key.TAGS][tag]
+        var ref_tag_data : Dictionary = ref_data[DialogueParser.Key.TAGS][tag]
 
         if !ref_tag_data.is_empty():
             log_start("Testing tag '%s'..." % tag)
@@ -94,12 +94,12 @@ func _test_tags(target_data : Dictionary, ref_data : Dictionary) -> void:
             target_tag_data_keys.sort()
 
             if ref_tag_data_keys != target_tag_data_keys:
-                log_fail("tag data mismatch %s != %s" % [ref_tag_data_keys, target_tag_data_keys], target_data[DialogueParser.__LINE_NUM])
+                log_fail("tag data mismatch %s != %s" % [ref_tag_data_keys, target_tag_data_keys], target_data[DialogueParser.Key.LINE_NUM])
 
             else:
                 for tag_pos : int in ref_tag_data.keys():
                     if ref_tag_data[tag_pos] != target_tag_data[tag_pos]:
-                        log_fail("value mismatch: %s != %s" % [ref_tag_data[tag_pos], target_tag_data[tag_pos]], target_data[DialogueParser.__LINE_NUM])
+                        log_fail("value mismatch: %s != %s" % [ref_tag_data[tag_pos], target_tag_data[tag_pos]], target_data[DialogueParser.Key.LINE_NUM])
                     else:
                         log_pass("%s == %s" % [ref_tag_data[tag_pos], target_tag_data[tag_pos]])
 

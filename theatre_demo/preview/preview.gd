@@ -79,7 +79,7 @@ func _dialogue_label_text_rendered(_rendered_text: String) -> void:
 func _stage_progressed_at(_line : int, line_data : Dictionary) -> void:
     progress_bar.value = 0
     progress_bar.max_value = bbcode_regex.sub(
-        line_data["content"], "", true
+        line_data[DialogueParser.Key.CONTENT], "", true
     ).length()
 
 func _stage_started() -> void:

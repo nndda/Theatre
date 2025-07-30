@@ -114,13 +114,13 @@ func get_sections() -> Dictionary:
 
 func _update_used_function_calls() -> void:
     for n : Dictionary in _sets:
-        for m : Dictionary in n[DialogueParser.__FUNC]:
-            if !_used_function_calls.has(m[DialogueParser.__SCOPE]):
-                _used_function_calls[m[DialogueParser.__SCOPE]] = {}
+        for m : Dictionary in n[DialogueParser.Key.FUNC]:
+            if !_used_function_calls.has(m[DialogueParser.Key.SCOPE]):
+                _used_function_calls[m[DialogueParser.Key.SCOPE]] = {}
 
-            _used_function_calls[m[DialogueParser.__SCOPE]][m[DialogueParser.__LN_NUM]] = {
-                DialogueParser.__NAME: m[DialogueParser.__NAME],
-                DialogueParser.__ARGS: m[DialogueParser.__ARGS],
+            _used_function_calls[m[DialogueParser.Key.SCOPE]][m[DialogueParser.Key.LN_NUM]] = {
+                DialogueParser.Key.NAME: m[DialogueParser.Key.NAME],
+                DialogueParser.Key.ARGS: m[DialogueParser.Key.ARGS],
             }
 
 ## Gets all variables used in the written [Dialogue].
@@ -129,7 +129,7 @@ func get_variables() -> PackedStringArray:
 
 func _update_used_variables() -> void:
     for n : Dictionary in _sets:
-        for m : String in n[DialogueParser.__VARS]:
+        for m : String in n[DialogueParser.Key.VARS]:
             if not m in _used_variables:
                 _used_variables.append(m)
 

@@ -117,7 +117,7 @@ func _update_variables_dialogue() -> void:
         )
 
         if is_playing():
-            _dialogue_full_string = _current_dialogue_set[DialogueParser.__CONTENT]
+            _dialogue_full_string = _current_dialogue_set[DialogueParser.Key.CONTENT]
             _update_display()
 
             if dialogue_label != null:
@@ -232,14 +232,14 @@ func _call_function(f : Dictionary) -> void:
     if !allow_func:
         return
 
-    var func_scope : StringName = f[DialogueParser.__SCOPE]
-    var func_name : StringName = f[DialogueParser.__NAME]
-    var func_vars : Array = f[DialogueParser.__VARS]
+    var func_scope : StringName = f[DialogueParser.Key.SCOPE]
+    var func_name : StringName = f[DialogueParser.Key.NAME]
+    var func_vars : Array = f[DialogueParser.Key.VARS]
 
     #region general error checks
     if !_scope_all.has(func_scope):
         push_error("Error @%s:%d - scope '%s' doesn't exists" % [
-            current_dialogue._source_path, f[DialogueParser.__LN_NUM],
+            current_dialogue._source_path, f[DialogueParser.Key.LN_NUM],
             func_scope,
         ])
         return
@@ -248,38 +248,38 @@ func _call_function(f : Dictionary) -> void:
 
     if scope_obj == null:
         push_error("Error @%s:%d - object of the scope '%s' is null" % [
-            current_dialogue._source_path, f[DialogueParser.__LN_NUM],
+            current_dialogue._source_path, f[DialogueParser.Key.LN_NUM],
             func_scope,
         ])
         return
 
     if !scope_obj.has_method(func_name):
         push_error("Error @%s:%d - function '%s.%s()' doesn't exists" % [
-            current_dialogue._source_path, f[DialogueParser.__LN_NUM],
+            current_dialogue._source_path, f[DialogueParser.Key.LN_NUM],
             func_scope, func_name
         ])
         return
     #endregion
 
-    if f[DialogueParser.__STANDALONE]:
-        scope_obj.callv(func_name, f[DialogueParser.__ARGS])
+    if f[DialogueParser.Key.STANDALONE]:
+        scope_obj.callv(func_name, f[DialogueParser.Key.ARGS])
         return
 
     if func_vars.any(_func_args_inp_check_scope.bind(_scope_all.keys())):
         push_error("Error @%s:%d - argument scope(s) used: %s doesn't exists" % [
-            current_dialogue._source_path, f[DialogueParser.__LN_NUM],
+            current_dialogue._source_path, f[DialogueParser.Key.LN_NUM],
             func_vars,
         ])
         return
 
-    var expr_err := _expression_args.parse(f[DialogueParser.__ARGS], func_vars as PackedStringArray)
+    var expr_err := _expression_args.parse(f[DialogueParser.Key.ARGS], func_vars as PackedStringArray)
     var expr_args = _expression_args.execute(
         (func_vars as Array[String]).map(_func_args_inp_get),
     scope_obj)
 
     if _expression_args.has_execute_failed() or expr_err != OK:
         push_error("Error @%s:%d - %s" % [
-            current_dialogue._source_path, f[DialogueParser.__LN_NUM],
+            current_dialogue._source_path, f[DialogueParser.Key.LN_NUM],
             _expression_args.get_error_text(),
         ])
         return
@@ -294,10 +294,10 @@ func _func_args_inp_check_scope(arg_str : String, arg_arr : Array) -> bool:
 
 func _execute_functions() -> void:
     if allow_func:
-        for n in _current_dialogue_set[DialogueParser.__FUNC].size():
+        for n in _current_dialogue_set[DialogueParser.Key.FUNC].size():
             # do not call positional functions
-            if not n in _current_dialogue_set[DialogueParser.__FUNC_IDX]:
-                _call_function(_current_dialogue_set[DialogueParser.__FUNC][n])
+            if not n in _current_dialogue_set[DialogueParser.Key.FUNC_IDX]:
+                _call_function(_current_dialogue_set[DialogueParser.Key.FUNC][n])
 
 #endregion
 
@@ -380,12 +380,12 @@ func get_invalid_functions() -> Dictionary:
             for m in used_funcs[n]:
                 if _scope[n] != null and _scope[n] is WeakRef:
                     if _scope[n].get_ref() != null:
-                        if !(_scope[n].get_ref() as Object).has_method(used_funcs[n][m][DialogueParser.__NAME]):
+                        if !(_scope[n].get_ref() as Object).has_method(used_funcs[n][m][DialogueParser.Key.NAME]):
                             if !output.has("no_method"):
                                 output["no_method"] = []
 
                             output["no_method"].append(
-                                "%s.%s" % [n, used_funcs[n][m][DialogueParser.__NAME]]
+                                "%s.%s" % [n, used_funcs[n][m][DialogueParser.Key.NAME]]
                             )
 
     return output
@@ -453,7 +453,7 @@ func switch(dialogue : Dialogue) -> void:
 
         if is_playing():
             _current_dialogue_set = current_dialogue._sets[_step]
-            _dialogue_full_string = _current_dialogue_set[DialogueParser.__CONTENT]
+            _dialogue_full_string = _current_dialogue_set[DialogueParser.Key.CONTENT]
             _update_display()
             dialogue_label.rerender()
 
@@ -519,7 +519,7 @@ func _progress_forward() -> void:
 
     _step += 1
     _current_dialogue_set = current_dialogue._sets[_step]
-    _dialogue_full_string = _current_dialogue_set[DialogueParser.__CONTENT]
+    _dialogue_full_string = _current_dialogue_set[DialogueParser.Key.CONTENT]
 
     _execute_functions()
     _update_display()
@@ -610,17 +610,17 @@ func _reset_progress(keep_dialogue : bool = false) -> void:
 func _update_display() -> void:
     if actor_label != null:
         actor_label.text = DialogueParser.escape_brackets(
-            _current_dialogue_set[DialogueParser.__ACTOR].format(_variables_all)
+            _current_dialogue_set[DialogueParser.Key.ACTOR].format(_variables_all)
         )
     if dialogue_label != null:
         dialogue_label.text = DialogueParser.escape_brackets(
             _dialogue_full_string.format(_variables_all)
         )
     # TODO
-    #if _current_dialogue_set[DialogueParser.__HAS_VARS]:
+    #if _current_dialogue_set[DialogueParser.Key.HAS_VARS]:
         #if actor_label != null:
             #actor_label.text = DialogueParser.escape_brackets(
-                #_current_dialogue_set[DialogueParser.__ACTOR].format(_variables_all)
+                #_current_dialogue_set[DialogueParser.Key.ACTOR].format(_variables_all)
             #)
         #if dialogue_label != null:
             #dialogue_label.text = DialogueParser.escape_brackets(
@@ -629,7 +629,7 @@ func _update_display() -> void:
     #else:
         #if actor_label != null:
             #actor_label.text = DialogueParser.escape_brackets(
-                #_current_dialogue_set[DialogueParser.__ACTOR]
+                #_current_dialogue_set[DialogueParser.Key.ACTOR]
             #)
         #if dialogue_label != null:
             #dialogue_label.text = DialogueParser.escape_brackets(

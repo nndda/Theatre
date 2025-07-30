@@ -56,91 +56,99 @@ const REGEX_VALID_DLG :=\
 const REGEX_SECTION :=\
     r"^\:(.+)";\
     static var _regex_section := RegEx.create_from_string(REGEX_SECTION)
-#endregion
 
-#region Dictionary keys constants
-const __ACTOR := "actor"
-const __CONTENT := "content"
-const __CONTENT_RAW := "content_raw"
-const __LINE_NUM := "line_num"
-const __TAGS := "tags"
-const __TAGS_DELAYS := "delays"
-const __TAGS_SPEEDS := "speeds"
-const __FUNC := "func"
-const __FUNC_POS := "func_pos"
-const __FUNC_IDX := "func_idx"
-const __OFFSETS := "offsets"
-const __HAS_VARS := "has_vars"
+# Named groups
 const __VAL := "val"
-const __VARS := "vars"
 const __SYM := "sym"
 
 const __SCOPE := "scope"
 const __NAME := "name"
 const __ARGS := "args"
-const __LN_NUM := "ln_num"
-const __STANDALONE := "standalone"
+#endregion
+
+#region Dictionary keys constants
+enum Key {
+    ACTOR,
+    CONTENT,
+    CONTENT_RAW,
+    LINE_NUM,
+    TAGS,
+    TAGS_DELAYS,
+    TAGS_SPEEDS,
+    FUNC,
+    FUNC_POS,
+    FUNC_IDX,
+    OFFSETS,
+    HAS_VARS,
+    VARS,
+
+    SCOPE,
+    NAME,
+    ARGS,
+    LN_NUM,
+    STANDALONE,
+}
 #endregion
 
 ## Dictionary template for each Dialogue line.
 const SETS_TEMPLATE := {
     # Actor's name.
-    __ACTOR: EMPTY,
+    Key.ACTOR: EMPTY,
 
     # Dialogue content, stripped from the Dialogue tags.
-    __CONTENT: EMPTY,
+    Key.CONTENT: EMPTY,
 
     # Written Dialogue content.
-    __CONTENT_RAW: EMPTY,
+    Key.CONTENT_RAW: EMPTY,
 
     # Line number of where the Dialogue line is written.
-    __LINE_NUM: -1,
+    Key.LINE_NUM: -1,
 
     # Built-in tags data.
-    __TAGS: {
-        __TAGS_DELAYS: {},
+    Key.TAGS: {
+        Key.TAGS_DELAYS: {},
             #   Position:   Delay in second.
-        __TAGS_SPEEDS: {},
+        Key.TAGS_SPEEDS: {},
             #   Position:   Speed scale (0, 1).
     },
 
     # Function calls in order. Refer to FUNC_TEMPLATE.
-    __FUNC: [],
+    Key.FUNC: [],
         # Array of Dictionary (FUNC_TEMPLATE).
 
     # Positional function calls.
-    __FUNC_POS: {},
+    Key.FUNC_POS: {},
         # Position:     [Function index...].
 
     # Function index tags.
-    __FUNC_IDX: [],
+    Key.FUNC_IDX: [],
 
-    __OFFSETS: {},
+    Key.OFFSETS: {},
         #   start, end
         #   15: 20
 
-    __HAS_VARS: false,
+    Key.HAS_VARS: false,
 
     # User-defined variables used.
-    __VARS: [],
+    Key.VARS: [],
 }
 
 ## Function call Dictionary template.
 const FUNC_TEMPLATE := {
     # Function's scope name/id.
-    __SCOPE: EMPTY,
+    Key.SCOPE: EMPTY,
 
     # Function name.
-    __NAME: EMPTY,
+    Key.NAME: EMPTY,
 
     # Arguments used.
-    __ARGS: null,
+    Key.ARGS: null,
 
     # Line number of where the function is written.
-    __LN_NUM: 0,
+    Key.LN_NUM: 0,
 
-    __STANDALONE: true,
-    __VARS: [],
+    Key.STANDALONE: true,
+    Key.VARS: [],
 }
 
 #region Built in tags and variables
@@ -237,20 +245,20 @@ func _init(src : String = "", src_path : String = ""):
             newline_stack = 0
             dlg_line_stack += 1
 
-            setsl[__LINE_NUM] = ln_num
+            setsl[Key.LINE_NUM] = ln_num
 
             if dlg_raw_size < i + 1:
                 push_error("Error @%s:%d - actor's name exists without a dialogue body" % [_source_path, ln_num])
 
-            setsl[__ACTOR] = StringName(n_stripped.trim_suffix(COLON))
+            setsl[Key.ACTOR] = StringName(n_stripped.trim_suffix(COLON))
 
-            if setsl[__ACTOR] == UNDERSCORE:
-                setsl[__ACTOR] = EMPTY
-            elif setsl[__ACTOR].is_empty():
+            if setsl[Key.ACTOR] == UNDERSCORE:
+                setsl[Key.ACTOR] = EMPTY
+            elif setsl[Key.ACTOR].is_empty():
                 if body_pos < 0:
                     push_error("Error @%s - missing initial actor's name" % _source_path)
                 else:
-                    setsl[__ACTOR] = output[body_pos][__ACTOR]
+                    setsl[Key.ACTOR] = output[body_pos][Key.ACTOR]
 
             output.append(setsl)
             body_pos += 1
@@ -279,10 +287,10 @@ func _init(src : String = "", src_path : String = ""):
             if regex_func_match != null:
                 var func_dict := FUNC_TEMPLATE.duplicate(true)
 
-                func_dict[__SCOPE] = StringName(regex_func_match.get_string(
+                func_dict[Key.SCOPE] = StringName(regex_func_match.get_string(
                     regex_func_match.names[__SCOPE]
                 ))
-                func_dict[__NAME] = StringName(regex_func_match.get_string(
+                func_dict[Key.NAME] = StringName(regex_func_match.get_string(
                     regex_func_match.names[__NAME]
                 ))
 
@@ -291,7 +299,7 @@ func _init(src : String = "", src_path : String = ""):
                     regex_func_match.names[__ARGS]
                 ).strip_edges()
 
-                func_dict[__LN_NUM] = ln_num
+                func_dict[Key.LN_NUM] = ln_num
 
                 # Parse parameter arguments
                 var args := Expression.new()
@@ -299,34 +307,34 @@ func _init(src : String = "", src_path : String = ""):
                 var var_matches := _regex_func_vars.search_all(args_raw)
 
                 if var_matches.is_empty():
-                    func_dict[__ARGS] = args.execute()
+                    func_dict[Key.ARGS] = args.execute()
 
                     if args.has_execute_failed():
                         push_error("Error @%s:%d - %s" % [_source_path, ln_num, args.get_error_text()])
 
                 else:
-                    func_dict[__STANDALONE] = false
-                    func_dict[__ARGS] = "[" + args_raw + "]"
+                    func_dict[Key.STANDALONE] = false
+                    func_dict[Key.ARGS] = "[" + args_raw + "]"
 
                     for var_match in var_matches:
-                        func_dict[__VARS].append(var_match.get_string(1))
+                        func_dict[Key.VARS].append(var_match.get_string(1))
 
                 func_dict.make_read_only()
-                output[body_pos][__FUNC].append(func_dict)
+                output[body_pos][Key.FUNC].append(func_dict)
 
-                output[body_pos][__CONTENT_RAW] += "{%d}" % (output[body_pos][__FUNC].size() - 1)
-                output[body_pos][__CONTENT] += output[body_pos][__CONTENT_RAW]
+                output[body_pos][Key.CONTENT_RAW] += "{%d}" % (output[body_pos][Key.FUNC].size() - 1)
+                output[body_pos][Key.CONTENT] += output[body_pos][Key.CONTENT_RAW]
             #endregion
 
             #region NOTE: Variables setter
             elif regex_vars_match != null:
                 var func_dict := FUNC_TEMPLATE.duplicate(true)
 
-                func_dict[__SCOPE] = StringName(regex_vars_match.get_string(
+                func_dict[Key.SCOPE] = StringName(regex_vars_match.get_string(
                     regex_vars_match.names[__SCOPE]
                 ))
-                func_dict[__NAME] = &"set"
-                func_dict[__LN_NUM] = ln_num
+                func_dict[Key.NAME] = &"set"
+                func_dict[Key.LN_NUM] = ln_num
 
                 var prop_name := "StringName(\"" + (regex_vars_match.get_string(
                     regex_vars_match.names[__NAME]
@@ -343,35 +351,35 @@ func _init(src : String = "", src_path : String = ""):
                 var val_obj_matches := _regex_func_vars.search_all(val_raw)
 
                 if val_obj_matches.is_empty():
-                    func_dict[__ARGS] = val.execute()
+                    func_dict[Key.ARGS] = val.execute()
 
                     if val.has_execute_failed():
                         push_error("Error @%s:%d - %s" % [_source_path, ln_num, val.get_error_text()])
 
                 else:
-                    func_dict[__STANDALONE] = false
-                    func_dict[__ARGS] = "[" + prop_name + ", (" + val_raw + ")]"
+                    func_dict[Key.STANDALONE] = false
+                    func_dict[Key.ARGS] = "[" + prop_name + ", (" + val_raw + ")]"
 
                     for var_match in val_obj_matches:
-                        func_dict[__VARS].append(var_match.get_string(1))
+                        func_dict[Key.VARS].append(var_match.get_string(1))
 
                 func_dict.make_read_only()
-                output[body_pos][__FUNC].append(func_dict)
+                output[body_pos][Key.FUNC].append(func_dict)
 
-                output[body_pos][__CONTENT_RAW] += "{%d}" % (output[body_pos][__FUNC].size() - 1)
-                output[body_pos][__CONTENT] += output[body_pos][__CONTENT_RAW]
+                output[body_pos][Key.CONTENT_RAW] += "{%d}" % (output[body_pos][Key.FUNC].size() - 1)
+                output[body_pos][Key.CONTENT] += output[body_pos][Key.CONTENT_RAW]
             #endregion
 
             #region NOTE: Newline Dialogue tags ----------------------------------------------------
             elif is_regex_full_string(_regex_dlg_tags_newline.search(current_processed_string)):
-                output[body_pos][__CONTENT_RAW] += "{%s}" % current_processed_string
-                output[body_pos][__CONTENT] += output[body_pos][__CONTENT_RAW]
+                output[body_pos][Key.CONTENT_RAW] += "{%s}" % current_processed_string
+                output[body_pos][Key.CONTENT] += output[body_pos][Key.CONTENT_RAW]
             #endregion
 
             #region NOTE: Newline BBCode tags ------------------------------------------------------
             elif is_regex_full_string(_regex_bbcode_tags.search(current_processed_string)):
-                output[body_pos][__CONTENT_RAW] += current_processed_string
-                output[body_pos][__CONTENT] += current_processed_string
+                output[body_pos][Key.CONTENT_RAW] += current_processed_string
+                output[body_pos][Key.CONTENT] += current_processed_string
             #endregion
 
             # Dialogue text body
@@ -390,17 +398,17 @@ func _init(src : String = "", src_path : String = ""):
                 newline_stack = 0
 
                 # Append Dialogue body
-                output[body_pos][__CONTENT_RAW] += dlg_body
-                output[body_pos][__CONTENT] += dlg_body
+                output[body_pos][Key.CONTENT_RAW] += dlg_body
+                output[body_pos][Key.CONTENT] += dlg_body
 
     # Per dialogue line
     for n in output.size():
         var body : String
-        var content_str : String = output[n][__CONTENT_RAW]
+        var content_str : String = output[n][Key.CONTENT_RAW]
 
         if content_str.is_empty():
             push_error("Error @%s:%d - empty dialogue body for actor '%s'" % [
-                _source_path, output[n][__LINE_NUM], output[n][__ACTOR]
+                _source_path, output[n][Key.LINE_NUM], output[n][Key.ACTOR]
             ])
 
         else:
@@ -438,24 +446,24 @@ func _init(src : String = "", src_path : String = ""):
                         .insert(start, bracket)
             #endregion
 
-            output[n][__CONTENT_RAW] = content_str
+            output[n][Key.CONTENT_RAW] = content_str
 
             var parsed_tags := parse_tags(content_str)
 
-            for tag : String in SETS_TEMPLATE[__TAGS].keys():
-                output[n][__TAGS][tag].merge(parsed_tags[__TAGS][tag])
+            for tag : int in SETS_TEMPLATE[Key.TAGS].keys():
+                output[n][Key.TAGS][tag].merge(parsed_tags[Key.TAGS][tag])
 
             body = content_str
             for tag in _regex_dlg_tags.search_all(content_str):
                 body = body.replace(tag.strings[0], EMPTY)
 
-            output[n][__VARS] = parsed_tags[__VARS]
-            output[n][__HAS_VARS] = parsed_tags[__HAS_VARS]
-            output[n][__FUNC_POS] = parsed_tags[__FUNC_POS]
-            output[n][__FUNC_IDX] = parsed_tags[__FUNC_IDX]
+            output[n][Key.VARS] = parsed_tags[Key.VARS]
+            output[n][Key.HAS_VARS] = parsed_tags[Key.HAS_VARS]
+            output[n][Key.FUNC_POS] = parsed_tags[Key.FUNC_POS]
+            output[n][Key.FUNC_IDX] = parsed_tags[Key.FUNC_IDX]
 
-        output[n][__FUNC].make_read_only()
-        output[n][__CONTENT] = body
+        output[n][Key.FUNC].make_read_only()
+        output[n][Key.CONTENT] = body
 
 ## Check if [param string] is indented with tabs or spaces.
 func is_indented(string : String) -> bool:
@@ -494,7 +502,7 @@ static func escape_brackets(string : String) -> String:
 static func parse_tags(string : String) -> Dictionary:
     var output : Dictionary = {}
     var vars : PackedStringArray = []
-    var tags : Dictionary = SETS_TEMPLATE[__TAGS].duplicate(true)
+    var tags : Dictionary = SETS_TEMPLATE[Key.TAGS].duplicate(true)
     var func_pos : Dictionary = {}
     var func_idx : PackedInt64Array = []
 
@@ -559,7 +567,7 @@ static func parse_tags(string : String) -> Dictionary:
 
             # If its in the same position after {delay}, offset by +1.
             # So that it will be called after the rendering continued.
-            if tags[__TAGS_DELAYS].has(tag_pos):
+            if tags[Key.TAGS_DELAYS].has(tag_pos):
                 tag_pos += 1
 
             if func_pos.has(tag_pos):
@@ -576,10 +584,10 @@ static func parse_tags(string : String) -> Dictionary:
         #elif tag_sym == "=": # NOTE: conflicting with the {s} shorthand alias to reset the rendering speed.
         #region NOTE: built in tags.
         elif TAG_DELAY_ALIASES.has(tag_key):
-            tags[__TAGS_DELAYS][tag_pos] = float(tag_value)
+            tags[Key.TAGS_DELAYS][tag_pos] = float(tag_value)
 
         elif TAG_SPEED_ALIASES.has(tag_key):
-            tags[__TAGS_SPEEDS][tag_pos] = 1.0 if tag_value.is_empty() else tag_value.to_float()
+            tags[Key.TAGS_SPEEDS][tag_pos] = 1.0 if tag_value.is_empty() else tag_value.to_float()
         #endregion
 
         # User defined variables.
@@ -604,12 +612,12 @@ static func parse_tags(string : String) -> Dictionary:
     for bb : Dictionary in bb_data:
         string = string.insert(bb["pos"], bb["content"])
 
-    output[__TAGS] = tags
+    output[Key.TAGS] = tags
     output["string"] = string
-    output[__FUNC_POS] = func_pos
-    output[__FUNC_IDX] = func_idx
-    output[__VARS] = vars
-    output[__HAS_VARS] = !vars.is_empty()
+    output[Key.FUNC_POS] = func_pos
+    output[Key.FUNC_IDX] = func_idx
+    output[Key.VARS] = vars
+    output[Key.HAS_VARS] = !vars.is_empty()
 
     return output
 
@@ -618,18 +626,19 @@ static func parse_tags(string : String) -> Dictionary:
 ## Format Dialogue body at [param pos] position with [member TheatreStage.variables], and update the positions of the built-in tags.
 ## Return the formatted string.
 static func update_tags_position(dlg : Dialogue, pos : int, vars : Dictionary) -> void:
-    var dlg_str : String = dlg._sets[pos][__CONTENT_RAW].format(vars)
-    for n in [__TAGS_DELAYS, __TAGS_SPEEDS]:
-        dlg._sets[pos][__TAGS][n].clear()
+    var dlg_str : String = dlg._sets[pos][Key.CONTENT_RAW].format(vars)
+
+    dlg._sets[pos][Key.TAGS][Key.TAGS_DELAYS].clear()
+    dlg._sets[pos][Key.TAGS][Key.TAGS_SPEEDS].clear()
 
     var parsed_tags := parse_tags(dlg_str)
 
-    dlg._sets[pos][__TAGS] = parsed_tags[__TAGS]
-    dlg._sets[pos][__CONTENT] = parsed_tags["string"]
-    dlg._sets[pos][__VARS] = parsed_tags[__VARS]
-    dlg._sets[pos][__HAS_VARS] = parsed_tags[__HAS_VARS]
-    dlg._sets[pos][__FUNC_POS] = parsed_tags[__FUNC_POS]
-    dlg._sets[pos][__FUNC_IDX] = parsed_tags[__FUNC_IDX]
+    dlg._sets[pos][Key.TAGS] = parsed_tags[Key.TAGS]
+    dlg._sets[pos][Key.CONTENT] = parsed_tags["string"]
+    dlg._sets[pos][Key.VARS] = parsed_tags[Key.VARS]
+    dlg._sets[pos][Key.HAS_VARS] = parsed_tags[Key.HAS_VARS]
+    dlg._sets[pos][Key.FUNC_POS] = parsed_tags[Key.FUNC_POS]
+    dlg._sets[pos][Key.FUNC_IDX] = parsed_tags[Key.FUNC_IDX]
 
 static func is_regex_full_string(regex_match : RegExMatch) -> bool:
     if regex_match == null:
