@@ -89,7 +89,7 @@ static var speed_scale_global : float = 1.0
                         current_dialogue, n, variables
                     )
 
-@export_storage var _scope : Dictionary = {}
+@export_storage var _scope : Dictionary[String, WeakRef] = {}
 
 #endregion
 
@@ -177,8 +177,8 @@ func clear_variables() -> void:
 ## Node-based scopes that are in the scene tree.
 @export var scope_nodes : Array[Node] = []
 
-static var _scope_built_in : Dictionary = {}
-var _scope_all : Dictionary = {}
+static var _scope_built_in : Dictionary[String, WeakRef] = {}
+var _scope_all : Dictionary[String, WeakRef] = {}
 
 func _update_scope() -> void:
     _scope_all = _scope.merged(_scope_built_in, true)
