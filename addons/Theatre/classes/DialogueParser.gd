@@ -194,6 +194,7 @@ const EMPTY := ""
 const UNDERSCORE := "_"
 const COLON := ":"
 const HASH := "#"
+const DOT := "."
 
 const INDENT_2 := "  "
 const INDENT_4 := "    "
@@ -376,7 +377,7 @@ func _init(src : String = "", src_path : String = ""):
                     func_dict[Key.STANDALONE] = not operator_used
                     func_dict[Key.ARGS] = "[" + prop_name + ", (" + (
                         # 'Scope.name'   ' + - * / ' 
-                        var_scope + "." + var_name + operator if operator_used
+                        var_scope + DOT + var_name + operator if operator_used
                         else EMPTY
                     ) + val_raw + ")]"
 
@@ -603,8 +604,8 @@ static func parse_tags(string : String) -> Dictionary:
             if !func_idx.has(idx):
                 func_idx.append(idx)
 
-        elif tag_sym == ".":
-            vars_scope.append(tag_key_l + "." + tag_value)
+        elif tag_sym == DOT:
+            vars_scope.append(tag_key_l + DOT + tag_value)
 
         #elif tag_sym == "=": # NOTE: conflicting with the {s} shorthand alias to reset the rendering speed.
         #region NOTE: built in tags.

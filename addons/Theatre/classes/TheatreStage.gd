@@ -523,7 +523,7 @@ func _progress_forward() -> void:
 
     var scoped_vars_defs : Dictionary[String, Variant] = {}
     for scoped_vars : String in _current_dialogue_set[DialogueParser.Key.VARS_SCOPE]:
-        var scope_var : PackedStringArray = scoped_vars.split(".", false, 2)
+        var scope_var : PackedStringArray = scoped_vars.split(DialogueParser.DOT, false, 2)
 
         if _scope_all.has(scope_var[0]):
             var scope_obj : Object = _scope_all[scope_var[0]].get_ref()
