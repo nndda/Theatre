@@ -2,7 +2,7 @@ extends RefCounted
 class_name DialogueParser
 
 var output : Array[Dictionary] = []
-var sections : Dictionary = {}
+var sections : Dictionary[String, int] = {}
 
 # Source path from Dialouge._source_path for debugging purposes.
 var _source_path : String

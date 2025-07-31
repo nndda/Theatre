@@ -36,17 +36,17 @@ static var section : Color
 static var section_bg : Color
 static var invalid : Color
 
-static var COL_actor_name_line : Dictionary
-static var COL_base_content : Dictionary
-static var COL_symbol : Dictionary
-static var COL_comment : Dictionary
-static var COL_tag_content : Dictionary
-static var COL_tag_braces : Dictionary
-static var COL_scope : Dictionary
-static var COL_func_name : Dictionary
-static var COL_func_args : Dictionary
-static var COL_section : Dictionary
-static var COL_invalid : Dictionary
+static var COL_actor_name_line : Dictionary[String, Color]
+static var COL_base_content : Dictionary[String, Color]
+static var COL_symbol : Dictionary[String, Color]
+static var COL_comment : Dictionary[String, Color]
+static var COL_tag_content : Dictionary[String, Color]
+static var COL_tag_braces : Dictionary[String, Color]
+static var COL_scope : Dictionary[String, Color]
+static var COL_func_name : Dictionary[String, Color]
+static var COL_func_args : Dictionary[String, Color]
+static var COL_section : Dictionary[String, Color]
+static var COL_invalid : Dictionary[String, Color]
 
 static var color_initialized := false
 

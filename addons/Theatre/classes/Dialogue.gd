@@ -25,9 +25,9 @@ extends Resource
 @export_storage var _source_path : String
 
 @export_storage var _used_variables : PackedStringArray = []
-@export_storage var _used_function_calls : Dictionary = {}
+@export_storage var _used_function_calls : Dictionary[String, Variant] = {}
 
-@export_storage var _sections : Dictionary = {}
+@export_storage var _sections : Dictionary[String, int] = {}
 #endregion
 
 #region NOTE: Loader/constructor -------------------------------------------------------------------
@@ -45,7 +45,7 @@ func _from_string(dlg_src : String = "") -> void:
         dlg_src.split(DialogueParser.NEWLINE, false, 3).size() >= 2:
         var stack : Array[Dictionary] = get_stack()
         if stack.size() >= 1:
-            var stack_ln : Dictionary = stack[-1]
+            var stack_ln : Dictionary[String, Variant] = stack[-1]
             print("Parsing Dialogue from raw string: %s:%d" % [
                 stack_ln["source"], stack_ln["line"]
             ])
@@ -73,7 +73,7 @@ static func load(path : String) -> Dialogue:
 #region NOTE: Utilities ----------------------------------------------------------------------------
 ## Return all actors present in the compiled [Dialogue]. Optionally pass [param variables] to
 ## insert variables used in the actor's name, otherwise it will return it as is (e.g. [code]{player_name}[/code])
-func get_actors(variables : Dictionary = {}) -> PackedStringArray:
+func get_actors(variables : Dictionary[String, Variant] = {}) -> PackedStringArray:
     var output : PackedStringArray = []
     for n in _sets:
         var actor : String = n.actor.format(variables)
@@ -93,7 +93,7 @@ func get_source_path() -> String:
 
 ## Returns word count in the compiled [Dialogue]. Optionally pass [param variables] to insert
 ## variables used by the [Dialogue], otherwise it will count any variable placeholder as 1 word.
-func get_word_count(variables : Dictionary = {}) -> int:
+func get_word_count(variables : Dictionary[String, Variant] = {}) -> int:
     return RegEx \
     .create_from_string(r"\w+") \
     .search_all(_strip(
@@ -101,7 +101,7 @@ func get_word_count(variables : Dictionary = {}) -> int:
         true, true
     )).size()
 
-func get_character_count(variables : Dictionary = {}) -> int:
+func get_character_count(variables : Dictionary[String, Variant] = {}) -> int:
     return humanize(false, variables).length()
 
 func get_function_calls() -> Dictionary:
@@ -113,10 +113,10 @@ func get_sections() -> Dictionary:
     return _sections
 
 func _update_used_function_calls() -> void:
-    for n : Dictionary in _sets:
+    for n : Dictionary[DialogueParser.Key, Variant] in _sets:
         for m : Dictionary in n[DialogueParser.Key.FUNC]:
             if !_used_function_calls.has(m[DialogueParser.Key.SCOPE]):
-                _used_function_calls[m[DialogueParser.Key.SCOPE]] = {}
+                _used_function_calls[m[DialogueParser.Key.SCOPE]] = {} as Dictionary[DialogueParser.Key, Variant]
 
             _used_function_calls[m[DialogueParser.Key.SCOPE]][m[DialogueParser.Key.LN_NUM]] = {
                 DialogueParser.Key.NAME: m[DialogueParser.Key.NAME],
@@ -128,18 +128,18 @@ func get_variables() -> PackedStringArray:
     return _used_variables
 
 func _update_used_variables() -> void:
-    for n : Dictionary in _sets:
+    for n : Dictionary[DialogueParser.Key, Variant] in _sets:
         for m : String in n[DialogueParser.Key.VARS]:
             if not m in _used_variables:
                 _used_variables.append(m)
 
 ## Returns the human-readable string of the compiled [Dialogue]. This will return the [Dialogue]
 ## without the Dialogue tags and/or BBCode tags. Optionally, insert the variables used by passing it to [param variables].
-func humanize(with_actor : bool = true, variables : Dictionary = {}) -> String:
+func humanize(with_actor : bool = true, variables : Dictionary[String, Variant] = {}) -> String:
     return _strip(variables, !with_actor)
 
 func _strip(
-    variables : Dictionary = {},
+    variables : Dictionary[String, Variant] = {},
     exclude_actors : bool = false,
     exclude_newline : bool = false
     ) -> String:

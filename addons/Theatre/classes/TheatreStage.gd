@@ -98,11 +98,11 @@ static var speed_scale_global : float = 1.0
 ## [br][br]
 ## [b]Note: Do not[/b] modify [member variables] directly, use methods such as [method add_variable],
 ## [method merge_variables], [method remove_variable], and [method clear_variables] instead.
-@export var variables : Dictionary = {}:
+@export var variables : Dictionary[String, Variant] = {}:
     set = _set_variables,
     get = get_variables
 
-func _set_variables(new_var : Dictionary) -> void:
+func _set_variables(new_var : Dictionary[String, Variant]) -> void:
     variables = new_var
 
     if is_playing():
@@ -145,7 +145,7 @@ func get_variables() -> Dictionary:
 ##
 ## [br][br]
 ## See also [method set_variable], [method remove_variable], and [method clear_variables].
-func merge_variables(vars : Dictionary) -> void:
+func merge_variables(vars : Dictionary[String, Variant]) -> void:
     for n in vars.keys():
         if n in DialogueParser.BUILT_IN_TAGS:
             push_error(
@@ -230,7 +230,7 @@ func clear_callers() -> void:
     clear_scopes()
 
 var _expression_args := Expression.new()
-func _call_function(f : Dictionary) -> void:
+func _call_function(f : Dictionary[DialogueParser.Key, Variant]) -> void:
     if !allow_func:
         return
 
@@ -313,17 +313,17 @@ signal finished
 ## also emitted when the [Dialogue] is started using [member start].
 signal progressed
 ## Same as [signal progressed], but with the line number and line data of the [Dialogue] passed.
-signal progressed_at(line : int, line_data : Dictionary)
+signal progressed_at(line : int, line_data : Dictionary[DialogueParser.Key, Variant])
 
 ## Emitted when the [Dialogue] progress is skipped. See [method progress].
 signal skipped
 ## Same as [signal skipped], but with the line number and line data of the [Dialogue] passed.
-signal skipped_at(line : int, line_data : Dictionary)
+signal skipped_at(line : int, line_data : Dictionary[DialogueParser.Key, Variant])
 
 ## Emitted when the [Dialogue] progress is cancelled using [method cancel] or [method reset].
 signal cancelled
 ## Same as [signal cancelled], but with the line number and line data of the [Dialogue] passed.
-signal cancelled_at(line : int, line_data : Dictionary)
+signal cancelled_at(line : int, line_data : Dictionary[DialogueParser.Key, Variant])
 
 ## Emitted when the [Dialogue] is switched using [method switch].
 signal dialogue_switched(old_dialogue : Dialogue, new_dialogue : Dialogue)
@@ -367,7 +367,7 @@ func get_invalid_functions() -> Dictionary:
     if current_dialogue == null:
         return {}
 
-    var output : Dictionary = {}
+    var output : Dictionary[String, Variant] = {}
     var used_funcs := current_dialogue.get_function_calls()
     var curr_scope := _scope.keys()
 
