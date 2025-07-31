@@ -27,8 +27,9 @@ const REGEX_BBCODE_TAGS :=\
 
 # Match variables assignments:
 #       Scope.name = value
+#       Scope.name += value
 const REGEX_VARS_SET :=\
-    r"(?<scope>\w+)\.(?<name>\w+)\s*\=\s*(?<val>.+)$";\
+    r"(?<scope>\w+)\.(?<name>\w+)\s*(?<op>[\+\-\*\/])?\=\s*(?<val>.+)$";\
     static var _regex_vars_set := RegEx.create_from_string(REGEX_VARS_SET)
 
 # Match function calls:
@@ -64,6 +65,7 @@ const __SYM := "sym"
 const __SCOPE := "scope"
 const __NAME := "name"
 const __ARGS := "args"
+const __OP := "op"
 #endregion
 
 #region Dictionary keys constants
@@ -329,16 +331,26 @@ func _init(src : String = "", src_path : String = ""):
             #region NOTE: Variables setter
             elif regex_vars_match != null:
                 var func_dict := FUNC_TEMPLATE.duplicate(true)
-
-                func_dict[Key.SCOPE] = StringName(regex_vars_match.get_string(
+                var var_scope := regex_vars_match.get_string(
                     regex_vars_match.names[__SCOPE]
-                ))
+                )
+                var var_name := regex_vars_match.get_string(
+                    regex_vars_match.names[__NAME]
+                )
+
+                func_dict[Key.SCOPE] = StringName(var_scope)
                 func_dict[Key.NAME] = &"set"
                 func_dict[Key.LN_NUM] = ln_num
 
-                var prop_name := "StringName(\"" + (regex_vars_match.get_string(
-                    regex_vars_match.names[__NAME]
-                )) + "\")"
+                var prop_name := "StringName(\"" + var_name + "\")"
+
+                # Operator assignment type if used
+                #       += -= *= /=
+                #       +  -  *  /
+                var operator := regex_vars_match.get_string(
+                    regex_vars_match.names[__OP]
+                )
+                var operator_used := not operator.is_empty()
 
                 # Value
                 var val_raw := regex_vars_match.get_string(
@@ -350,16 +362,25 @@ func _init(src : String = "", src_path : String = ""):
                 var val_err := val.parse("[" + prop_name + ", (" + val_raw + ")]")
                 var val_obj_matches := _regex_func_vars.search_all(val_raw)
 
-                if val_obj_matches.is_empty():
+                if val_obj_matches.is_empty() and\
+                    not operator_used:
+
                     func_dict[Key.ARGS] = val.execute()
 
                     if val.has_execute_failed():
                         push_error("Error @%s:%d - %s" % [_source_path, ln_num, val.get_error_text()])
 
                 else:
-                    func_dict[Key.STANDALONE] = false
-                    func_dict[Key.ARGS] = "[" + prop_name + ", (" + val_raw + ")]"
+                    func_dict[Key.STANDALONE] = not operator_used
+                    func_dict[Key.ARGS] = "[" + prop_name + ", (" + (
+                        # 'Scope.name'   ' + - * / ' 
+                        var_scope + "." + var_name + operator if operator_used
+                        else EMPTY
+                    ) + val_raw + ")]"
 
+                    if operator_used:
+                        func_dict[Key.VARS].append(var_scope)
+                    
                     for var_match in val_obj_matches:
                         func_dict[Key.VARS].append(var_match.get_string(1))
 
