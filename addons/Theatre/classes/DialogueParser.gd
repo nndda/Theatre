@@ -83,6 +83,7 @@ enum Key {
     OFFSETS,
     HAS_VARS,
     VARS,
+    VARS_SCOPE,
 
     SCOPE,
     NAME,
@@ -133,6 +134,7 @@ const SETS_TEMPLATE := {
 
     # User-defined variables used.
     Key.VARS: [],
+    Key.VARS_SCOPE: [],
 }
 
 ## Function call Dictionary template.
@@ -479,6 +481,7 @@ func _init(src : String = "", src_path : String = ""):
                 body = body.replace(tag.strings[0], EMPTY)
 
             output[n][Key.VARS] = parsed_tags[Key.VARS]
+            output[n][Key.VARS_SCOPE] = parsed_tags[Key.VARS_SCOPE]
             output[n][Key.HAS_VARS] = parsed_tags[Key.HAS_VARS]
             output[n][Key.FUNC_POS] = parsed_tags[Key.FUNC_POS]
             output[n][Key.FUNC_IDX] = parsed_tags[Key.FUNC_IDX]
@@ -523,6 +526,7 @@ static func escape_brackets(string : String) -> String:
 static func parse_tags(string : String) -> Dictionary:
     var output : Dictionary = {}
     var vars : PackedStringArray = []
+    var vars_scope : PackedStringArray = []
     var tags : Dictionary = SETS_TEMPLATE[Key.TAGS].duplicate(true)
     var func_pos : Dictionary = {}
     var func_idx : PackedInt64Array = []
@@ -600,7 +604,7 @@ static func parse_tags(string : String) -> Dictionary:
                 func_idx.append(idx)
 
         elif tag_sym == ".":
-            pass
+            vars_scope.append(tag_key_l + "." + tag_value)
 
         #elif tag_sym == "=": # NOTE: conflicting with the {s} shorthand alias to reset the rendering speed.
         #region NOTE: built in tags.
@@ -638,7 +642,8 @@ static func parse_tags(string : String) -> Dictionary:
     output[Key.FUNC_POS] = func_pos
     output[Key.FUNC_IDX] = func_idx
     output[Key.VARS] = vars
-    output[Key.HAS_VARS] = !vars.is_empty()
+    output[Key.VARS_SCOPE] = vars_scope
+    output[Key.HAS_VARS] = not vars.is_empty() or not vars_scope.is_empty()
 
     return output
 
@@ -657,6 +662,7 @@ static func update_tags_position(dlg : Dialogue, pos : int, vars : Dictionary) -
     dlg._sets[pos][Key.TAGS] = parsed_tags[Key.TAGS]
     dlg._sets[pos][Key.CONTENT] = parsed_tags["string"]
     dlg._sets[pos][Key.VARS] = parsed_tags[Key.VARS]
+    dlg._sets[pos][Key.VARS_SCOPE] = parsed_tags[Key.VARS_SCOPE]
     dlg._sets[pos][Key.HAS_VARS] = parsed_tags[Key.HAS_VARS]
     dlg._sets[pos][Key.FUNC_POS] = parsed_tags[Key.FUNC_POS]
     dlg._sets[pos][Key.FUNC_IDX] = parsed_tags[Key.FUNC_IDX]

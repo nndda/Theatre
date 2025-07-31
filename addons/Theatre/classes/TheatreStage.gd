@@ -521,6 +521,24 @@ func _progress_forward() -> void:
     _current_dialogue_set = current_dialogue._sets[_step]
     _dialogue_full_string = _current_dialogue_set[DialogueParser.Key.CONTENT]
 
+    var scoped_vars_defs : Dictionary[String, Variant] = {}
+    for scoped_vars : String in _current_dialogue_set[DialogueParser.Key.VARS_SCOPE]:
+        var scope_var : PackedStringArray = scoped_vars.split(".", false, 2)
+
+        if _scope_all.has(scope_var[0]):
+            var scope_obj : Object = _scope_all[scope_var[0]].get_ref()
+
+            if scope_var[1] in scope_obj:
+                scoped_vars_defs[scoped_vars] = scope_obj.get(scope_var[1])
+
+    if not scoped_vars_defs.is_empty():
+        DialogueParser.update_tags_position(
+            current_dialogue,
+            clampi(_step, 0, _current_dialogue_set.size()),
+            variables.merged(scoped_vars_defs)
+        )
+        _dialogue_full_string = _current_dialogue_set[DialogueParser.Key.CONTENT]
+
     _execute_functions()
     _update_display()
 
