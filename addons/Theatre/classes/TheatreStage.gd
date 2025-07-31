@@ -111,8 +111,6 @@ func _set_variables(new_var : Dictionary) -> void:
     _update_variables_dialogue()
 
 func _update_variables_dialogue() -> void:
-    _variables_all.clear()
-    _variables_all.merge(variables, true)
     if current_dialogue != null:
         var stepn := clampi(_step, 0, current_dialogue._sets.size())
         # NOTE, BUG: NOT COMPATIBLE WHEN CHANGING VARIABLE REAL-TIME
@@ -126,8 +124,6 @@ func _update_variables_dialogue() -> void:
 
             if dialogue_label != null:
                 dialogue_label.rerender()
-
-var _variables_all : Dictionary = {}
 
 ## Set a variable used in the written [Dialogue].
 ## [br][br]
@@ -634,21 +630,21 @@ func _reset_progress(keep_dialogue : bool = false) -> void:
 func _update_display() -> void:
     if actor_label != null:
         actor_label.text = DialogueParser.escape_brackets(
-            _current_dialogue_set[DialogueParser.Key.ACTOR].format(_variables_all)
+            _current_dialogue_set[DialogueParser.Key.ACTOR].format(variables)
         )
     if dialogue_label != null:
         dialogue_label.text = DialogueParser.escape_brackets(
-            _dialogue_full_string.format(_variables_all)
+            _dialogue_full_string.format(variables)
         )
     # TODO
     #if _current_dialogue_set[DialogueParser.Key.HAS_VARS]:
         #if actor_label != null:
             #actor_label.text = DialogueParser.escape_brackets(
-                #_current_dialogue_set[DialogueParser.Key.ACTOR].format(_variables_all)
+                #_current_dialogue_set[DialogueParser.Key.ACTOR].format(variables)
             #)
         #if dialogue_label != null:
             #dialogue_label.text = DialogueParser.escape_brackets(
-                #_dialogue_full_string.format(_variables_all)
+                #_dialogue_full_string.format(variables)
             #)
     #else:
         #if actor_label != null:
