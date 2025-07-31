@@ -519,7 +519,6 @@ func _progress_forward() -> void:
 
     _step += 1
     _current_dialogue_set = current_dialogue._sets[_step]
-    _dialogue_full_string = _current_dialogue_set[DialogueParser.Key.CONTENT]
 
     var scoped_vars_defs : Dictionary[String, Variant] = {}
     for scoped_vars : String in _current_dialogue_set[DialogueParser.Key.VARS_SCOPE]:
@@ -537,7 +536,8 @@ func _progress_forward() -> void:
             clampi(_step, 0, _current_dialogue_set.size()),
             variables.merged(scoped_vars_defs)
         )
-        _dialogue_full_string = _current_dialogue_set[DialogueParser.Key.CONTENT]
+
+    _dialogue_full_string = _current_dialogue_set[DialogueParser.Key.CONTENT]
 
     _execute_functions()
     _update_display()
