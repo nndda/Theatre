@@ -20,7 +20,9 @@ extends Node
 func set_actor_label(node : Label) -> void:
     actor_label = node
     if node != null:
-        actor_label.tree_exiting.connect(set_actor_label.bind(null))
+        var cb : Callable = set_actor_label.bind(null)
+        if not actor_label.tree_exiting.is_connected(cb):
+            actor_label.tree_exiting.connect(cb)
 
 func get_actor_label() -> Label:
     return actor_label
@@ -33,7 +35,9 @@ func get_actor_label() -> Label:
 func set_dialogue_label(node : DialogueLabel) -> void:
     dialogue_label = node
     if node != null:
-        dialogue_label.tree_exiting.connect(set_dialogue_label.bind(null))
+        var cb : Callable = set_dialogue_label.bind(null)
+        if not dialogue_label.tree_exiting.is_connected(cb):
+            dialogue_label.tree_exiting.connect(cb)
 
 func get_dialogue_label() -> DialogueLabel:
     return dialogue_label
@@ -197,7 +201,9 @@ func get_callers() -> Dictionary:
 func add_scope(id : String, object : Object) -> void:
     _scope[id] = weakref(object)
     if object is Node:
-        object.tree_exited.connect(remove_scope.bind(id))
+        var cb : Callable = remove_scope.bind(id)
+        if not object.tree_exited.is_connected(cb):
+            object.tree_exited.connect(cb)
     _update_scope()
 ## @deprecated: Use [method add_scope] instead.
 func add_caller(id : String, object : Object) -> void:
