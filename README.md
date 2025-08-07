@@ -11,7 +11,8 @@
 
 Yet another <sub>(linear)</sub> dialogue system<b>/</b>addon<b>/</b>plugin for Godot. With features such as:
 
-- ✍️ Written in human-readable syntax.
+- ✍️ Human-readable syntax.
+- ⚡ Simple setup. Get started in just 7 lines of codes!
 - 😐 ....
 - 📝 And 100% written in GDScript!
 
@@ -49,8 +50,25 @@ Dia:
 </tr>
 </table>
 
+```gdscript
+var my_dialogue := Dialogue.load('res://my_dialogue.dlg')
+
+@export var my_stage: TheatreStage
+
+func _ready():
+    my_stage.start(epic_dialogue)
+
+func _input(event):
+    if event.is_action_pressed('ui_accept'):
+        my_stage.progress()
+```
+
+<br>
+
 > [!IMPORTANT]
 > This project is still in development and is subject to frequent breaking changes, and bugs. Check out the [Issues](https://github.com/nndda/Theatre/issues) page for known bugs &amp; issues, and [Common Troubleshooting](https://nndda.github.io/Theatre/tutorials/troubleshooting/) documentation page if you encounter any issues.
+
+<br>
 
 # Features
 
@@ -62,6 +80,20 @@ Godette:
     "Hello!{delay = 0.7} Nice to meet you."
 ```
 
+## Variables
+
+Insert static or dynamic variables.
+```yaml
+Dia:
+    "Great job, {player}. Just {item_left} to go."
+```
+```yaml
+Dia:
+    "Your operating system is {User.os}.
+    It is currently {User.datetime}.
+    Your IP address is {User.ip_adress}"
+```
+
 ## Set Properties
 
 Manipulate properties &amp; variables.
@@ -69,6 +101,11 @@ Manipulate properties &amp; variables.
 Ritsu:
     UI.portrait = "ritsu_smile.png"
     "Cheers!"
+```
+```yaml
+Ritsu:
+    Global.friendship_lv += 1
+    "Yay!"
 ```
 
 ## Call Functions
@@ -82,7 +119,7 @@ Connect your story to the game with function calls.
 
 <br>
 
-Call functions or set properties/variables only at specific points in the Dialogue.
+Call functions or set properties/variables at specific points in the Dialogue.
 ```yaml
 Dia:
     "Let's brighten up the room a little...{d = 1.1}
@@ -101,10 +138,10 @@ Dia:
 Write your epic Dialogue!
 ```gdscript
 # Write it in a *.dlg file, and load it.
-var epic_dialogue = Dialogue.load("res://epic_dialogue.dlg")
+var epic_dialogue := Dialogue.load("res://epic_dialogue.dlg")
 
 # Write it directly with triple quotation marks.
-var epic_dialogue = Dialogue.new("""
+var epic_dialogue := Dialogue.new("""
 
 Dia:
     "Loading the Dialogue written in a *.dlg file
@@ -118,17 +155,17 @@ Dia:
 """)
 ```
 
-Set the Stage! Add `Stage` and `DialogueLabel` node to your scene. Structure your scene like the following:
+Set the Stage! Add `TheatreStage` and `DialogueLabel` node to your scene. Structure your scene like the following:
 
 <div align="center">
-<img src="https://github.com/user-attachments/assets/05e5e3ba-adfb-4208-81bc-adbbf6b6c571" alt="A scene tree, with Stage and PanelContainer > VBoxContainer > Label, DialogueLabel" width="207" height="302">
+<img width="261" height="197" alt="A scene tree, with Stage and PanelContainer" src="https://github.com/user-attachments/assets/2fe8cc77-d35a-4eae-911d-8f3e0b6410dc" />
 </div>
 
 <br>
 
 Adjust the position and size of the `PanelContainer` to your liking.
 
-Select the `Stage` node, and reference the `Label` & `DialogueLabel` node to display your Dialogue. Adjust and configure your `Stage` via the inspector. Alternatively, you can also set them in script:
+Select the `TheatreStage` node, and reference the `Label` & `DialogueLabel` node to display your Dialogue. Adjust and configure your `TheatreStage` via the inspector. Alternatively, you can also set them in script:
 
 <table align="center">
 <tr align="center">
@@ -143,13 +180,13 @@ Select the `Stage` node, and reference the `Label` & `DialogueLabel` node to dis
 <tr>
 <td>
 
-<img src="https://github.com/nndda/Theatre/assets/96333146/69d7b946-2444-4247-8cdf-394332466c99" alt="Inspector dock's representation of Stage's properties." width="261" height="235">
+<img width="260" height="244" alt="Inspector dock's representation of Stage's properties." src="https://github.com/user-attachments/assets/6a60fa6c-3b6c-49e4-b182-f1fef3eec733" />
 
 </td>
 <td>
 
 ```gdscript
-@onready var my_stage : TheatreStage = $TheatreStage
+@onready var my_stage: TheatreStage = $TheatreStage
 
 func _ready():
     my_stage.actor_label =\
@@ -157,10 +194,6 @@ func _ready():
     my_stage.dialogue_label =\
         $PanelContainer/VBoxContainer/DialogueLabel
 
-    my_stage.allow_skip = true
-    my_stage.allow_cancel = true
-    my_stage.allow_func = true
-    my_stage.speed_scale = 1.0
 ```
 
 </td>
@@ -168,15 +201,15 @@ func _ready():
 
 </table>
 
-Reference the `Stage` node in the script, and set up a way to progress your Dialogue with `Stage.progress()`.
+Reference the `TheatreStage` node in the script, and set up a way to progress your Dialogue with `TheatreStage.progress()`.
 
 ```gdscript
 func _input(event):
-    if event.is_action_pressed("ui_accept"):
+    if event.is_action_pressed('ui_accept'):
         my_stage.progress()
 ```
 
-And finally, start the `Stage` with your `epic_dialogue`.
+And finally, start the `TheatreStage` with your `epic_dialogue`.
 
 ```gdscript
 func _ready():
