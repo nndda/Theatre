@@ -106,14 +106,16 @@ plugins:
 
 extra:
   social:
-    - icon: simple/mastodon
-      link: https://mastodon.art/@nnda
     - icon: simple/godotengine
       link: https://godotengine.org/asset-library/asset/2332
     - icon: simple/github
       link: https://github.com/nndda/Theatre
     - icon: simple/itchdotio
       link: https://nnda.itch.io
+    - icon: simple/bluesky
+      link: https://bsky.app/profile/nnda.dev
+    - icon: simple/mastodon
+      link: https://mastodon.art/@nnda
 
 extra_css:
   - assets/stylesheets/extra.css
