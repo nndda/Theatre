@@ -2,14 +2,16 @@
 
 This page covers the syntax of the written `Dialogue` and its features.
 
-Dialogue text file needs to be saved as `*.dlg`. Dialogue text/string needs to have at least one actor's name with `:` at the end, and the dialogue body indented:
+Dialogue text file needs to be saved as `*.dlg`. Dialogue text/string require at least one actor's name with `:` at the end, and the dialogue body indented:
 
-```
+```yaml
 Actor's name:
     Dialogue body
 ```
 
-```
+## Whitespace
+
+```yaml
 Ritsu:
     "You can
     break newline
@@ -20,19 +22,41 @@ Ritsu:
 ```
 
 !!! note "Newlines"
-    Even though the dialogue above has multiple newline breaks, it will be rendered without the newline:
+    Even though the dialogue above have multiple newline breaks, it will be rendered without the newlines:
     ```
     "You can break newline many times, as long as the dialogue body is indented!"
     ```
     You can insert newlines by using [`{n}` dialogue variable.](#built-in-variables).
 
+Any extra whitespaces **after** the end of a dialogue line will be trimmed to one space.
+
+```yaml
+Ritsu:
+    "There's bunch of spaces here 👉      
+    but... its invisible, and it will be trimmed to one anyway."
+```
+
+If you want to avoid trimming, insert the spaces in the middle:
+
+```yaml
+Ritsu:
+    "This is a long        space."
+```
+
+Or using the built-in `{spc}` variable:
+
+```yaml
+Ritsu:
+    "This is a long {spc}{spc}{spc}{spc} space."
+```
+
 ## Actor's Name
 
-For dialogue lines that use the same actor, You can leave the following actor's name blank, leaving `:` alone. It will use the last declared actor's name.
+For dialogue lines that use the same actor, you can leave the following actor's name blank, leaving `:` alone. It will use the last declared actor's name.
 
 <div class="grid" markdown>
 
-```
+```yaml
 Dia:
     "I'm honestly running out of
     ideas for the dialogue
@@ -48,7 +72,7 @@ Dia:
     lines of 'Hello, world!'"
 ```
 
-```
+```yaml
 Dia:
     "I'm honestly running out of
     ideas for the dialogue
@@ -68,7 +92,7 @@ Dia:
 
 Leave the actor's name blank, by using a single underscore `_`.
 
-```
+```yaml
 {player}:
     "I'm {player}"
 
@@ -81,7 +105,7 @@ _:
 
 Insert variables by wrapping the variables name inside curly brackets: `{_}`.
 
-```
+```yaml
 {player}:
     "Please call my name, I need to demonstrate
     the variable use in the written Dialogue."
@@ -98,7 +122,7 @@ your_stage.set_variable(
 )
 ```
 
-You can also define multiple variables using `TheatreStage.merge_variables` with a `Dictionary`.
+Define multiple variables using `TheatreStage.merge_variables()` with a `Dictionary`.
 
 ```gdscript
 your_stage.merge_variables({
@@ -107,7 +131,7 @@ your_stage.merge_variables({
 })
 ```
 
-```
+```yaml
 Dia:
     "Great job {player}! just {item_left} more to go."
 ```
@@ -122,7 +146,7 @@ Dia:
 
 !!! warning
     You can't use names for variables that are used by Theatre. This includes:
-    `{n}`, `{d}`, `{w}`, `{s}`, `{spc}`, `{delay}`, `{wait}`, `{speed}`, and [function calls indexes](#positional-function-calls).
+    `{n}`, `{d}`, `{w}`, `{s}`, `{spc}`, `{delay}`, `{wait}`, `{speed}`, and numbers (`{0}`, `{3}`, `{15}`, etc.).
     Variables using any of these names will be ignored or treated as the built-in tags/variables.
 
 ## Tags
@@ -148,7 +172,7 @@ There are several built-in tags to fine-tune your Dialogue flows. Tags can have 
     ```
     { delay|wait|d|w = t }
     ```
-    ```
+    ```yaml
     Dia:
         "Hello!{delay = 0.6} nice to meet you"
     ```
@@ -159,17 +183,17 @@ There are several built-in tags to fine-tune your Dialogue flows. Tags can have 
     ```
     { speed|s = s }
     ```
-    ```
+    ```yaml
     Ritsu:
         "That is quite {speed = 0.4}spooky"
     ```
 :   You can also revert the speed back with `{s}`, which is equivalent to `{s = 1.0}`.
-    ```
+    ```yaml
     Ritsu:
         "So {s = 0.4}uh...{s} {d=0.9}what are we gonna do?"
     ```
 
-## Calling Functions & Changing Properties
+## Calling Functions & Manipulating Properties
 
 ### Scopes
 
@@ -204,7 +228,7 @@ If the scope is a `Node` or inherits `Node`, it will be removed automatically fr
 your_stage.remove_scope("Player")
 ```
 
-Removes all scopes of a `TheatreStage` using `TheatreStage.clear_scopes()`:
+Remove all scopes of a `TheatreStage` using `TheatreStage.clear_scopes()`:
 
 ```gdscript
 your_stage.clear_scopes()
@@ -212,50 +236,119 @@ your_stage.clear_scopes()
 
 ### Syntax
 
-After setting up the scopes, you can call any functions, or manipulate properties that are available in the scope.
+After setting up the scopes, you can call any functions, manipulate properties, and insert variables that are available in the scope.
 
-```
+#### Function Calls
+
+```yaml
 {player_name}:
     Player.heals(25)
     "Thanks, that feels so much better."
 ```
-```
+
+#### Property Manipulations
+
+```yaml
 Ritsu:
     UI.portrait = "ritsu_smile.png"
     "Cheers!"
 ```
-```
+```yaml
 Ritsu:
-    Global.friendship_lv = Global.friendship_lv + 1
+    Global.friendship_lv += 1
     "Yay!"
 ```
 
-All functions on a Dialogue line are called with the order they are written. The following Dialogue will call `one()`, `two()`, and `three()` subsequently.
+#### Scope-based Variables
 
+```yaml
+Dia:
+    "Good {GameData.day_state}, {GameData.player_name}."
 ```
+
+### Orders
+
+Functions calls and variables manipulations on a Dialogue line are called with the order they are written. The following Dialogue will call `one()`, `two()`, and `three()` subsequently.
+
+```yaml
 Dia:
     Scope.one()
     Scope.two()
     Scope.three()
     "You can call as many functions as you want."
+:
+    "By the start or the end of a dialogue line."
+    Scope.owo()
+:
+    "Or, in the middle
+    Scope.uwu()
+    of the dialogue."
 ```
+
+In the last line, the function `Scope.uwu()` will be called, right after the word `'middle'` has rendered in.
+
+The same also applies to variable manipulation.
+
+```yaml
+Dia:
+    Scope.value = 0
+    Scope.value += 3
+    Scope.value *= 6
+    Scope.value /= 2
+    "'Scope.value' is now 9"
+```
+
+!!! example
+
+    ```yaml
+    Dia:
+        "Let me brighten up the room a little...{d = 1.1}
+            Background.set_brightness(1.0)
+        there we go."
+    ```
+
+    ```yaml
+    Ritsu:
+        Portrait.set("ritsu_smile.png")
+
+        "Such a lovely weather today!{d = 1.5}
+            Environment.set_weather("storm")
+            delay=1.5
+            Portrait.set("ritsu_pissed.png")
+        nevermind..."
+    ```
+
+!!! note
+
+    If a line contains scope-based variables, like the following:
+
+    ```yaml
+    Dia:
+        Portrait.change("dia_smiles.png")
+
+        "My, you like {GameData.player_fav} too?"
+    ```
+
+    The scope variable `GameData.player_fav` will be pulled ***before*** calling any function, even the first one like the above's `Portrait.change()`.
+
+    Meaning if the variable has a getter function, that getter function will be called, before any of the functions in the dialogue. 
 
 ### Arguments & Expressions
 
 You can generally pass any data type as the function calls arguments, or as the property's value.
-```
+```yaml
 Ritsu:
     Inventory.add([ 'apple_pie', 'cupcake', 'muffin' ])
     "Don't eat all of them at once~!"
 ```
-```
+```yaml
 Thief:
     Inventory.items = []
     "I'll be taking that >:)"
 ```
 
 You can also write expressions.
-```
+```yaml
     Sprite.jump(pow(15, 2) * Vector2(0, -1))
 ```
 
@@ -283,7 +376,7 @@ Although, built-in constants are not supported for now.
         Portrait.set("res://ritsu_smile.png")
     ```
 
-### Positions
+<!-- ### Positions
 
 Functions will be called, and properties will be set, when the `Dialogue` has rendered/reached the exact positions they were written on:
 
@@ -314,7 +407,7 @@ Ritsu:
         Portrait.set("ritsu_pissed.png")
     nevermind..."
 ```
-
+ -->
 ## BBCodes
 
 !!! warning
@@ -332,22 +425,24 @@ There's also several shorthand aliases for BBCode tags:
 | `\[` | `[lb]` |
 | `\]` | `[rb]` |
 
-The escaped square brackets: `\[` and `\]`, are actually shorthands for `[rb]` and `[lb]`. So, rather than writing:
+So, the following:
 
-```
+```yaml
 Dia:
     "There are three main classes of the Theatre plugin:
+        delay=.5
     [color=blue]Dialogue[/color],
     [color=green]DialogueLabel[/color], &
     [color=red]TheatreStage[/color],
     "
 ```
 
-You can write:
+Is actually the same as:
 
-```
+```yaml
 Dia:
     "There are three main classes of the Theatre plugin:
+        delay=.5
     [c=blue]Dialogue[/c],
     [c=green]DialogueLabel[/c], &
     [c=red]TheatreStage[/c],
@@ -359,14 +454,14 @@ Dia:
 
 Define a section in dialogue with `:section_name`.
 
-``` title="res://convo.dlg"
+```yaml title="res://convo.dlg"
 Dia:
-    "This Dialogue line can be skipped!"
+    "This Dialogue line can be skipped."
 
 :some_section
 Dia:
     "You can jump to any defined section
-    in the written Dialogue"
+    in the written Dialogue."
 ```
 
 You can start a `Dialogue` at a specific section.
@@ -386,7 +481,7 @@ your_stage.jump_to("some_section")
 ## Comments
 
 Write comments by placing `#` at the start of a new line.
-```
+```yaml
 Ritsu:
     "This is a dialogue!"
 

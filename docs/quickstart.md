@@ -67,7 +67,7 @@ Attach a script to the scene's root.
 extends Control
 ```
 
-Create a variable with `@export` annotation to reference the `Stage` node made previously. In this example, we'll name the variable `'my_stage'`.
+Create a variable with `@export` annotation to reference the `TheatreStage` node that was made previously. In this example, we'll name the variable `'my_stage'`.
 
 ```gdscript hl_lines="3"
 extends Control
@@ -126,7 +126,7 @@ Now the `Dialogue` will start when you play the scene. But we're not done here y
 
 ### Progressing
 
-Progress the `Dialogue` with `progress()`. In this example, we'll use `_input(event)` with Godot's default action key `'ui_accept'` (space/enter key).
+Progress the `Dialogue` with `TheatreStage.progress()`. In this example, we'll use `_input(event)` with Godot's default action key `'ui_accept'` (space/enter key).
 
 ```gdscript hl_lines="10 11 12"
 extends Control
