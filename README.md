@@ -51,7 +51,7 @@ Dia:
 </table>
 
 ```gdscript
-var my_dialogue := Dialogue.load('res://my_dialogue.dlg')
+var epic_dialogue := Dialogue.load('res://epic_dialogue.dlg')
 
 @export var my_stage: TheatreStage
 
