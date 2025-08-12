@@ -38,7 +38,8 @@ Dia:
     "Welcome! {d=0.8}to the
     [fx1]Theatre[/fx1]!
         d=0.9
-    yet another text-based dialogue addon
+    yet another text-based
+    dialogue addon
         d=0.3
     developed for Godot {gd_ver}."
 
