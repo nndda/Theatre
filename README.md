@@ -48,7 +48,15 @@ Dia:
 
 </td>
 </tr>
-</table>
+
+<tr>
+<td colspan="2">
+    <b>GDScript</b>
+</td>
+</tr>
+
+<tr>
+<td colspan="2">
 
 ```gdscript
 var epic_dialogue := Dialogue.load('res://epic_dialogue.dlg')
@@ -62,6 +70,12 @@ func _input(event):
     if event.is_action_pressed('ui_accept'):
         my_stage.progress()
 ```
+
+</td>
+</tr>
+
+</table>
+
 
 <br>
 
