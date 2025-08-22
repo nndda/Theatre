@@ -116,7 +116,7 @@ func _update_used_function_calls() -> void:
     for n : Dictionary[DialogueParser.Key, Variant] in _sets:
         for m : Dictionary in n[DialogueParser.Key.FUNC]:
             if !_used_function_calls.has(m[DialogueParser.Key.SCOPE]):
-                _used_function_calls[m[DialogueParser.Key.SCOPE]] = {} as Dictionary[DialogueParser.Key, Variant]
+                _used_function_calls[m[DialogueParser.Key.SCOPE]] = {}
 
             _used_function_calls[m[DialogueParser.Key.SCOPE]][m[DialogueParser.Key.LN_NUM]] = {
                 DialogueParser.Key.NAME: m[DialogueParser.Key.NAME],
@@ -128,7 +128,7 @@ func get_variables() -> PackedStringArray:
     return _used_variables
 
 func _update_used_variables() -> void:
-    for n : Dictionary[DialogueParser.Key, Variant] in _sets:
+    for n : Dictionary in _sets:
         for m : String in n[DialogueParser.Key.VARS]:
             if not m in _used_variables:
                 _used_variables.append(m)

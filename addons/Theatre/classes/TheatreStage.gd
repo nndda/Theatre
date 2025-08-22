@@ -230,7 +230,7 @@ func clear_callers() -> void:
     clear_scopes()
 
 var _expression_args := Expression.new()
-func _call_function(f : Dictionary[DialogueParser.Key, Variant]) -> void:
+func _call_function(f : Dictionary) -> void:
     if !allow_func:
         return
 
@@ -313,17 +313,17 @@ signal finished
 ## also emitted when the [Dialogue] is started using [member start].
 signal progressed
 ## Same as [signal progressed], but with the line number and line data of the [Dialogue] passed.
-signal progressed_at(line : int, line_data : Dictionary[DialogueParser.Key, Variant])
+signal progressed_at(line : int, line_data : Dictionary)
 
 ## Emitted when the [Dialogue] progress is skipped. See [method progress].
 signal skipped
 ## Same as [signal skipped], but with the line number and line data of the [Dialogue] passed.
-signal skipped_at(line : int, line_data : Dictionary[DialogueParser.Key, Variant])
+signal skipped_at(line : int, line_data : Dictionary)
 
 ## Emitted when the [Dialogue] progress is cancelled using [method cancel] or [method reset].
 signal cancelled
 ## Same as [signal cancelled], but with the line number and line data of the [Dialogue] passed.
-signal cancelled_at(line : int, line_data : Dictionary[DialogueParser.Key, Variant])
+signal cancelled_at(line : int, line_data : Dictionary)
 
 ## Emitted when the [Dialogue] is switched using [method switch].
 signal dialogue_switched(old_dialogue : Dialogue, new_dialogue : Dialogue)
