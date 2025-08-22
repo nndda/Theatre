@@ -35,7 +35,7 @@ jobs:
       GODOT_BINARY: Godot_v4.4-stable_linux.x86_64
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Cache Godot binary
         id: godotbin-cache
