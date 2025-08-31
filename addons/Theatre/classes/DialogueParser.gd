@@ -32,6 +32,12 @@ const REGEX_VARS_SET :=\
     r"(?<scope>\w+)\.(?<name>\w+)\s*(?<op>[\+\-\*\/])?\=\s*(?<val>.+)$";\
     static var _regex_vars_set := RegEx.create_from_string(REGEX_VARS_SET)
 
+# Match expressions-as-variable tag
+#       {(Scope.owo()[-1] + "owo")}
+const REGEX_VARS_EXPR :=\
+    r"(?<!\\)\{\((?<expr>.+)(?<!\\)\)(?<!\\)\}";\
+    static var _regex_vars_expr := RegEx.create_from_string(REGEX_VARS_EXPR)
+
 # Match function calls:
 #       Scope.name(args)
 const REGEX_FUNC_CALL :=\
@@ -84,6 +90,7 @@ enum Key {
     HAS_VARS,
     VARS,
     VARS_SCOPE,
+    VARS_EXPR,
 
     SCOPE,
     NAME,
@@ -135,6 +142,7 @@ const SETS_TEMPLATE := {
     # User-defined variables used.
     Key.VARS: [],
     Key.VARS_SCOPE: [],
+    Key.VARS_EXPR: [],
 }
 
 ## Function call Dictionary template.
@@ -206,6 +214,7 @@ static func _initialize_regex() -> void:
     _regex_dlg_tags_newline = RegEx.create_from_string(REGEX_DLG_TAGS_NEWLINE)
     _regex_bbcode_tags = RegEx.create_from_string(REGEX_BBCODE_TAGS)
     _regex_vars_set = RegEx.create_from_string(REGEX_VARS_SET)
+    _regex_vars_expr = RegEx.create_from_string(REGEX_VARS_EXPR)
     _regex_func_call = RegEx.create_from_string(REGEX_FUNC_CALL)
     _regex_func_vars = RegEx.create_from_string(REGEX_FUNC_VARS)
     _regex_indent = RegEx.create_from_string(REGEX_INDENT)
@@ -410,6 +419,34 @@ func _init(src : String = "", src_path : String = ""):
             else:
                 # Bake built-in variables
                 current_processed_string = current_processed_string.format(VARS_BUILT_IN)
+
+                # Expression-as-variable tag
+                # "{(1 + 2)}"
+                # "{(Scope.uwu()[-1] + "owo")}"
+                for regex_vars_expr_match: RegExMatch in _regex_vars_expr.search_all(current_processed_string):
+                    var tag_expr_start := regex_vars_expr_match.get_start()
+                    var tag_expr_full := regex_vars_expr_match.get_string()
+                    var tag_expr_args_str := regex_vars_expr_match.get_string(1)
+
+                    var inputs : PackedStringArray = []
+                    for input_re: RegExMatch in _regex_func_vars.search_all(tag_expr_args_str):
+                        inputs.append(input_re.get_string(1))
+
+                    output[body_pos][Key.VARS_EXPR].append({
+                        Key.NAME: "#%d%d" % [ln_num, tag_expr_full.hash()],
+                        Key.ARGS: inputs,
+                        Key.CONTENT: tag_expr_args_str,
+                    })
+
+                    current_processed_string = current_processed_string \
+                        .erase(
+                            tag_expr_start,
+                            tag_expr_full.length(),
+                        )\
+                        .insert(
+                            tag_expr_start,
+                            "{" + output[body_pos][Key.VARS_EXPR][-1][Key.NAME] + "}",
+                        )
 
                 if newline_stack > 0:
                     newline_stack += 1

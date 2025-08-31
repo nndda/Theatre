@@ -179,6 +179,7 @@ func _get_line_syntax_highlighting(line : int) -> Dictionary:
                 if !dict.has(END):
                     dict[END] = COL_base_content
 
+            var bb_col_arr : Array[PackedInt32Array] = [] 
             if DialogueParser._regex_bbcode_tags == null:
                 DialogueParser._regex_bbcode_tags = RegEx.create_from_string(
                     DialogueParser.REGEX_BBCODE_TAGS
@@ -190,6 +191,35 @@ func _get_line_syntax_highlighting(line : int) -> Dictionary:
                 dict[START] = COL_tag_braces
 
                 dict[bb.get_start(__TAG)] = COL_tag_content
+                dict[END - 1] = COL_tag_braces
+
+                # TODO: these methods are... suboptimals
+                bb_col_arr.append([START, bb.get_start(__TAG), END - 1] as PackedInt32Array)
+
+                if !dict.has(END):
+                    bb_col_arr[-1].append(END)
+                    dict[END] = COL_base_content
+
+            if DialogueParser._regex_vars_expr == null:
+                DialogueParser._regex_vars_expr = RegEx.create_from_string(
+                    DialogueParser.REGEX_VARS_EXPR
+                )
+            for tag in DialogueParser._regex_vars_expr.search_all(string):
+                var START : int = tag.get_start()
+                var END : int = tag.get_end()
+
+                # TODO: this is very... suboptimal
+                # stupid edge cases
+                for bb_col: PackedInt32Array in bb_col_arr:
+                    if START <= bb_col[0] and bb_col[-1] <= END:
+                        for bb_i: int in bb_col:
+                            dict.erase(bb_i)
+
+                dict[START] = COL_tag_braces
+                dict[START + 1] = COL_symbol
+                dict[START + 2] = COL_func_args
+
+                dict[END - 2] = COL_symbol
                 dict[END - 1] = COL_tag_braces
 
                 if !dict.has(END):

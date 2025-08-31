@@ -522,7 +522,9 @@ func _progress_forward() -> void:
     _step += 1
     _current_dialogue_set = current_dialogue._sets[_step]
 
-    var scoped_vars_defs : Dictionary[String, Variant] = {}
+
+    var dyn_vars_defs : Dictionary[String, Variant] = {}
+
     for scoped_vars : String in _current_dialogue_set[DialogueParser.Key.VARS_SCOPE]:
         var scope_var : PackedStringArray = scoped_vars.split(DialogueParser.DOT, false, 2)
 
@@ -530,13 +532,27 @@ func _progress_forward() -> void:
             var scope_obj : Object = _scope_all[scope_var[0]].get_ref()
 
             if scope_var[1] in scope_obj:
-                scoped_vars_defs[scoped_vars] = scope_obj.get(scope_var[1])
+                dyn_vars_defs[scoped_vars] = scope_obj.get(scope_var[1])
 
-    if not scoped_vars_defs.is_empty():
+    for expr_vars : Dictionary in _current_dialogue_set[DialogueParser.Key.VARS_EXPR]:
+        var expr_err := _expression_args.parse(expr_vars[DialogueParser.Key.CONTENT], expr_vars[DialogueParser.Key.ARGS])
+        var expr_res = _expression_args.execute(
+            (expr_vars[DialogueParser.Key.ARGS] as Array[String]).map(_func_args_inp_get),
+        )
+
+        if _expression_args.has_execute_failed() or expr_err != OK:
+            push_error("Error @%s:%d - %s" % [
+                current_dialogue._source_path, _current_dialogue_set[DialogueParser.Key.LN_NUM],
+                _expression_args.get_error_text(),
+            ])
+        
+        dyn_vars_defs[expr_vars[DialogueParser.Key.NAME]] = expr_res
+
+    if not dyn_vars_defs.is_empty():
         DialogueParser.update_tags_position(
             current_dialogue,
             clampi(_step, 0, _current_dialogue_set.size()),
-            variables.merged(scoped_vars_defs)
+            variables.merged(dyn_vars_defs)
         )
 
     _dialogue_full_string = _current_dialogue_set[DialogueParser.Key.CONTENT]
