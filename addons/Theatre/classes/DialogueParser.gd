@@ -396,7 +396,7 @@ func _init(src : String = "", src_path : String = ""):
 
             #region NOTE: Newline Dialogue tags ----------------------------------------------------
             elif is_regex_full_string(_regex_dlg_tags_newline.search(current_processed_string)):
-                output[body_pos][Key.CONTENT_RAW] += "{%s}" % current_processed_string
+                output[body_pos][Key.CONTENT_RAW] += "{" + current_processed_string + "}"
                 output[body_pos][Key.CONTENT] += output[body_pos][Key.CONTENT_RAW]
             #endregion
 
@@ -472,20 +472,11 @@ func _init(src : String = "", src_path : String = ""):
 
             output[n][Key.CONTENT_RAW] = content_str
 
-            var parsed_tags := parse_tags(content_str)
-
-            for tag : int in SETS_TEMPLATE[Key.TAGS].keys():
-                output[n][Key.TAGS][tag].merge(parsed_tags[Key.TAGS][tag])
-
             body = content_str
             for tag in _regex_dlg_tags.search_all(content_str):
                 body = body.replace(tag.strings[0], EMPTY)
 
-            output[n][Key.VARS] = parsed_tags[Key.VARS]
-            output[n][Key.VARS_SCOPE] = parsed_tags[Key.VARS_SCOPE]
-            output[n][Key.HAS_VARS] = parsed_tags[Key.HAS_VARS]
-            output[n][Key.FUNC_POS] = parsed_tags[Key.FUNC_POS]
-            output[n][Key.FUNC_IDX] = parsed_tags[Key.FUNC_IDX]
+            output[n].merge(parse_tags(content_str), true)
 
         output[n][Key.FUNC].make_read_only()
         output[n][Key.CONTENT] = body
@@ -525,7 +516,6 @@ static func escape_brackets(string : String) -> String:
 
 # 😭😭😭
 static func parse_tags(string : String) -> Dictionary:
-    var output : Dictionary = {}
     var vars : PackedStringArray = []
     var vars_scope : PackedStringArray = []
     var tags : Dictionary = SETS_TEMPLATE[Key.TAGS].duplicate(true)
@@ -533,30 +523,35 @@ static func parse_tags(string : String) -> Dictionary:
     var func_idx : PackedInt64Array = []
 
     # BBCode ===============================================================
-    var bb_data : Array[Dictionary] = []
+    #var bb_data : Array[Dictionary] = []
+    var bb_data : Dictionary[int, String] = {}
     var bbcode_pos_offset : int = 0
 
     # Escaped Equal Sign ===================================================
     string = string.replace("\\=", "=")
 
     # Strip and log BBCode tags
+    var bb_start : int
+    var bb_end : int
+    var bb_tag : String
     for bb in _regex_bbcode_tags.search_all(_regex_dlg_tags.sub(string, EMPTY, true)):
-        var bb_start : int = bb.get_start() - bbcode_pos_offset
-        var bb_end : int = bb.get_end() - bbcode_pos_offset
-        var bb_tag := bb.get_string("tag")
+        bb_start = bb.get_start() - bbcode_pos_offset
+        bb_end = bb.get_end() - bbcode_pos_offset
+        bb_tag = bb.get_string("tag")
 
-        bb_data.append({
-            "pos" : bb_start,
-            "content" : bb.strings[0],
-            #"img" : false,
-        })
+        #bb_data.append({
+            #"pos" : bb_start,
+            #"content" : bb.strings[0],
+            ##"img" : false,
+        #})
+        bb_data[bb_start] = bb.strings[0]
 
-        if bb_tag == r"lb":
-            string = string.replace(bb.strings[0], "[")
-        elif bb_tag == r"rb":
-            string = string.replace(bb.strings[0], "]")
-        else:
-            string = string.replace(bb.strings[0], EMPTY)
+        string = string.replace(
+            bb.strings[0],
+            "[" if bb_tag == r"lb" else
+            "]" if bb_tag ==r"rb" else
+            EMPTY
+        )
 
     # Escaped Curly Brackets ===============================================
     # 💀💀💀💀💀💀💀💀💀💀💀
@@ -575,14 +570,20 @@ static func parse_tags(string : String) -> Dictionary:
     # Dialogue tags ========================================================
     var tag_pos_offset : int = 0
 
+    var string_match : String
+    var tag_pos : int
+    var tag_key_l : String
+    var tag_key : String
+    var tag_value : String
+    var tag_sym : String
     for b in _regex_dlg_tags.search_all(string):
-        var string_match := b.strings[0]
+        string_match = b.strings[0]
 
-        var tag_pos : int = b.get_start() - tag_pos_offset
-        var tag_key_l := b.get_string("tag")
-        var tag_key := tag_key_l.to_upper()
-        var tag_value := b.get_string(__VAL)
-        var tag_sym := b.get_string(__SYM)
+        tag_pos = b.get_start() - tag_pos_offset
+        tag_key_l = b.get_string("tag")
+        tag_key = tag_key_l.to_upper()
+        tag_value = b.get_string(__VAL)
+        tag_sym = b.get_string(__SYM)
 
         # Position-based function calls.
         if tag_key_l.is_valid_int():
@@ -631,42 +632,38 @@ static func parse_tags(string : String) -> Dictionary:
             .insert(cb, esc_curly_brackets[cb])
 
     # Insert back BBCodes ==================================================
-    string = string\
-        .replace("[", EMPTY)\
-        .replace("]", EMPTY)
+    if not bb_data.is_empty():
+        string = string\
+            .replace("[", EMPTY)\
+            .replace("]", EMPTY)
 
-    for bb : Dictionary in bb_data:
-        string = string.insert(bb["pos"], bb["content"])
+        #var re := RegEx.create_from_string(r"\[|\]")
+        #string = re.sub(string, EMPTY)
 
-    output[Key.TAGS] = tags
-    output["string"] = string
-    output[Key.FUNC_POS] = func_pos
-    output[Key.FUNC_IDX] = func_idx
-    output[Key.VARS] = vars
-    output[Key.VARS_SCOPE] = vars_scope
-    output[Key.HAS_VARS] = not vars.is_empty() or not vars_scope.is_empty()
+    for bb : int in bb_data.keys():
+        string = string.insert(bb, bb_data[bb])
 
-    return output
+    return {
+        Key.TAGS: tags,
+        Key.CONTENT: string,
+        Key.FUNC_POS: func_pos,
+        Key.FUNC_IDX: func_idx,
+        Key.VARS: vars,
+        Key.VARS_SCOPE: vars_scope,
+        Key.HAS_VARS: not vars.is_empty() or not vars_scope.is_empty(),
+    }
 
 # Temporary solution when using variables and tags at the same time
 # Might not be performant when dealing with real-time variables
 ## Format Dialogue body at [param pos] position with [member TheatreStage.variables], and update the positions of the built-in tags.
 ## Return the formatted string.
 static func update_tags_position(dlg : Dialogue, pos : int, vars : Dictionary) -> void:
-    var dlg_str : String = dlg._sets[pos][Key.CONTENT_RAW].format(vars)
-
-    dlg._sets[pos][Key.TAGS][Key.TAGS_DELAYS].clear()
-    dlg._sets[pos][Key.TAGS][Key.TAGS_SPEEDS].clear()
-
-    var parsed_tags := parse_tags(dlg_str)
-
-    dlg._sets[pos][Key.TAGS] = parsed_tags[Key.TAGS]
-    dlg._sets[pos][Key.CONTENT] = parsed_tags["string"]
-    dlg._sets[pos][Key.VARS] = parsed_tags[Key.VARS]
-    dlg._sets[pos][Key.VARS_SCOPE] = parsed_tags[Key.VARS_SCOPE]
-    dlg._sets[pos][Key.HAS_VARS] = parsed_tags[Key.HAS_VARS]
-    dlg._sets[pos][Key.FUNC_POS] = parsed_tags[Key.FUNC_POS]
-    dlg._sets[pos][Key.FUNC_IDX] = parsed_tags[Key.FUNC_IDX]
+    dlg._sets[pos].merge(
+        parse_tags(
+            dlg._sets[pos][Key.CONTENT_RAW].format(vars)
+        ),
+        true
+    )
 
 static func is_regex_full_string(regex_match : RegExMatch) -> bool:
     if regex_match == null:
