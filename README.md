@@ -86,16 +86,20 @@ Godette:
 
 ## Variables
 
-Insert static or dynamic variables.
+Insert static...
 ```yaml
 Dia:
-    "Great job, {player}. Just {item_left} to go."
+    "Let's meet {player}. Don't keep {player_pronoun} waiting."
+```
+...or dynamic variables.
+```yaml
+Ritsu:
+    "HEY {( GameData.player_name.to_upper() )}!!"
 ```
 ```yaml
 Dia:
-    "Your operating system is {User.os}.
-    It is currently {User.datetime}.
-    Your IP address is {User.ip_adress}"
+    "Your operating system is {( OS.get_name() )}.
+    It is currently {( Time.get_time_string_from_system(false) )}."
 ```
 
 ## Set Properties
