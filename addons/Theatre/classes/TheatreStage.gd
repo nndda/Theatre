@@ -241,7 +241,7 @@ func _call_function(f : Dictionary) -> void:
     #region general error checks
     if !_scope_all.has(func_scope):
         push_error("Error @%s:%d - scope '%s' doesn't exists" % [
-            current_dialogue._source_path, f[DialogueParser.Key.LN_NUM],
+            current_dialogue._source_path, f[DialogueParser.Key.LINE_NUM],
             func_scope,
         ])
         return
@@ -250,14 +250,14 @@ func _call_function(f : Dictionary) -> void:
 
     if scope_obj == null:
         push_error("Error @%s:%d - object of the scope '%s' is null" % [
-            current_dialogue._source_path, f[DialogueParser.Key.LN_NUM],
+            current_dialogue._source_path, f[DialogueParser.Key.LINE_NUM],
             func_scope,
         ])
         return
 
     if !scope_obj.has_method(func_name):
         push_error("Error @%s:%d - function '%s.%s()' doesn't exists" % [
-            current_dialogue._source_path, f[DialogueParser.Key.LN_NUM],
+            current_dialogue._source_path, f[DialogueParser.Key.LINE_NUM],
             func_scope, func_name
         ])
         return
@@ -269,7 +269,7 @@ func _call_function(f : Dictionary) -> void:
 
     if func_vars.any(_func_args_inp_check_scope.bind(_scope_all.keys())):
         push_error("Error @%s:%d - argument scope(s) used: %s doesn't exists" % [
-            current_dialogue._source_path, f[DialogueParser.Key.LN_NUM],
+            current_dialogue._source_path, f[DialogueParser.Key.LINE_NUM],
             func_vars,
         ])
         return
@@ -281,7 +281,7 @@ func _call_function(f : Dictionary) -> void:
 
     if _expression_args.has_execute_failed() or expr_err != OK:
         push_error("Error @%s:%d - %s" % [
-            current_dialogue._source_path, f[DialogueParser.Key.LN_NUM],
+            current_dialogue._source_path, f[DialogueParser.Key.LINE_NUM],
             _expression_args.get_error_text(),
         ])
         return
@@ -289,6 +289,12 @@ func _call_function(f : Dictionary) -> void:
     scope_obj.callv(func_name, expr_args)
 
 func _func_args_inp_get(arg_str : String) -> Object:
+    if not _scope_all.has(arg_str):
+        push_error("Error @%s:%d - scope '%s' doesn't exists" % [
+            current_dialogue._source_path, _current_dialogue_set[DialogueParser.Key.LINE_NUM],
+            arg_str,
+        ])
+        return null
     return _scope_all[arg_str].get_ref()
 
 func _func_args_inp_check_scope(arg_str : String, arg_arr : Array) -> bool:
@@ -522,7 +528,6 @@ func _progress_forward() -> void:
     _step += 1
     _current_dialogue_set = current_dialogue._sets[_step]
 
-
     var dyn_vars_defs : Dictionary[String, Variant] = {}
 
     for scoped_vars : String in _current_dialogue_set[DialogueParser.Key.VARS_SCOPE]:
@@ -538,15 +543,17 @@ func _progress_forward() -> void:
         var expr_err := _expression_args.parse(expr_vars[DialogueParser.Key.CONTENT], expr_vars[DialogueParser.Key.ARGS])
         var expr_res = _expression_args.execute(
             (expr_vars[DialogueParser.Key.ARGS] as Array[String]).map(_func_args_inp_get),
+            null,
+            false,
         )
 
         if _expression_args.has_execute_failed() or expr_err != OK:
             push_error("Error @%s:%d - %s" % [
-                current_dialogue._source_path, _current_dialogue_set[DialogueParser.Key.LN_NUM],
+                current_dialogue._source_path, _current_dialogue_set[DialogueParser.Key.LINE_NUM],
                 _expression_args.get_error_text(),
             ])
-        
-        dyn_vars_defs[expr_vars[DialogueParser.Key.NAME]] = expr_res
+
+        dyn_vars_defs[expr_vars[DialogueParser.Key.NAME]] = "" if expr_res == null else expr_res
 
     if not dyn_vars_defs.is_empty():
         DialogueParser.update_tags_position(

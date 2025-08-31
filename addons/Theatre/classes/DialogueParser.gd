@@ -95,7 +95,6 @@ enum Key {
     SCOPE,
     NAME,
     ARGS,
-    LN_NUM,
     STANDALONE,
 }
 #endregion
@@ -157,7 +156,7 @@ const FUNC_TEMPLATE := {
     Key.ARGS: null,
 
     # Line number of where the function is written.
-    Key.LN_NUM: 0,
+    Key.LINE_NUM: 0,
 
     Key.STANDALONE: true,
     Key.VARS: [],
@@ -313,7 +312,7 @@ func _init(src : String = "", src_path : String = ""):
                     regex_func_match.names[__ARGS]
                 ).strip_edges()
 
-                func_dict[Key.LN_NUM] = ln_num
+                func_dict[Key.LINE_NUM] = ln_num
 
                 # Parse parameter arguments
                 var args := Expression.new()
@@ -352,7 +351,7 @@ func _init(src : String = "", src_path : String = ""):
 
                 func_dict[Key.SCOPE] = StringName(var_scope)
                 func_dict[Key.NAME] = &"set"
-                func_dict[Key.LN_NUM] = ln_num
+                func_dict[Key.LINE_NUM] = ln_num
 
                 var prop_name := "StringName(\"" + var_name + "\")"
 

@@ -118,7 +118,7 @@ func get_sections() -> Dictionary:
             #if !_used_function_calls.has(m[DialogueParser.Key.SCOPE]):
                 #_used_function_calls[m[DialogueParser.Key.SCOPE]] = {}
 #
-            #_used_function_calls[m[DialogueParser.Key.SCOPE]][m[DialogueParser.Key.LN_NUM]] = {
+            #_used_function_calls[m[DialogueParser.Key.SCOPE]][m[DialogueParser.Key.LINE_NUM]] = {
                 #DialogueParser.Key.NAME: m[DialogueParser.Key.NAME],
                 #DialogueParser.Key.ARGS: m[DialogueParser.Key.ARGS],
             #}
