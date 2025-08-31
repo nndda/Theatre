@@ -45,10 +45,10 @@ func _from_string(dlg_src : String = "") -> void:
         dlg_src.split(DialogueParser.NEWLINE, false, 3).size() >= 2:
         var stack : Array[Dictionary] = get_stack()
         if stack.size() >= 1:
-            var stack_ln : Dictionary[String, Variant] = stack[-1]
-            print("Parsing Dialogue from raw string: %s:%d" % [
-                stack_ln["source"], stack_ln["line"]
-            ])
+            var stack_ln : Dictionary = stack[-1]
+            #print("Parsing Dialogue from raw string: %s:%d" % [
+                #stack_ln["source"], stack_ln["line"]
+            #])
             _source_path = "%s:%d" % [stack_ln["source"], stack_ln["line"]]
 
         parser = DialogueParser.new(
