@@ -59,7 +59,7 @@ func _from_string(dlg_src : String = "") -> void:
         _sections = parser.sections
         _sets = parser.output
         _update_used_variables()
-        _update_used_function_calls()
+        #_update_used_function_calls()
 
         _sections.make_read_only()
         _sets.make_read_only()
@@ -112,16 +112,16 @@ func get_function_calls() -> Dictionary:
 func get_sections() -> Dictionary:
     return _sections
 
-func _update_used_function_calls() -> void:
-    for n : Dictionary[DialogueParser.Key, Variant] in _sets:
-        for m : Dictionary in n[DialogueParser.Key.FUNC]:
-            if !_used_function_calls.has(m[DialogueParser.Key.SCOPE]):
-                _used_function_calls[m[DialogueParser.Key.SCOPE]] = {}
-
-            _used_function_calls[m[DialogueParser.Key.SCOPE]][m[DialogueParser.Key.LN_NUM]] = {
-                DialogueParser.Key.NAME: m[DialogueParser.Key.NAME],
-                DialogueParser.Key.ARGS: m[DialogueParser.Key.ARGS],
-            }
+#func _update_used_function_calls() -> void:
+    #for n : Dictionary[DialogueParser.Key, Variant] in _sets:
+        #for m : Dictionary in n[DialogueParser.Key.FUNC]:
+            #if !_used_function_calls.has(m[DialogueParser.Key.SCOPE]):
+                #_used_function_calls[m[DialogueParser.Key.SCOPE]] = {}
+#
+            #_used_function_calls[m[DialogueParser.Key.SCOPE]][m[DialogueParser.Key.LN_NUM]] = {
+                #DialogueParser.Key.NAME: m[DialogueParser.Key.NAME],
+                #DialogueParser.Key.ARGS: m[DialogueParser.Key.ARGS],
+            #}
 
 ## Gets all variables used in the written [Dialogue].
 func get_variables() -> PackedStringArray:
