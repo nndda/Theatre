@@ -157,10 +157,10 @@ const FUNC_TEMPLATE := {
 
 #region Built in tags and variables
 const TAG_DELAY_ALIASES : PackedStringArray = [
-    "DELAY", "WAIT", "D", "W"
+    "delay", "wait", "d", "w"
 ]
 const TAG_SPEED_ALIASES : PackedStringArray = [
-    "SPEED", "SPD", "S"
+    "speed", "spd", "s"
 ]
 const VARS_BUILT_IN_KEYS : PackedStringArray = ["n", "spc", "eq"]
 
@@ -572,7 +572,6 @@ static func parse_tags(string : String) -> Dictionary:
 
     var string_match : String
     var tag_pos : int
-    var tag_key_l : String
     var tag_key : String
     var tag_value : String
     var tag_sym : String
@@ -580,14 +579,13 @@ static func parse_tags(string : String) -> Dictionary:
         string_match = b.strings[0]
 
         tag_pos = b.get_start() - tag_pos_offset
-        tag_key_l = b.get_string("tag")
-        tag_key = tag_key_l.to_upper()
+        tag_key = b.get_string("tag")
         tag_value = b.get_string(__VAL)
         tag_sym = b.get_string(__SYM)
 
         # Position-based function calls.
-        if tag_key_l.is_valid_int():
-            var idx : int = tag_key_l.to_int()
+        if tag_key.is_valid_int():
+            var idx : int = tag_key.to_int()
 
             if tag_pos == 0:
                 tag_pos = 1
@@ -606,7 +604,7 @@ static func parse_tags(string : String) -> Dictionary:
                 func_idx.append(idx)
 
         elif tag_sym == DOT:
-            vars_scope.append(tag_key_l + DOT + tag_value)
+            vars_scope.append(tag_key + DOT + tag_value)
 
         #elif tag_sym == "=": # NOTE: conflicting with the {s} shorthand alias to reset the rendering speed.
         #region NOTE: built in tags.
@@ -618,8 +616,8 @@ static func parse_tags(string : String) -> Dictionary:
         #endregion
 
         # User defined variables.
-        elif tag_key_l not in vars:
-            vars.append(tag_key_l)
+        elif tag_key not in vars:
+            vars.append(tag_key)
 
         string = string.replace(string_match, EMPTY)
 
