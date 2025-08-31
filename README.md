@@ -14,10 +14,10 @@
 
 Yet another <sub>(linear)</sub> dialogue system<b>/</b>addon<b>/</b>plugin for Godot. With features such as:
 
-- ✍️ Human-readable syntax.
-- ⚡ Simple setup. Get started in just 7 lines of codes!
+- ✍️ Text-based, human-readable syntax.
+- ⚡ Simple setup. Get started in just <b>7 lines</b> of codes!
 - 😐 ....
-- 📝 And 100% written in GDScript!
+- 📝 And <b>100%</b> written in <b>GDScript!</b>
 
 <table align="center">
 <tr align="center">
