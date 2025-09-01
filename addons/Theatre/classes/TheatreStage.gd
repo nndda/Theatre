@@ -530,14 +530,12 @@ func _progress_forward() -> void:
 
     var dyn_vars_defs : Dictionary[String, Variant] = {}
 
-    for scoped_vars : String in _current_dialogue_set[DialogueParser.Key.VARS_SCOPE]:
-        var scope_var : PackedStringArray = scoped_vars.split(DialogueParser.DOT, false, 2)
+    for scoped_vars : Array in _current_dialogue_set[DialogueParser.Key.VARS_SCOPE]:
+        if _scope_all.has(scoped_vars[1]):
+            var scope_obj : Object = _scope_all[scoped_vars[1]].get_ref()
 
-        if _scope_all.has(scope_var[0]):
-            var scope_obj : Object = _scope_all[scope_var[0]].get_ref()
-
-            if scope_var[1] in scope_obj:
-                dyn_vars_defs[scoped_vars] = scope_obj.get(scope_var[1])
+            if scoped_vars[2] in scope_obj:
+                dyn_vars_defs[scoped_vars[0]] = scope_obj.get(scoped_vars[2])
 
     for expr_vars : Dictionary in _current_dialogue_set[DialogueParser.Key.VARS_EXPR]:
         var expr_err := _expression_args.parse(expr_vars[DialogueParser.Key.CONTENT], expr_vars[DialogueParser.Key.ARGS])

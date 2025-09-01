@@ -12,8 +12,12 @@ var _source_path : String
 # Match Dialogue tags: {delay=1.0} {d = 1.0} {foo} {bar} {foo.bar}
 # But not: \{foo\} \{foo} {foo\}
 const REGEX_DLG_TAGS :=\
-    r"(?<!\\)(?:\\\\)*\{\s*(?<tag>\w+)\s*(?<sym>\=|\.)?\s*(?<val>(?:[^\\\{\}]|\\[\{\}])*?)\s*(?<!\\)\}";\
+    r"(?<!\\)(?:\\\\)*\{\s*(?<tag>\w+)\s*(?<sym>\=)?\s*(?<val>(?:[^\\\{\}]|\\[\{\}])*?)\s*(?<!\\)\}";\
     static var _regex_dlg_tags := RegEx.create_from_string(REGEX_DLG_TAGS)
+
+const REGEX_SCOPE_VAR_TAGS :=\
+    r"(?<!\\)(?:\\\\)*\{(?<name>\s*(?<scope>\w+)\s*\.\s*(?<val>(?:[^\\\{\}]|\\[\{\}])*?)\s*(?<!\\))\}";\
+    static var _regex_scope_var_tags := RegEx.create_from_string(REGEX_SCOPE_VAR_TAGS)
 
 # Match Dialogue tags newline syntax:
 #       d=1.0
@@ -211,6 +215,7 @@ const INDENT_4 := "    "
 static var _regex_initialized := false
 static func _initialize_regex() -> void:
     _regex_dlg_tags = RegEx.create_from_string(REGEX_DLG_TAGS)
+    _regex_scope_var_tags = RegEx.create_from_string(REGEX_SCOPE_VAR_TAGS)
     _regex_dlg_tags_newline = RegEx.create_from_string(REGEX_DLG_TAGS_NEWLINE)
     _regex_bbcode_tags = RegEx.create_from_string(REGEX_BBCODE_TAGS)
     _regex_vars_set = RegEx.create_from_string(REGEX_VARS_SET)
@@ -420,33 +425,16 @@ func _init(src : String = "", src_path : String = ""):
                 # Bake built-in variables
                 current_processed_string = current_processed_string.format(VARS_BUILT_IN)
 
-                # Expression-as-variable tag
-                # "{(1 + 2)}"
-                # "{(Scope.uwu()[-1] + "owo")}"
-                for regex_vars_expr_match: RegExMatch in _regex_vars_expr.search_all(current_processed_string):
-                    var tag_expr_start := regex_vars_expr_match.get_start()
-                    var tag_expr_full := regex_vars_expr_match.get_string()
-                    var tag_expr_args_str := regex_vars_expr_match.get_string(1)
+                var parsed_expr_tags := parse_expr_tags(current_processed_string, ln_num)
+                if not parsed_expr_tags.is_empty():
+                    output[body_pos][Key.VARS_EXPR].append(
+                        parsed_expr_tags[Key.VARS_EXPR]
+                    )
+                    current_processed_string = parsed_expr_tags[Key.NAME]
 
-                    var inputs : PackedStringArray = []
-                    for input_re: RegExMatch in _regex_func_vars.search_all(tag_expr_args_str):
-                        inputs.append(input_re.get_string(1))
-
-                    output[body_pos][Key.VARS_EXPR].append({
-                        Key.NAME: "#%d%d" % [ln_num, tag_expr_full.hash()],
-                        Key.ARGS: inputs,
-                        Key.CONTENT: tag_expr_args_str,
-                    })
-
-                    current_processed_string = current_processed_string \
-                        .erase(
-                            tag_expr_start,
-                            tag_expr_full.length(),
-                        )\
-                        .insert(
-                            tag_expr_start,
-                            "{" + output[body_pos][Key.VARS_EXPR][-1][Key.NAME] + "}",
-                        )
+                output[body_pos][Key.VARS_SCOPE].append_array(
+                    parse_var_scope_tags(current_processed_string, ln_num)
+                )
 
                 if newline_stack > 0:
                     newline_stack += 1
@@ -551,10 +539,57 @@ static func escape_brackets(string : String) -> String:
         .replace(r"\{", "{")\
         .replace(r"\}", "}")
 
+func parse_var_scope_tags(string : String, line_num : int = 0) -> Array[Array]:
+    var output : Array[Array] = []
+
+    for tag: RegExMatch in _regex_scope_var_tags.search_all(string):
+        output.append(
+            [
+                tag.get_string(__NAME),
+                tag.get_string(__SCOPE),
+                StringName(tag.get_string(__VAL)),
+                line_num,
+            ]
+        )
+
+    return output
+    
+# Expression-as-variable tag
+# "{(1 + 2)}"
+# "{(Scope.uwu()[-1] + "owo")}"
+func parse_expr_tags(string : String, line_num : int = 0) -> Dictionary:
+    var output : Dictionary = {}
+
+    for regex_vars_expr_match: RegExMatch in _regex_vars_expr.search_all(string):
+        var tag_expr_start := regex_vars_expr_match.get_start()
+        var tag_expr_full := regex_vars_expr_match.get_string()
+        var tag_expr_args_str := regex_vars_expr_match.get_string(1)
+
+        var inputs : PackedStringArray = []
+        for input_re: RegExMatch in _regex_func_vars.search_all(tag_expr_args_str):
+            inputs.append(input_re.get_string(1))
+
+        output[Key.VARS_EXPR] = {
+            Key.NAME: "#%d%d" % [line_num, tag_expr_full.hash()],
+            Key.ARGS: inputs,
+            Key.CONTENT: tag_expr_args_str,
+        }
+
+        output[Key.NAME] = string \
+            .erase(
+                tag_expr_start,
+                tag_expr_full.length(),
+            )\
+            .insert(
+                tag_expr_start,
+                "{" + output[Key.VARS_EXPR][Key.NAME] + "}",
+            )
+
+    return output
+
 # 😭😭😭
 static func parse_tags(string : String) -> Dictionary:
     var vars : PackedStringArray = []
-    var vars_scope : PackedStringArray = []
     var tags : Dictionary = SETS_TEMPLATE[Key.TAGS].duplicate(true)
     var func_pos : Dictionary = {}
     var func_idx : PackedInt64Array = []
@@ -640,9 +675,6 @@ static func parse_tags(string : String) -> Dictionary:
             if !func_idx.has(idx):
                 func_idx.append(idx)
 
-        elif tag_sym == DOT:
-            vars_scope.append(tag_key + DOT + tag_value)
-
         #elif tag_sym == "=": # NOTE: conflicting with the {s} shorthand alias to reset the rendering speed.
         #region NOTE: built in tags.
         elif TAG_DELAY_ALIASES.has(tag_key):
@@ -684,8 +716,6 @@ static func parse_tags(string : String) -> Dictionary:
         Key.FUNC_POS: func_pos,
         Key.FUNC_IDX: func_idx,
         Key.VARS: vars,
-        Key.VARS_SCOPE: vars_scope,
-        Key.HAS_VARS: not vars.is_empty() or not vars_scope.is_empty(),
     }
 
 # Temporary solution when using variables and tags at the same time
