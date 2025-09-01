@@ -43,6 +43,7 @@ func _from_string(dlg_src : String = "") -> void:
 
     elif DialogueParser.is_valid_source(dlg_src) and\
         dlg_src.split(DialogueParser.NEWLINE, false, 3).size() >= 2:
+
         var stack : Array[Dictionary] = get_stack()
         if stack.size() >= 1:
             var stack_ln : Dictionary = stack[-1]
@@ -64,6 +65,9 @@ func _from_string(dlg_src : String = "") -> void:
         _sections.make_read_only()
         _sets.make_read_only()
         _used_function_calls.make_read_only()
+
+    else:
+        push_error("Error parsing dialogue file %s. Invalid dialogue syntax." % _source_path)
 
 ## Load written [Dialogue] file from [param path]. Use [method Dialogue.new] instead to create a written [Dialogue] directly in the script.
 static func load(path : String) -> Dialogue:
