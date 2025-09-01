@@ -82,6 +82,10 @@ const __OP := "op"
 #region Dictionary keys constants
 enum Key {
     ACTOR,
+    ACTOR_DYN_VAR,
+    ACTOR_DYN_EXPR,
+    ACTOR_DYN_HAS,
+
     CONTENT,
     CONTENT_RAW,
     LINE_NUM,
@@ -108,6 +112,9 @@ enum Key {
 const SETS_TEMPLATE := {
     # Actor's name.
     Key.ACTOR: EMPTY,
+    Key.ACTOR_DYN_VAR: [],
+    Key.ACTOR_DYN_EXPR: [],
+    #Key.ACTOR_DYN_HAS: false,
 
     # Dialogue content, stripped from the Dialogue tags.
     Key.CONTENT: EMPTY,
@@ -269,16 +276,39 @@ func _init(src : String = "", src_path : String = ""):
             if dlg_raw_size < i + 1:
                 push_error("Error @%s:%d - actor's name exists without a dialogue body" % [_source_path, ln_num])
 
-            setsl[Key.ACTOR] = StringName(n_stripped.trim_suffix(COLON))
+            var actor_str := n_stripped.trim_suffix(COLON)
+            setsl[Key.ACTOR] = StringName(actor_str)
 
-            if setsl[Key.ACTOR] == UNDERSCORE:
+
+            if actor_str == UNDERSCORE:
                 setsl[Key.ACTOR] = EMPTY
-            elif setsl[Key.ACTOR].is_empty():
+            elif actor_str.is_empty():
                 if body_pos < 0:
                     push_error("Error @%s - missing initial actor's name" % _source_path)
                 else:
                     setsl[Key.ACTOR] = output[body_pos][Key.ACTOR]
+            else:
+                # Actor name with dynamic variable
+                # Expression tag
+                var parsed_expr_tags := parse_expr_tags(actor_str, ln_num)
+                if not parsed_expr_tags.is_empty():
+                    setsl[Key.ACTOR_DYN_EXPR].append(
+                        parsed_expr_tags[Key.VARS_EXPR]
+                    )
+                    actor_str = parsed_expr_tags[Key.NAME]
+                setsl[Key.ACTOR_DYN_EXPR].make_read_only()
 
+                # Scoped var tag
+                setsl[Key.ACTOR_DYN_VAR].append_array(
+                    parse_var_scope_tags(actor_str, ln_num)
+                )
+                setsl[Key.ACTOR_DYN_VAR].make_read_only()
+
+                setsl[Key.ACTOR_DYN_HAS] = \
+                    not setsl[Key.ACTOR_DYN_VAR].is_empty() or \
+                    not setsl[Key.ACTOR_DYN_EXPR].is_empty()
+
+            setsl[Key.ACTOR] = actor_str
             output.append(setsl)
             body_pos += 1
             #endregion

@@ -528,30 +528,10 @@ func _progress_forward() -> void:
     _step += 1
     _current_dialogue_set = current_dialogue._sets[_step]
 
-    var dyn_vars_defs : Dictionary[String, Variant] = {}
-
-    for scoped_vars : Array in _current_dialogue_set[DialogueParser.Key.VARS_SCOPE]:
-        if _scope_all.has(scoped_vars[1]):
-            var scope_obj : Object = _scope_all[scoped_vars[1]].get_ref()
-
-            if scoped_vars[2] in scope_obj:
-                dyn_vars_defs[scoped_vars[0]] = scope_obj.get(scoped_vars[2])
-
-    for expr_vars : Dictionary in _current_dialogue_set[DialogueParser.Key.VARS_EXPR]:
-        var expr_err := _expression_args.parse(expr_vars[DialogueParser.Key.CONTENT], expr_vars[DialogueParser.Key.ARGS])
-        var expr_res = _expression_args.execute(
-            (expr_vars[DialogueParser.Key.ARGS] as Array[String]).map(_func_args_inp_get),
-            null,
-            false,
-        )
-
-        if _expression_args.has_execute_failed() or expr_err != OK:
-            push_error("Error @%s:%d - %s" % [
-                current_dialogue._source_path, _current_dialogue_set[DialogueParser.Key.LINE_NUM],
-                _expression_args.get_error_text(),
-            ])
-
-        dyn_vars_defs[expr_vars[DialogueParser.Key.NAME]] = "" if expr_res == null else expr_res
+    var dyn_vars_defs : Dictionary[String, Variant] = _dyn_var_get(
+        _current_dialogue_set[DialogueParser.Key.VARS_SCOPE],
+        _current_dialogue_set[DialogueParser.Key.VARS_EXPR],
+    )
 
     if not dyn_vars_defs.is_empty():
         DialogueParser.update_tags_position(
@@ -569,6 +549,37 @@ func _progress_forward() -> void:
     progressed.emit()
     progressed_at.emit(_step, _current_dialogue_set)
  
+func _dyn_var_get(
+    vars_scoped: Array,
+    vars_expr: Array,
+) -> Dictionary[String, Variant]:
+    var dyn_vars_defs : Dictionary[String, Variant] = {}
+
+    for scoped_vars : Array in vars_scoped:
+        if _scope_all.has(scoped_vars[1]):
+            var scope_obj : Object = _scope_all[scoped_vars[1]].get_ref()
+
+            if scoped_vars[2] in scope_obj:
+                dyn_vars_defs[scoped_vars[0]] = scope_obj.get(scoped_vars[2])
+
+    for expr_vars : Dictionary in vars_expr:
+        var expr_err := _expression_args.parse(expr_vars[DialogueParser.Key.CONTENT], expr_vars[DialogueParser.Key.ARGS])
+        var expr_res = _expression_args.execute(
+            (expr_vars[DialogueParser.Key.ARGS] as Array[String]).map(_func_args_inp_get),
+            null,
+            false,
+        )
+
+        if _expression_args.has_execute_failed() or expr_err != OK:
+            push_error("Error @%s:%d - %s" % [
+                current_dialogue._source_path, _current_dialogue_set[DialogueParser.Key.LINE_NUM],
+                _expression_args.get_error_text(),
+            ])
+
+        dyn_vars_defs[expr_vars[DialogueParser.Key.NAME]] = "" if expr_res == null else expr_res
+
+    return dyn_vars_defs
+
 ## Jump and progress to a specific [Dialogue] line.
 ## Return error if [param line] is greater than [Dialogue] length.
 ## Will wrap if [param line] is negative.
@@ -651,7 +662,14 @@ func _reset_progress(keep_dialogue : bool = false) -> void:
 func _update_display() -> void:
     if actor_label != null:
         actor_label.text = DialogueParser.escape_brackets(
-            _current_dialogue_set[DialogueParser.Key.ACTOR].format(variables)
+            _current_dialogue_set[DialogueParser.Key.ACTOR].format(
+                variables.merged(
+                    _dyn_var_get(
+                        _current_dialogue_set[DialogueParser.Key.ACTOR_DYN_VAR],
+                        _current_dialogue_set[DialogueParser.Key.ACTOR_DYN_EXPR],
+                    )
+                ) if _current_dialogue_set[DialogueParser.Key.ACTOR_DYN_HAS] else variables
+            )
         )
     if dialogue_label != null:
         dialogue_label.text = DialogueParser.escape_brackets(
