@@ -19,7 +19,7 @@ const __VAL := "val"
 const __SYM := "sym"
 
 var string : String
-var dict : Dictionary = {}
+var dict : Dictionary[int, Dictionary] = {}
 
 static var actor_name_line : Color
 static var actor_name_line_bg : Color
