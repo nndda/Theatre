@@ -13,7 +13,7 @@ var progress_label_tween : Tween
 var tree : SceneTree
 
 var dlg := Dialogue.load(
-    "res://dialogue/preview-advanced.dlg"
+    "res://dialogues/preview-advanced.dlg"
 )
 var bbcode_regex := RegEx.new()
 

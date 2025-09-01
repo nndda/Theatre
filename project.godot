@@ -19,7 +19,6 @@ config/icon="res://addons/Theatre/assets/icons/Theatre.svg"
 [autoload]
 
 Theatre="*res://addons/Theatre/classes/Theatre.gd"
-DialogueTest="*res://tests/dialogue_test.gd"
 
 [display]
 

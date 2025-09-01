@@ -1,0 +1,191 @@
+[gd_resource type="Resource" script_class="Dialogue" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/Theatre/classes/Dialogue.gd" id="1_dk7sw"]
+
+[resource]
+script = ExtResource("1_dk7sw")
+_sets = Array[Dictionary]([{
+0: "Dia",
+1: [],
+2: [],
+3: false,
+4: "\"Hello.\" ",
+5: "\"Hello.\" ",
+6: 1,
+7: {
+8: {},
+9: {}
+},
+10: [],
+11: {},
+12: PackedInt64Array(),
+13: {},
+14: false,
+15: PackedStringArray(),
+16: [],
+17: []
+}, {
+0: "Dia",
+1: [],
+2: [],
+3: false,
+4: "\"This is a demo dialogue for the Theatre addon. For benchmarking, testing, and, well, demo purposes.\" ",
+5: "\"This is a demo dialogue for the Theatre addon. For benchmarking, testing, and, well, demo purposes.\" ",
+6: 3,
+7: {
+8: {},
+9: {}
+},
+10: [],
+11: {},
+12: PackedInt64Array(),
+13: {},
+14: false,
+15: PackedStringArray(),
+16: [],
+17: []
+}, {
+0: "Dia",
+1: [],
+2: [],
+3: false,
+4: "\"More specifically, a 'vanilla' variation of it.\" ",
+5: "\"More specifically, a 'vanilla' variation of it.\" ",
+6: 5,
+7: {
+8: {},
+9: {}
+},
+10: [],
+11: {},
+12: PackedInt64Array(),
+13: {},
+14: false,
+15: PackedStringArray(),
+16: [],
+17: []
+}, {
+0: "Dia",
+1: [],
+2: [],
+3: false,
+4: "\"Where the dialogue present itself, absent of any of the Theatre's dialogue features.\" ",
+5: "\"Where the dialogue present itself, absent of any of the Theatre's dialogue features.\" ",
+6: 7,
+7: {
+8: {},
+9: {}
+},
+10: [],
+11: {},
+12: PackedInt64Array(),
+13: {},
+14: false,
+15: PackedStringArray(),
+16: [],
+17: []
+}, {
+0: "Dia",
+1: [],
+2: [],
+3: false,
+4: "\"Such as: tags, variables, function calls, even optional line breaks and other syntactic sugars.\" ",
+5: "\"Such as: tags, variables, function calls, even optional line breaks and other syntactic sugars.\" ",
+6: 9,
+7: {
+8: {},
+9: {}
+},
+10: [],
+11: {},
+12: PackedInt64Array(),
+13: {},
+14: false,
+15: PackedStringArray(),
+16: [],
+17: []
+}, {
+0: "Ritsu",
+1: [],
+2: [],
+3: false,
+4: "\"But whyy??\" ",
+5: "\"But whyy??\" ",
+6: 12,
+7: {
+8: {},
+9: {}
+},
+10: [],
+11: {},
+12: PackedInt64Array(),
+13: {},
+14: false,
+15: PackedStringArray(),
+16: [],
+17: []
+}, {
+0: "Ritsu",
+1: [],
+2: [],
+3: false,
+4: "\"Without them its just... a plugin that iterates over an array of string every time a key is pressed!\" ",
+5: "\"Without them its just... a plugin that iterates over an array of string every time a key is pressed!\" ",
+6: 14,
+7: {
+8: {},
+9: {}
+},
+10: [],
+11: {},
+12: PackedInt64Array(),
+13: {},
+14: false,
+15: PackedStringArray(),
+16: [],
+17: []
+}, {
+0: "Ritsu",
+1: [],
+2: [],
+3: false,
+4: "\"Its boring!\" ",
+5: "\"Its boring!\" ",
+6: 16,
+7: {
+8: {},
+9: {}
+},
+10: [],
+11: {},
+12: PackedInt64Array(),
+13: {},
+14: false,
+15: PackedStringArray(),
+16: [],
+17: []
+}, {
+0: "Ritsu",
+1: [],
+2: [],
+3: false,
+4: "\"I want fancy effects! I want confetti!! I want explosions!!!\" ",
+5: "\"I want fancy effects! I want confetti!! I want explosions!!!\" ",
+6: 18,
+7: {
+8: {},
+9: {}
+},
+10: [],
+11: {},
+12: PackedInt64Array(),
+13: {},
+14: false,
+15: PackedStringArray(),
+16: [],
+17: []
+}])
+_source_path = "res://dialogues/vanilla.dlg"
+_used_variables = PackedStringArray()
+_used_function_calls = Dictionary[String, Variant]({})
+_sections = Dictionary[String, int]({})

@@ -60,9 +60,9 @@ actor_label = NodePath("../PanelContainer/CenterContainer/VBoxContainer/Label")
 dialogue_label = NodePath("../PanelContainer/CenterContainer/VBoxContainer/DialogueLabel")
 allow_skip = false
 allow_cancel = false
-variables = {
+variables = Dictionary[String, Variant]({
 "gd_ver": 4
-}
+})
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
 layout_mode = 1
@@ -108,6 +108,7 @@ bbcode_enabled = true
 text = "Dialogue content..."
 fit_content = true
 custom_effects = [SubResource("RichTextEffect_s00e0"), SubResource("RichTextEffect_fvvq4"), SubResource("RichTextEffect_bysel")]
+visible_characters_behavior = 1
 script = ExtResource("3_fq1xf")
 
 [node name="Container" type="Container" parent="PanelContainer/CenterContainer/VBoxContainer"]

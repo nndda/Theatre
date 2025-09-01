@@ -1,0 +1,19 @@
+Dia:
+    "Hello."
+:
+    "This is a demo dialogue for the Theatre addon. For benchmarking, testing, and, well, demo purposes."
+:
+    "More specifically, a 'vanilla' variation of it."
+:
+    "Where the dialogue present itself, absent of any of the Theatre's dialogue features."
+:
+    "Such as: tags, variables, function calls, even optional line breaks and other syntactic sugars."
+
+Ritsu:
+    "But whyy??"
+:
+    "Without them its just... a plugin that iterates over an array of string every time a key is pressed!"
+:
+    "Its boring!"
+:
+    "I want fancy effects! I want confetti!! I want explosions!!!"

@@ -1,0 +1,512 @@
+Ritsu:
+    "How{speed=0.8}...{speed}
+    {delay=0.5}many dialogue lines can a single written dialogue has?"
+
+Dia:
+    "I'm{speed=0.8}...{speed=0.9} not sure..."
+:
+    "We do not have the test unit for that yet."
+
+Ritsu:
+    "Wait,{delay=0.5}
+    'plugin'?{delay=0.5}
+    isn't it called{delay=0.3} 'addon.'?"
+
+Dia:
+    "Its 'plugin',{delay=0.5} because Theatre integrates directly with the Godot engine itself."
+
+Ritsu:
+    "No,{delay=0.5} its an 'addon,'{delay=0.5} because it adds stuff to the engine!"
+
+Dia:
+    "Its a plugin."
+Ritsu:
+    "Its an addon!"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+
+Dia:
+    "Hmmm{speed=0.7}...{speed}{delay=0.5} what was the name of the built-in class,{delay=0.3}
+    used by the editor to extend its functionality again{speed-0.8}...?"
+:
+    "Oh,{delay=0.5} right,{delay=0.5}{speed=0.8} 'Editor[i][b]Plugin[/b][/i].'"
+:
+    "And what's the name of the tab,{delay=0.5} in the project settings,{delay=0.5}
+    where'd you enabled and disabled various {speed=0.6}**plugins**{speed} within the project?"
+:
+    "Oh,{delay=0.5} right,{delay=0.5} its also called{speed=0.8}... [i][b]'Plugins.'[/b][/i]"
+
+
+Ritsu:
+    "Its- its an addon!"
+
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
+Dia:
+    "Plugin"
+Ritsu:
+    "Addon"
