@@ -1,0 +1,55 @@
+:root {
+  --main-logo-width: 150px;
+}
+
+.intro-snippet {
+  max-width: 500px;
+  margin: auto;
+}
+
+a.md-content__button {
+  display: none;
+}
+
+.container {
+  max-width: 850px;
+  margin: auto !important;
+}
+
+.preview-img-container {
+  background: #121018;
+}
+
+.preview-img {
+  display: block;
+  margin-left: auto;
+}
+
+.home-header {
+  display: grid;
+  grid-template-columns: var(--main-logo-width) auto;
+
+  max-width: 600px;
+  margin: auto;
+  margin-bottom: 2em;
+}
+
+.home-header > .right-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.home-title {
+  color: var(--md-accent-bg-color) !important;
+  margin-bottom: 0 !important;
+}
+
+.main-logo {
+  width: var(--main-logo-width);
+  margin: 0 !important;
+}
+
+aside.md-source-file {
+  display: none !important;
+}

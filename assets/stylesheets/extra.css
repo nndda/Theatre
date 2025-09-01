@@ -1,0 +1,114 @@
+@media screen {
+  [data-md-color-scheme="slate"] {
+
+/* r #fc3a78*/
+/*    #9e87b5 #884ec2*/
+/* d #3fd4f2*/
+
+    --md-code-fg-color: #c0caf5 !important;
+    --md-code-bg-color: #110f17 !important;
+    --md-code-hl-color: #3fd4f280 !important;
+    --md-code-hl-color--light: #3fd4f210 !important;
+    --md-code-hl-number-color: #d9748d !important;
+    --md-code-hl-special-color: #bb9af7 !important;
+    --md-code-hl-function-color: #fc6087 !important;
+    --md-code-hl-constant-color: #3ff2d7 !important;
+    --md-code-hl-keyword-color: #3fd4f2 !important;
+    --md-code-hl-string-color: #99f23f !important;
+    --md-code-hl-name-color: #c0caf5 !important;
+    --md-code-hl-operator-color: #f2cb3f !important;
+    --md-code-hl-punctuation-color: #fc6087 !important;
+    --md-code-hl-comment-color: #677882 !important;
+    --md-code-hl-generic-color: #c0caf5 !important;
+    --md-code-hl-variable-color: #c0caf5 !important;
+
+  }
+}
+
+.hidden {
+  display: none !important;
+}
+
+.label > .twemoji {
+  margin-right: .5em;
+}
+
+/*
+.var, .func {
+  font-family: monospace;
+  font-weight: bold;
+}
+
+.var > a,
+.func > a {
+  margin-right: .5em;
+}
+
+.var > .keyword,
+.func > .keyword {
+  font-weight: bold;
+}
+
+.func > .params {
+  font-size: .9em;
+  opacity: .9;
+}
+
+.func > .params:not(:last-child) {
+  margin-right: .5em;
+}
+
+.func > .params:not(:last-child):after {
+  content: ",";
+}
+*/
+
+/*[data-md-color-media="(prefers-color-scheme: light)"] .main-logo*/
+/*[data-md-color-media="(prefers-color-scheme: light)"] .md-header__button.md-logo*/
+/*{
+  filter: invert() brightness(1.25) contrast(60%);
+}*/
+
+.main-logo {
+  display: block;
+  margin: auto !important;
+}
+
+
+a.md-tabs__link[href="class/stage/tutorials/setting-up"] {}
+
+.button-home {
+  display: inline-block;
+}
+
+
+.label {
+  display: inline-block;
+  border: 1px solid var(--md-accent-fg-color);
+  background: var(--md-accent-fg-color--transparent);
+  color: var(--md-accent-bg-color--light) !important;
+  padding: .1em .6em;
+  margin: .25em;
+  border-radius: .3em;
+  font-size: .8em;
+}
+
+.label:hover {
+  background: var(--md-accent-fg-color);
+  color: var(--md-accent-bg-color) !important;
+}
+
+.md-typeset kbd {
+  box-shadow: none;
+  border-bottom: .25em solid var(--md-typeset-kbd-accent-color);
+  border-radius: .4em;
+}
+
+aside.md-source-file {
+  margin-top: 3em;
+}
+
+img.center {
+  display: block;
+  margin: auto;
+}
