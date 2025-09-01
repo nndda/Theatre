@@ -281,12 +281,15 @@ func _init(src : String = "", src_path : String = ""):
 
 
             if actor_str == UNDERSCORE:
-                setsl[Key.ACTOR] = EMPTY
+                actor_str = EMPTY
             elif actor_str.is_empty():
                 if body_pos < 0:
                     push_error("Error @%s - missing initial actor's name" % _source_path)
                 else:
-                    setsl[Key.ACTOR] = output[body_pos][Key.ACTOR]
+                    actor_str = output[body_pos][Key.ACTOR]
+                    setsl[Key.ACTOR_DYN_HAS] = output[body_pos][Key.ACTOR_DYN_HAS]
+                    setsl[Key.ACTOR_DYN_VAR] = output[body_pos][Key.ACTOR_DYN_VAR]
+                    setsl[Key.ACTOR_DYN_EXPR] = output[body_pos][Key.ACTOR_DYN_EXPR]
             else:
                 # Actor name with dynamic variable
                 # Expression tag
