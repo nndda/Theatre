@@ -2,7 +2,7 @@
 extends EditorImportPlugin
 
 func _get_format_version() -> int:
-    return 2066923331
+    return 2066924420
     #return "{version}".hash()
 
 func _get_import_options(path: String, preset_index: int) -> Array[Dictionary]:
