@@ -105,6 +105,9 @@ enum Key {
     NAME,
     ARGS,
     STANDALONE,
+    
+    POS,
+    PLACEHOLDER,
 }
 #endregion
 
@@ -621,6 +624,11 @@ func parse_expr_tags(string : String, line_num : int = 0) -> Dictionary:
     return output
 
 # 😭😭😭
+#const BB_TAG_TEMPLATE := {
+    #Key.POS: 0,
+    #Key.CONTENT: "",
+    #Key.PLACEHOLDER: false,
+#}
 static func parse_tags(string : String) -> Dictionary:
     var vars : PackedStringArray = []
     var tags : Dictionary = SETS_TEMPLATE[Key.TAGS].duplicate(true)
@@ -628,7 +636,7 @@ static func parse_tags(string : String) -> Dictionary:
     var func_idx : PackedInt64Array = []
 
     # BBCode ===============================================================
-    var bb_data : Dictionary[int, String] = {}
+    var bb_data : Array[Dictionary] = []
 
     # Escaped Equal Sign ===================================================
     string = string.replace("\\=", "=")
@@ -638,22 +646,26 @@ static func parse_tags(string : String) -> Dictionary:
     var bb_full_str : String
     var bb_full_str_len : int
     var bb_pos : int
+    var bb_pos_inv : int
 
     var is_sqr_bracket : bool
     var is_img : bool
     var is_placeholder : bool
-    var bb_placeholder_data : Dictionary[int, String] = {}
 
     var tagless_string : String = _regex_dlg_tags.sub(string, EMPTY, true)
 
-    for bb in _regex_bbcode_tags.search_all(tagless_string):
+    var bb_tag_img_end : int = 0
+    var bb_tags_matches := _regex_bbcode_tags.search_all(tagless_string)
+    bb_tags_matches.reverse()
+
+    for bb in bb_tags_matches:
         bb_tag = bb.get_string("tag")
 
         if not bb_tag == "/img":
             bb_full_str = bb.strings[0]
             bb_full_str_len = bb_full_str.length()
 
-            bb_pos = bb.get_start()
+            bb_pos = bb.get_start()            
 
             is_sqr_bracket = bb_tag == "lb" or bb_tag == "rb"
             is_img = bb_tag == "img"
@@ -662,25 +674,44 @@ static func parse_tags(string : String) -> Dictionary:
             if is_img:
                 bb_full_str = tagless_string.substr(
                     bb_pos,
-                    tagless_string.find("[/img]", bb.get_end()) - 6 # "[/img]".length()
+                    bb_tag_img_end - bb_pos,
                 )
+                bb_full_str_len = bb_full_str.length()
 
             # so scawy
+            tagless_string = tagless_string\
+                .erase(bb_pos, bb_full_str_len)
+
+            if is_placeholder:
+                tagless_string = tagless_string\
+                    .insert(bb_pos, HASH)
+
             string = string.replace(
                 bb_full_str,
                 HASH if is_placeholder else
                 EMPTY
             )
-            tagless_string = tagless_string.replace(
-                bb_full_str,
-                HASH if is_placeholder else
+
+            # BBCodes data to be re-inserted later after parsing the dialogue tags
+            bb_pos_inv = tagless_string.length() - bb_pos
+            
+            bb_data.append({
+                Key.POS: bb_pos_inv,
+                Key.CONTENT: (
+                    "[" + bb_tag + "]" if is_sqr_bracket
+                    else bb_full_str + "[/img]" if is_img
+                    else bb_full_str
+                ),
+                Key.PLACEHOLDER: is_placeholder,
+            })
+
+        else:
+            bb_tag_img_end = bb.get_start()
+            string = string.replace(
+                bb.strings[0],
                 EMPTY
             )
-
-            if is_placeholder:
-                bb_placeholder_data[bb_pos] = "[" + bb_tag + "]" if is_sqr_bracket else bb_full_str
-            else:
-                bb_data[bb_pos] = bb_full_str
+            tagless_string = tagless_string.erase(bb_tag_img_end, bb.strings[0].length())
 
     # Escaped Curly Brackets ===============================================
     # 💀💀💀💀💀💀💀💀💀💀💀
@@ -756,17 +787,13 @@ static func parse_tags(string : String) -> Dictionary:
             .insert(cb, esc_curly_brackets[cb])
 
     # Insert back BBCodes ==================================================
-    if not bb_placeholder_data.is_empty():
-        var bb_placeholder_data_keys := bb_placeholder_data.keys()
-        bb_placeholder_data_keys.reverse()
-
-        for br: int in bb_placeholder_data_keys:
+    var str_len := string.length()
+    if not bb_data.is_empty():
+        for data: Dictionary in bb_data:
+            bb_pos_inv = str_len - data[Key.POS]
             string = string\
-                .erase(br)\
-                .insert(br, bb_placeholder_data[br])
-
-    for bb : int in bb_data.keys():
-        string = string.insert(bb, bb_data[bb])
+                .erase(bb_pos_inv, 1 if data[Key.PLACEHOLDER] else 0)\
+                .insert(bb_pos_inv, data[Key.CONTENT])
 
     return {
         Key.TAGS: tags,
