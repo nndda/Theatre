@@ -27,7 +27,7 @@ const REGEX_DLG_TAGS_NEWLINE :=\
     static var _regex_dlg_tags_newline := RegEx.create_from_string(REGEX_DLG_TAGS_NEWLINE)
 
 const REGEX_BBCODE_TAGS :=\
-    r"(?<!\\)\[(?<tag>\/?\w+)[^\[\]]*?(?<!\\)\]";\
+    r"(?<!\\)\[(?<tag>\/?(?<tag_name>\w+))[^\[\]]*?(?<!\\)\]";\
     static var _regex_bbcode_tags := RegEx.create_from_string(REGEX_BBCODE_TAGS)
 
 # Match variables assignments:
@@ -506,10 +506,10 @@ func _init(src : String = "", src_path : String = ""):
                 var start : int
 
                 for bb in match_bb:
-                    tag = bb.get_string("tag")
+                    tag = bb.get_string("tag_name")
 
                     if BB_ALIASES_TAGS.has(tag):
-                        start = bb.get_start("tag")
+                        start = bb.get_start("tag_name")
                         content_str = content_str \
                             .erase(start, tag.length()) \
                             .insert(start, BB_ALIASES[tag])
