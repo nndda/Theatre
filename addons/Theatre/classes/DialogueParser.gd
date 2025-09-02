@@ -27,7 +27,7 @@ const REGEX_DLG_TAGS_NEWLINE :=\
     static var _regex_dlg_tags_newline := RegEx.create_from_string(REGEX_DLG_TAGS_NEWLINE)
 
 const REGEX_BBCODE_TAGS :=\
-    r"(?<!\\)\[\/?(?<tag>\w+)[^\[\]]*?(?<!\\)\]";\
+    r"(?<!\\)\[(?<tag>\/?\w+)[^\[\]]*?(?<!\\)\]";\
     static var _regex_bbcode_tags := RegEx.create_from_string(REGEX_BBCODE_TAGS)
 
 # Match variables assignments:
@@ -628,35 +628,59 @@ static func parse_tags(string : String) -> Dictionary:
     var func_idx : PackedInt64Array = []
 
     # BBCode ===============================================================
-    #var bb_data : Array[Dictionary] = []
     var bb_data : Dictionary[int, String] = {}
-    var bbcode_pos_offset : int = 0
 
     # Escaped Equal Sign ===================================================
     string = string.replace("\\=", "=")
 
     # Strip and log BBCode tags
-    var bb_start : int
-    var bb_end : int
     var bb_tag : String
-    for bb in _regex_bbcode_tags.search_all(_regex_dlg_tags.sub(string, EMPTY, true)):
-        bb_start = bb.get_start() - bbcode_pos_offset
-        bb_end = bb.get_end() - bbcode_pos_offset
+    var bb_full_str : String
+    var bb_full_str_len : int
+    var bb_pos : int
+
+    var is_sqr_bracket : bool
+    var is_img : bool
+    var is_placeholder : bool
+    var bb_placeholder_data : Dictionary[int, String] = {}
+
+    var tagless_string : String = _regex_dlg_tags.sub(string, EMPTY, true)
+
+    for bb in _regex_bbcode_tags.search_all(tagless_string):
         bb_tag = bb.get_string("tag")
 
-        #bb_data.append({
-            #"pos" : bb_start,
-            #"content" : bb.strings[0],
-            ##"img" : false,
-        #})
-        bb_data[bb_start] = bb.strings[0]
+        if not bb_tag == "/img":
+            bb_full_str = bb.strings[0]
+            bb_full_str_len = bb_full_str.length()
 
-        string = string.replace(
-            bb.strings[0],
-            "[" if bb_tag == r"lb" else
-            "]" if bb_tag ==r"rb" else
-            EMPTY
-        )
+            bb_pos = bb.get_start()
+
+            is_sqr_bracket = bb_tag == "lb" or bb_tag == "rb"
+            is_img = bb_tag == "img"
+            is_placeholder = is_sqr_bracket or is_img
+
+            if is_img:
+                bb_full_str = tagless_string.substr(
+                    bb_pos,
+                    tagless_string.find("[/img]", bb.get_end()) - 6 # "[/img]".length()
+                )
+
+            # so scawy
+            string = string.replace(
+                bb_full_str,
+                HASH if is_placeholder else
+                EMPTY
+            )
+            tagless_string = tagless_string.replace(
+                bb_full_str,
+                HASH if is_placeholder else
+                EMPTY
+            )
+
+            if is_placeholder:
+                bb_placeholder_data[bb_pos] = "[" + bb_tag + "]" if is_sqr_bracket else bb_full_str
+            else:
+                bb_data[bb_pos] = bb_full_str
 
     # Escaped Curly Brackets ===============================================
     # 💀💀💀💀💀💀💀💀💀💀💀
@@ -732,13 +756,14 @@ static func parse_tags(string : String) -> Dictionary:
             .insert(cb, esc_curly_brackets[cb])
 
     # Insert back BBCodes ==================================================
-    if not bb_data.is_empty():
-        string = string\
-            .replace("[", EMPTY)\
-            .replace("]", EMPTY)
+    if not bb_placeholder_data.is_empty():
+        var bb_placeholder_data_keys := bb_placeholder_data.keys()
+        bb_placeholder_data_keys.reverse()
 
-        #var re := RegEx.create_from_string(r"\[|\]")
-        #string = re.sub(string, EMPTY)
+        for br: int in bb_placeholder_data_keys:
+            string = string\
+                .erase(br)\
+                .insert(br, bb_placeholder_data[br])
 
     for bb : int in bb_data.keys():
         string = string.insert(bb, bb_data[bb])
