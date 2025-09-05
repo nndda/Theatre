@@ -5,12 +5,9 @@
 
 <img src="/addons/Theatre/assets/icons/Theatre.svg" alt="Theatre logo" height="160" align="right">
 
-<a href="https://godotengine.org/">
-<img src="https://img.shields.io/badge/4.4-white?style=flat-square&logo=godotengine&logoColor=white&label=Godot&labelColor=%232f5069&color=%233e4c57" alt="Godot 4.3" height="20"></a>
-<a href="https://github.com/nndda/Theatre/actions/workflows/dialogue-test.yml">
-<img src="https://img.shields.io/github/actions/workflow/status/nndda/Theatre/dialogue-test.yml?branch=main&event=push&style=flat-square&label=CI&labelColor=%23252b30&color=%23306b3d" alt="Build status" height="20"></a>
-<a href="https://nndda.github.io/Theatre/">
-<img src="https://img.shields.io/website?style=flat-square&label=Docs&labelColor=%23252b30&color=%23306b3d&up_message=online&url=http%3A//nndda.github.io/Theatre" alt="Documentation build" height="20"></a>
+<a href="https://godotengine.org/"><img src="https://img.shields.io/badge/4.4-white?style=flat-square&logo=godotengine&logoColor=white&label=Godot&labelColor=%232f5069&color=%233e4c57" alt="Godot 4.3" height="20"></a>
+<a href="https://github.com/nndda/Theatre/actions/workflows/dialogue-test.yml"><img src="https://img.shields.io/github/actions/workflow/status/nndda/Theatre/dialogue-test.yml?branch=main&event=push&style=flat-square&label=CI&labelColor=%23252b30&color=%23306b3d" alt="Build status" height="20"></a>
+<a href="https://nndda.github.io/Theatre/"><img src="https://img.shields.io/website?style=flat-square&label=Docs&labelColor=%23252b30&color=%23306b3d&up_message=online&url=http%3A//nndda.github.io/Theatre" alt="Documentation build" height="20"></a>
 
 Yet another <sub>(linear)</sub> dialogue system<b>/</b>addon<b>/</b>plugin for Godot. With features such as:
 
@@ -83,8 +80,12 @@ Fine-tune your dialogue flow with `{delay}` and `{speed}`.
 Godette:
     "Hello!{delay = 0.7} Nice to meet you."
 ```
+```yaml
+Ritsu:
+    "{speed = 1.5} AAAAAAAAAAAAAAAAA!!!!"
+```
 
-## Variables
+## Variables & Expressions
 
 Insert static...
 ```yaml
@@ -92,9 +93,11 @@ Dia:
     "Let's meet {player}. Don't keep {player_pronoun} waiting."
 ```
 ...or dynamic variables.
+
+Execute, evaluate, and insert any valid GDScript expressions to the dialogue.
 ```yaml
 Ritsu:
-    "HEY {( GameData.player_name.to_upper() )}!!"
+    "HEY {( Player.name.to_upper() )}!!"
 ```
 ```yaml
 Dia:
@@ -102,9 +105,9 @@ Dia:
     It is currently {( Time.get_time_string_from_system(false) )}."
 ```
 
-## Set Properties
+## Manipulate Properties
 
-Manipulate properties &amp; variables.
+Manipulate in-game object properties &amp; variables.
 ```yaml
 Ritsu:
     UI.portrait = "ritsu_smile.png"
@@ -163,7 +166,11 @@ Dia:
 """)
 ```
 
-Set the Stage! Add `TheatreStage` and `DialogueLabel` node to your scene. Structure your scene like the following:
+Set the Stage! Add
+<code><img src="addons/Theatre/assets/icons/classes/ticket.svg" height="13"> TheatreStage</code>
+and
+<code><img src="addons/Theatre/assets/icons/classes/message.svg" height="13"> DialogueLabel</code>
+node to your scene. Structure your scene like the following:
 
 <div align="center">
 <img width="261" height="197" alt="A scene tree, with Stage and PanelContainer" src="https://github.com/user-attachments/assets/2fe8cc77-d35a-4eae-911d-8f3e0b6410dc" />
@@ -171,9 +178,19 @@ Set the Stage! Add `TheatreStage` and `DialogueLabel` node to your scene. Struct
 
 <br>
 
-Adjust the position and size of the `PanelContainer` to your liking.
+Adjust the position and size of the
+<code><img src="https://raw.githubusercontent.com/godotengine/godot/refs/heads/master/editor/icons/PanelContainer.svg" height="13"> PanelContainer</code>
+to your liking.
 
-Select the `TheatreStage` node, and reference the `Label` & `DialogueLabel` node to display your Dialogue. Adjust and configure your `TheatreStage` via the inspector. Alternatively, you can also set them in script:
+Select the
+<code><img src="addons/Theatre/assets/icons/classes/ticket.svg" height="13"> TheatreStage</code>
+node, and reference the
+<code><img src="https://raw.githubusercontent.com/godotengine/godot/refs/heads/master/editor/icons/Label.svg" height="13"> Label</code>
+&
+<code><img src="addons/Theatre/assets/icons/classes/message.svg" height="13"> DialogueLabel</code>
+node to display your Dialogue. Adjust and configure your
+<code><img src="addons/Theatre/assets/icons/classes/ticket.svg" height="13"> TheatreStage</code>
+via the inspector. Alternatively, you can also set them in script:
 
 <table align="center">
 <tr align="center">
@@ -209,7 +226,9 @@ func _ready():
 
 </table>
 
-Reference the `TheatreStage` node in the script, and set up a way to progress your Dialogue with `TheatreStage.progress()`.
+Reference the
+<code><img src="addons/Theatre/assets/icons/classes/ticket.svg" height="13"> TheatreStage</code>
+node in the script, and set up a way to progress your Dialogue with `TheatreStage.progress()`.
 
 ```gdscript
 func _input(event):
@@ -217,7 +236,9 @@ func _input(event):
         my_stage.progress()
 ```
 
-And finally, start the `TheatreStage` with your `epic_dialogue`.
+And finally, start the
+<code><img src="addons/Theatre/assets/icons/classes/ticket.svg" height="13"> TheatreStage</code>
+with your `epic_dialogue`.
 
 ```gdscript
 func _ready():
