@@ -5,3 +5,6 @@
 /**        export-ignore
 /addons    !export-ignore
 /addons/** !export-ignore
+
+# Ignore generated files in diff and repository statistic
+/tests/refs/** linguist-generated=true
