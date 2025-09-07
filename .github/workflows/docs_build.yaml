@@ -1,9 +1,9 @@
 name: Build documentation
 
 on:
-  push:
-    branches:
-      - docs
+  # push:
+  #   branches:
+  #     - docs
   workflow_dispatch:
 
 permissions:
