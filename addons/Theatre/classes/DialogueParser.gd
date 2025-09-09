@@ -207,10 +207,11 @@ const BB_ALIASES := {
     "fg": "fgcolor",
     "col": "color",
     "c": "color",
+    "f": "font",
 }
 
 const BB_ALIASES_TAGS : PackedStringArray = [
-    "bg", "fg", "col", "c"
+    "bg", "fg", "col", "c", "f",
 ]
 #endregion
 
