@@ -19,6 +19,13 @@ const REGEX_SCOPE_VAR_TAGS :=\
     r"(?<!\\)(?:\\\\)*\{(?<name>\s*(?<scope>\w+)\s*\.\s*(?<val>(?:[^\\\{\}]|\\[\{\}])*?)\s*(?<!\\))\}";\
     static var _regex_scope_var_tags := RegEx.create_from_string(REGEX_SCOPE_VAR_TAGS)
 
+# Match Dialogue tags [img] syntax:
+#   [img h=20 res://icon.png]
+#   [img 20x20 res://icon.png]
+const REGEX_DLG_TAGS_IMG :=\
+    r"(?<!\\)\[\s*img\s*((?<width>\d*?%?)x(?<height>\d*?%?))?(?<attr>\s+.+?)?\s+(?<path>(?<pathid>(?:res|user|uid)\:\/\/).+?)(?<!\\)\]";\
+    static var _regex_dlg_tags_img := RegEx.create_from_string(REGEX_DLG_TAGS_IMG)
+
 # Match Dialogue tags newline syntax:
 #       d=1.0
 #       delay=1.0
@@ -260,6 +267,7 @@ func _init(src : String = "", src_path : String = ""):
 
     var regex_func_match : RegExMatch
     var regex_vars_match : RegExMatch
+    var regex_img_match : RegExMatch
 
     # Per raw string line
     for i in dlg_raw_size:
@@ -339,9 +347,12 @@ func _init(src : String = "", src_path : String = ""):
             current_processed_string = dlg_raw[i].strip_edges()
             regex_func_match = _regex_func_call.search(current_processed_string)
             regex_vars_match = null
+            regex_img_match = null
 
             if regex_func_match == null:
                 regex_vars_match = _regex_vars_set.search(current_processed_string)
+            if regex_vars_match == null:
+                regex_img_match = _regex_dlg_tags_img.search(current_processed_string)
 
             #region NOTE: Function calls -----------------------------------------------------------
             if regex_func_match != null:
@@ -447,6 +458,14 @@ func _init(src : String = "", src_path : String = ""):
 
                 output[body_pos][Key.CONTENT_RAW] += "{%d}" % (output[body_pos][Key.FUNC].size() - 1)
                 output[body_pos][Key.CONTENT] += output[body_pos][Key.CONTENT_RAW]
+            #endregion
+
+            #region NOTE: [img] tag sugar ----------------------------------------------------------
+            elif regex_img_match != null:
+                var parsed_img := parse_img_tag(regex_img_match) + SPACE
+
+                output[body_pos][Key.CONTENT_RAW] += parsed_img
+                output[body_pos][Key.CONTENT] += parsed_img
             #endregion
 
             #region NOTE: Newline Dialogue tags ----------------------------------------------------
@@ -579,6 +598,36 @@ static func escape_brackets(string : String) -> String:
     return string\
         .replace(r"\{", "{")\
         .replace(r"\}", "}")
+
+func parse_img_tag(img_tag_match : RegExMatch) -> String:
+#static func parse_img_tag(string : String) -> String:
+    #if _regex_dlg_tags_img == null:
+        #_regex_dlg_tags_img = RegEx.create_from_string(REGEX_DLG_TAGS_IMG)
+
+    #var img_tag_match := _regex_dlg_tags_img.search(string)
+    var attrs : String = ""
+
+    var n := img_tag_match.get_string("width")
+    if not n.is_empty():
+        attrs += " width=" + n
+
+    n = img_tag_match.get_string("height")
+    if not n.is_empty():
+        attrs += " height=" + n
+        
+    n = img_tag_match.get_string("attr")
+    if not n.is_empty():
+        for attr in _regex_bbcode_attr.search_all(n):
+            var key := attr.get_string("key")
+
+            if key == "w": key = "width"
+            elif key == "h": key = "height"
+
+            attrs += \
+                " " + key + "=" +\
+                attr.get_string("val")
+
+    return "[img" + attrs + "]" + img_tag_match.get_string("path") + "[/img]"
 
 func parse_var_scope_tags(string : String, line_num : int = 0) -> Array[Array]:
     var output : Array[Array] = []

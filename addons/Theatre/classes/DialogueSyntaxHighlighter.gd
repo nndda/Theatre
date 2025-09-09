@@ -124,6 +124,7 @@ func _get_line_syntax_highlighting(line : int) -> Dictionary:
         var match_func := DialogueParser._regex_func_call.search(string)
         var match_vars : RegExMatch = null
         var match_newline_tag : RegExMatch = null
+        var match_bb_img : RegExMatch = null
 
         if match_func != null:
             dict[match_func.get_start(__SCOPE)] = COL_scope
@@ -186,6 +187,10 @@ func _get_line_syntax_highlighting(line : int) -> Dictionary:
                 DialogueParser._regex_bbcode_tags = RegEx.create_from_string(
                     DialogueParser.REGEX_BBCODE_TAGS
                 )
+            if DialogueParser._regex_dlg_tags_img == null:
+                DialogueParser._regex_dlg_tags_img = RegEx.create_from_string(
+                    DialogueParser.REGEX_DLG_TAGS_IMG
+                )
             for bb in DialogueParser._regex_bbcode_tags.search_all(string):
                 var START : int = bb.get_start()
                 var END : int = bb.get_end()
@@ -193,7 +198,7 @@ func _get_line_syntax_highlighting(line : int) -> Dictionary:
 
                 dict[START] = COL_tag_braces
                 dict[bb.get_start(__TAG)] = COL_tag_content
-                
+
                 var END_TAG : int = bb.get_end(__TAG)
 
                 if not attr_str.is_empty():
@@ -209,6 +214,14 @@ func _get_line_syntax_highlighting(line : int) -> Dictionary:
                         else:
                             dict[END_TAG + attr.get_start(__EQ)] = COL_symbol
                             dict[END_TAG + attr.get_start(__VAL)] = COL_func_args
+
+                match_bb_img = DialogueParser._regex_dlg_tags_img.search(string)
+                if match_bb_img != null:
+                    dict[match_bb_img.get_start("pathid")] = COL_actor_name_line
+                    dict[
+                        match_bb_img.get_string("pathid").length() +
+                        match_bb_img.get_start("path")
+                    ] = COL_func_args
 
                 dict[END - 1] = COL_tag_braces
 
