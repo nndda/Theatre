@@ -17,6 +17,8 @@ const __ARG := "arg"
 const __SCOPE := "scope"
 const __VAL := "val"
 const __SYM := "sym"
+const __KEY := "key"
+const __EQ := "eq"
 
 var string : String
 var dict : Dictionary[int, Dictionary] = {}
@@ -187,10 +189,27 @@ func _get_line_syntax_highlighting(line : int) -> Dictionary:
             for bb in DialogueParser._regex_bbcode_tags.search_all(string):
                 var START : int = bb.get_start()
                 var END : int = bb.get_end()
+                var attr_str : String = bb.get_string("attr")
 
                 dict[START] = COL_tag_braces
-
                 dict[bb.get_start(__TAG)] = COL_tag_content
+                
+                var END_TAG : int = bb.get_end(__TAG)
+
+                if not attr_str.is_empty():
+                    if DialogueParser._regex_bbcode_attr == null:
+                        DialogueParser._regex_bbcode_attr = RegEx.create_from_string(
+                            DialogueParser.REGEX_BBCODE_ATTR
+                        )
+                    for attr in DialogueParser._regex_bbcode_attr.search_all(attr_str):
+                        if not attr.get_string(__KEY).is_empty():
+                            dict[END_TAG + attr.get_start(__KEY)] = COL_actor_name_line
+                            dict[END_TAG + attr.get_start(__EQ) + 1] = COL_symbol
+                            dict[END_TAG + attr.get_start(__VAL) + 1] = COL_func_args
+                        else:
+                            dict[END_TAG + attr.get_start(__EQ)] = COL_symbol
+                            dict[END_TAG + attr.get_start(__VAL)] = COL_func_args
+
                 dict[END - 1] = COL_tag_braces
 
                 # TODO: these methods are... suboptimals

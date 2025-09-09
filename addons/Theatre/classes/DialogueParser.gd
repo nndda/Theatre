@@ -27,8 +27,12 @@ const REGEX_DLG_TAGS_NEWLINE :=\
     static var _regex_dlg_tags_newline := RegEx.create_from_string(REGEX_DLG_TAGS_NEWLINE)
 
 const REGEX_BBCODE_TAGS :=\
-    r"(?<!\\)\[(?<tag>\/?(?<tag_name>\w+))[^\[\]]*?(?<!\\)\]";\
+    r"(?<!\\)\[(?<tag>\/?(?<tag_name>\w+))\s*(?<attr>[^\[\]]+?)?(?<!\\)\]";\
     static var _regex_bbcode_tags := RegEx.create_from_string(REGEX_BBCODE_TAGS)
+
+const REGEX_BBCODE_ATTR :=\
+    r"\s*(?<key>.*?)(?<eq>=)(?<val>\"(?:[^\"]*)\"|'(?:[^']*)'|[^\s\"']+)";\
+    static var _regex_bbcode_attr := RegEx.create_from_string(REGEX_BBCODE_ATTR)
 
 # Match variables assignments:
 #       Scope.name = value
