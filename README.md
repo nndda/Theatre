@@ -71,6 +71,12 @@ func _input(event):
 
 <br>
 
+# Installation
+Run the command below in your Godot project directory. Or [download and install](https://theatre.nnda.dev/installation/) it manually.
+```sh
+curl -L 'https://nnda.dev/theatre/latest' | tar zxv --strip-components=1
+```
+
 # Features
 
 ## Dialogue Tags
