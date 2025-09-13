@@ -1,15 +1,18 @@
 # Configuring Stage
-
+<!-- 
 <style>
     table code {
         white-space: nowrap;
     }
 </style>
+ -->
+This page cover configurations & properties for [TheatreStage]. You can configure them through the inspector dock, or in script.
 
-This page cover various configurations & properties for `TheatreStage`. You can configure `TheatreStage` through inspector, or in script.
+[DialogueLabel] node is required to run a [Dialogue].
 
-`DialogueLabel` node is required to run a `Dialogue`. Unlike `actor_label`, which is optional.
+<!-- Unlike [`actor_label`](class/theatrestage/references/#actor_label), which is optional. -->
 
+<!-- 
 | Property          | Type            | Default | Description                      |
 | ----------------- | --------------- | ------  | -------------------------------- |
 | `dialogue_label`  | `DialogueLabel` | `null`  | A `DialogueLabel` node used to display the dialogue body. This is the only required parameter.|
@@ -30,15 +33,16 @@ This page cover various configurations & properties for `TheatreStage`. You can 
 | ----------------- | --------------- | ------  | -------------------------------- |
 | `variables`       | `Dictionary`    | `{}`    | `Dictionary` of user-defined variables used in the written `Dialogue`.|
 | `scope_nodes`    | `Array[Node]`   | `[]`    | Node-based scopes that are in the scene tree.|
+ -->
 
 ### `scope_nodes`
 
-While you can add scopes with `add_scope()`, if the function scope is a `Node`, and is accessible in the scene tree where the `TheatreStage` at, You can reference it directly in the inspector in `scope_nodes`. And the scope name/ID will use the node's name.
+While you can add scopes with [`add_scope()`](/class/theatrestage/references/#add_scope), if the scope is a [Node], and is accessible in the scene tree, you can reference it directly in the inspector in [`scope_nodes`](/class/theatrestage/references/#scope_nodes). The scope name/ID will use the node's name.
 
 !!! warning "Scope name"
-    Make sure that all nodes referenced for scope in `scope_nodes` have unique names from each other.
+    Make sure that all nodes referenced for scope in [`scope_nodes`](/class/theatrestage/references/#scope_nodes) have unique names from each other. Otherwise, they will conflict.
 
-This approach is preferrable in such case. Not only that its more simpler compared to adding the scope through script(1), the scope `Node` will always be synced if it moved in the tree.
+This approach is preferrable in such case. Not only that its more simpler compared to adding the scope through script(1), the scope [Node] will always be synced if it moved in the scene tree.
 { .annotate }
 
 1.  !!! example "Like this"

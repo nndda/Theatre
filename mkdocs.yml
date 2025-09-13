@@ -12,9 +12,13 @@ validation:
 
 nav:
   - "index.md"
+
+
   - "Quick Start":
     - "installation.md"
     - "quickstart.md"
+
+
   - "Tutorials":
     - "tutorials/index.md"
     - "tutorials/minimal_setup/index.md"
@@ -24,10 +28,41 @@ nav:
     - "tutorials/dialogue_ui_toggle/index.md"
     - "tutorials/dialogue_beep/index.md"
     - "tutorials/troubleshooting.md"
+
+
   - "Dialogue":
+    - "class/dialogue/index.md"
+    - "Reference":
+      - "class/dialogue/references/index.md"
+      - Description: "class/dialogue/references/#description"
+      - Methods: "class/dialogue/references/#methods"
+
     - "class/dialogue/syntax.md"
-  - "Stage":
-    - "class/stage/configuration.md"
+    # - "class/dialogue/data-structure.md"
+
+
+  - "TheatreStage":
+    - "class/theatrestage/index.md"
+    - "References":
+      - "class/theatrestage/references/index.md"
+      - Description: "class/theatrestage/references/#description"
+      - Properties: "class/theatrestage/references/#properties"
+      - Methods: "class/theatrestage/references/#methods"
+      - Signals: "class/theatrestage/references/#signals"
+
+    - "class/theatrestage/configuration.md"
+
+
+  - "DialogueLabel":
+    - "class/dialoguelabel/index.md"
+    - "References":
+      - "class/dialoguelabel/references/index.md"
+      - Description: "class/dialoguelabel/references/#description"
+      - Properties: "class/dialoguelabel/references/#properties"
+      - Methods: "class/dialoguelabel/references/#methods"
+      - Signals: "class/dialoguelabel/references/#signals"
+
+
 
 theme:
   name: material

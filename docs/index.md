@@ -1,8 +1,12 @@
 ---
-title: Home
+title: ""
+# icon: material/home
+icon: fontawesome/solid/home
 hide:
   - navigation
   - toc
+  - toc
+  - footer
 ---
 <p class="hidden">
 <link rel="stylesheet" href="assets/stylesheets/home.css">
@@ -26,7 +30,7 @@ Yet another Godot dialogue addon.
 
 <p markdown>
 
-[:material-download: v0.11.1](https://github.com/nndda/Theatre/archive/refs/tags/0.11.1.zip "Download Theatre."){ .label }
+[:material-download: v0.12.0](https://github.com/nndda/Theatre/archive/refs/tags/0.12.0.zip "Download Theatre."){ .label }
 
 [:simple-godotengine: Godot 4.4](https://godotengine.org/ "Compatible with Godot 4.4 or above."){ .label }
 
@@ -52,30 +56,97 @@ Yet another Godot dialogue addon.
 </div>
 
 ``` { .plain .no-copy }
-
 Dia:
-    "Welcome! {d=0.8}to the
-    [fx1]Theatre[/fx1]!
-        d=0.9
-    yet another text-based dialogue addon
-        d=0.3
-    developed for Godot {gd_ver}."
-
-
-    ＼(^ ▽ ^)
-
+    "Welcome! {d=0.8}to
+    [img h=20 res://icons/Theatre-icon.png]
+    [f=res://fonts/gabriela.tres]
+        [wavy][u]Theatre[/u][/wavy]!
+    [/f]
+    {d=0.9} yet another text-based dialogue addon,
+    {d=0.3} developed for
+    [img h=20 res://icons/godot.png]
+    Godot {( Engine.get_version_info()["major"] )}."
 ```
+
+</div>
 
 </div>
 
 <br>
 
+<section markdown>
+    
+## Install Theatre <small class="label">Latest</small> { .install-home-heading }
+
+```sh { .install-sh-home }
+curl -L 'https://nnda.dev/theatre/latest' | tar zxv --strip-components=1
+```
+
+<p align="center" markdown>
+Run the command above in your Godot project directory.
+Or [download and install](installation.md) it manually.
+</p>
+
+</section>
+
+<br>
+
+<hr>
+
+<br>
+
+<section class="grid cards features" markdown>
+
+-   :material-clock-fast:{ .lg .middle } **Simple Setup**
+
+    ---
+
+    Install easily with a single [command line](#install-theatre-latest).
+    And start writing & running your first dialogue in just 7 lines of codes!
+
+    <div class="flex-space"></div>
+
+    [:fontawesome-solid-arrow-right: Quick Start](quickstart.md)
+
+    [:fontawesome-solid-arrow-right: Tutorials](tutorials/index.md)
+
+
+-   :material-pen:{ .lg .middle } **Human-readable Syntax**
+
+    ---
+
+    Write your [Dialogue] easily and quickly, with syntax designed for clarity and simplicity. Complete with its own syntax highlighting.
+
+    <div class="flex-space"></div>
+
+    [:fontawesome-solid-arrow-right: Dialogue Syntax](class/dialogue/syntax.md)
+
+
+-   :material-arrow-expand:{ .lg .middle } **Full Control**
+
+    ---
+
+    Control _your_ story with _your_ own way using [`progress()`](#). Interact with in-game functionalities effortlessly with [function calls](#) and [expression tag](#).
+
+    <div class="flex-space"></div>
+
+    [:fontawesome-solid-arrow-right: `TheatreStage` Class Reference](class/theatrestage/references/index.md)
+
+</section>
+
+<br>
+
+<!-- 
 <p style="text-align: center;">
     <mark>Comprehensive documentation for class references (properties, methods, signals) are accessible in Godot directly.</mark> Press <kbd>F1</kbd> and search for Theatre classes, or hold <kbd>Ctrl</kbd> and click one of the class in the script to see its documentation page. <del>I'm too lazy to migrate all of that stuff here</del> this site is focused for in-depth tutorials and guides.
 </p>
+ -->
+ 
+<br>
+<br>
+<br>
 
-<br>
-<br>
+<div class="container" markdown>
 
 !!! warning
     Theatre and this documentation is still under development.
@@ -83,5 +154,3 @@ Dia:
     and might not fully reflect the current Theatre version.
 
 </div>
-
-<!-- </div> -->

@@ -1,15 +1,26 @@
 # Installation
 
-## Installing
-
-For the most up-to-date features and fixes, **download the addon directly from the official GitHub repository.** The GitHub release will always be the latest version, as updates are available immediately, whereas updates from the Godot Asset Library may take a few additional days due to the approval process.
+For the most up-to-date features and fixes, **download the addon directly from the official GitHub repository**, [manually](#manually) or via [command line](#via-command-line-recommended). The GitHub release will always be the latest version, as updates are available immediately, whereas updates from the Godot Asset Library may take a few additional days due to the approval process.
 
 !!! note
     The built-in update checks also look for the latest GitHub release.
 
-### via official releases
+---
 
-Grab the latest release [:material-download: here](https://github.com/nndda/Theatre/archive/refs/tags/0.11.1.zip), or get it from:
+## Installing
+
+### via Command Line <small>(Recommended)</small>
+
+Open your project folder in your favourite terminal. And run the following command:
+```sh
+curl -L 'https://nnda.dev/theatre/latest' | tar zxv --strip-components=1
+```
+
+---
+
+### via Official Releases
+
+Grab the latest release [:material-download: here](https://github.com/nndda/Theatre/archive/refs/tags/0.12.0.zip), or get it from:
 
 - [:simple-godotengine: Godot Asset Library](https://godotengine.org/asset-library/asset/2332)
 - [:simple-github: GitHub](https://github.com/nndda/Theatre/releases)
@@ -28,6 +39,8 @@ Grab the latest release [:material-download: here](https://github.com/nndda/Thea
 
 0. Make sure `Ignore asset root` is checked, and then click `Install`.
 
+---
+
 ### via Godot Asset Library
 
 0. Go to the `AssetLib` scene tab.
@@ -40,8 +53,9 @@ Grab the latest release [:material-download: here](https://github.com/nndda/Thea
 
 0. Make sure `Ignore asset root` is checked, and then click `Install`.
 
+---
 
-## Enabling
+## Enabling the Plugin
 
 Make sure that Theatre is enabled at `Project > Project Settings... > Plugins`.
 
@@ -51,8 +65,22 @@ You should see the following on your console output.
 🎭 Theatre <version> by nnda
 ```
 
+---
 
 ## Updating
+
+### via Command Line <small>(Recommended)</small>
+
+0. Disable Theatre plugin and close your project.
+
+0. Open your project folder in your favourite terminal. And run the following command:
+```sh
+rm -r addons/Theatre/ && curl -L 'https://nnda.dev/theatre/latest' | tar zxv --strip-components=1
+```
+
+0. Enable the plugin.
+
+### Manually
 
 0. Disable Theatre plugin and close your project.
 
@@ -60,7 +88,9 @@ You should see the following on your console output.
 
 0. Re-install it [via official releases manually](#manually).
 
-0. Enable the Theatre plugin.
+0. Enable the plugin.
 
+<!-- 
 !!! note
     For updates on `Dialogue` (new `Dialogue` features, syntax, or parser updates), you might want to re-import the written `Dialogue` resources, by using `Project > Tools > 🎭 Theatre > ♻️ Reimport Dialogue resources`.
+-->

@@ -1,7 +1,7 @@
 # Quick Start
 
-You've installed the plugin [(or have you?)](installation.md "Installing the plugin."). You had the characters, plot, and the worldbuilding of your story ready, or maybe not, thats ok too.
-Lets start by writing a `Dialogue`.
+You've installed and enabled the plugin [(or have you?)](installation.md "Installing the plugin."). You have the characters, plot, and the worldbuilding of your story ready, or maybe not, thats ok too.
+Lets start by writing a [Dialogue].
 
 ## Writing the Dialogue
 
@@ -25,7 +25,7 @@ Actor's name:
 
 ```
 
-Save it as `*.dlg` file. Here we'll save the file as `res://intro.dlg`. Now that the `Dialogue` is ready, let's set up the `Stage`.
+Save it as `*.dlg` file. Here we'll save the file as `res://intro.dlg`. Now that the [Dialogue] is ready, let's set up the `Stage`.
 
 [**More on writing Dialogue here.**](class/dialogue/syntax.md){ .md-button }
 
@@ -33,7 +33,11 @@ Save it as `*.dlg` file. Here we'll save the file as `res://intro.dlg`. Now that
 
 ### Nodes & UI
 
-Create a new `2D` or `User Interface` scene. We'll use `User Interface` scene, which use `Control` node for the scene's root. And add the following nodes: `TheatreStage`, `Label`, and `DialogueLabel`.
+Create a new `2D` or `User Interface` scene. We'll use `User Interface` scene, which use [Control] node for the scene's root. And add the following nodes:
+
+- [TheatreStage],
+- [Label],
+- and [DialogueLabel].
 
 <div class="grid cards" markdown>
 
@@ -41,7 +45,9 @@ Create a new `2D` or `User Interface` scene. We'll use `User Interface` scene, w
 
 </div>
 
-To tidy things up a little, add `PanelContainer`, and `VBoxContainer` inside it. Put the `Label` and `DialogueLabel` inside the `VBoxContainer`.
+To tidy things up a little, add [PanelContainer], and [VBoxContainer] inside it.
+
+And then put the [Label] and [DialogueLabel] inside the [VBoxContainer].
 
 <div class="grid cards" markdown>
 
@@ -49,9 +55,9 @@ To tidy things up a little, add `PanelContainer`, and `VBoxContainer` inside it.
 
 </div>
 
-Adjust the size and position of the `PanelContainer` to your liking.
+Adjust the size and position of the [PanelContainer] to your liking.
 
-And lastly, make sure that `fit_content` is set to `true` on `DialogueLabel`.
+And lastly, make sure that `fit_content` is set to `true` on [DialogueLabel].
 
 <div class="grid cards" markdown>
 
@@ -67,15 +73,15 @@ Attach a script to the scene's root.
 extends Control
 ```
 
-Create a variable with `@export` annotation to reference the `TheatreStage` node that was made previously. In this example, we'll name the variable `'my_stage'`.
+Create a variable with [`@export`](https://docs.godotengine.org/en/4.4/tutorials/scripting/gdscript/gdscript_exports.html) annotation to reference the [TheatreStage] node that was made previously. In this example, we'll name the variable `'my_stage'`.
 
 ```gdscript hl_lines="3"
 extends Control
 
-@export var my_stage : TheatreStage
+@export var my_stage: TheatreStage
 ```
 
-Click the scene's root node, go to the inspector, and assign the `TheatreStage` node to `my_stage`.
+Click the scene's root node, go to the inspector, and assign the [TheatreStage] node to `my_stage`.
 
 <div class="grid cards" markdown>
 
@@ -85,7 +91,7 @@ Click the scene's root node, go to the inspector, and assign the `TheatreStage` 
 
 </div>
 
-Click the `TheatreStage` node, and head over to the inspector dock. Reference the `Label` and `DialogueLabel` node that were made before.
+Click the [TheatreStage] node, and head over to the inspector dock. Reference the [Label] and [DialogueLabel] node that were made before.
 
 <div class="grid cards" markdown>
 
@@ -93,47 +99,47 @@ Click the `TheatreStage` node, and head over to the inspector dock. Reference th
 
 </div>
 
-[**More on configuring Stage here.**](class/stage/configuration.md){ .md-button }
+[**More on configuring Stage here.**](class/theatrestage/configuration.md){ .md-button }
 
 ## Controlling the Stage
 
 ### Starting
 
-Create another variable to store the `Dialogue`, we'll name it `'epic_dialogue'`. Use `Dialogue.load()` and pass the path of the written dialogue file.
+Create another variable to store the [Dialogue], we'll name it `'epic_dialogue'`. Use [`Dialogue.load()`](/class/dialogue/references/#load) and pass the path of the written dialogue file.
 
 ```gdscript hl_lines="3"
 extends Control
 
 var epic_dialogue = Dialogue.load('res://intro.dlg')
 
-@export var my_stage : TheatreStage
+@export var my_stage: TheatreStage
 ```
 
-Call `start()` method on `my_stage`, and pass the `epic_dialogue` as the argument to start it.
+Call [`start()`](/class/theatrestage/references/#start) method on `my_stage`, and pass the `epic_dialogue` as the argument to start it.
 
 ```gdscript hl_lines="7 8"
 extends Control
 
 var epic_dialogue = Dialogue.load('res://intro.dlg')
 
-@export var my_stage : TheatreStage
+@export var my_stage: TheatreStage
 
 func _ready():
     my_stage.start(epic_dialogue)
 ```
 
-Now the `Dialogue` will start when you play the scene. But we're not done here yet!
+Now, the dialogue will start when you play the scene. But we're not done here yet!
 
 ### Progressing
 
-Progress the `Dialogue` with `TheatreStage.progress()`. In this example, we'll use `_input(event)` with Godot's default action key `'ui_accept'` (space/enter key).
+Progress the dialogue with [`TheatreStage.progress()`](/class/theatrestage/references/#progress). In this example, we'll use `_input(event)` with Godot's default action key `'ui_accept'` (<kbd>space</kbd>/<kbd>enter</kbd> key).
 
 ```gdscript hl_lines="10 11 12"
 extends Control
 
 var epic_dialogue = Dialogue.load('res://intro.dlg')
 
-@export var my_stage : TheatreStage
+@export var my_stage: TheatreStage
 
 func _ready():
     my_stage.start(epic_dialogue)
@@ -143,7 +149,7 @@ func _input(event):
         my_stage.progress()
 ```
 
-Now, everytime `'ui_accept'` key is pressed, the Dialogue should progress.
+Now, everytime `'ui_accept'` key is pressed, the dialogue should progress.
 
 ## Summary
 
@@ -165,7 +171,7 @@ extends Control
 
 var epic_dialogue = Dialogue.load('res://intro.dlg')
 
-@export var my_stage : TheatreStage
+@export var my_stage: TheatreStage
 
 func _ready():
     my_stage.start(epic_dialogue)
@@ -175,12 +181,12 @@ func _input(event):
         my_stage.progress()
 ```
 
-There's also the [Minimal Theatre Setup](tutorials/minimal_setup/index.md) tutorial which is very similar to this article, but a lot more shorter and straightforward.
+There's also [Minimal Theatre Setup](tutorials/minimal_setup/index.md) tutorial which is very similar to this article, but a lot more shorter and straightforward.
 
 ## Next step
 
-* More about writing your `Dialogue` on [Dialogue Syntax](class/dialogue/syntax.md).
-* Configure your `Stage` on [Configuring Stage](class/stage/configuration.md).
+* More about writing your [Dialogue] on [Dialogue Syntax](class/dialogue/syntax.md).
+* More on controlling your [TheatreStage] on its [Class Reference](class/theatrestage/references/) page.
 * Encounter any problems? Check out [Common Troubleshooting](tutorials/troubleshooting.md).
 
 ### Specific tutorials
