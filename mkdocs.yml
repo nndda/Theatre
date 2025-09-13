@@ -128,4 +128,7 @@ extra_css:
   - assets/stylesheets/syntax.css
   - assets/stylesheets/themes.css
 
+hooks:
+  - docs/hooks/type_class.py
+
 copyright: Copyright &copy; 2025 nnda
