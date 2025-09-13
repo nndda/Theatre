@@ -4,6 +4,12 @@ repo_url: https://github.com/nndda/Theatre
 repo_name: nndda/Theatre
 edit_uri: edit/docs/docs/
 
+validation:
+  links:
+    absolute_links: relative_to_docs
+    anchors: warn
+    unrecognized_links: warn
+
 nav:
   - "index.md"
   - "Quick Start":
