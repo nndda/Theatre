@@ -122,7 +122,4 @@ extra_css:
   - assets/stylesheets/syntax.css
   - assets/stylesheets/themes.css
 
-extra_javascript:
-  - assets/scripts/heading-type.js
-
 copyright: Copyright &copy; 2025 nnda
