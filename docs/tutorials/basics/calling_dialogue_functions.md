@@ -1,4 +1,4 @@
-# Calling Dialogue Functions
+# Calling Functions from Dialogue
 
 ```
 Dia:
@@ -12,7 +12,7 @@ Dia:
     using its various setter functions."
 ```
 
-0. Add `ColorRect` node to the scene. Adjust its position and size to your liking.
+0. Add [ColorRect] node to the scene. Adjust its position and size to your liking.
 
     ``` hl_lines="7"
     MyScene
@@ -30,14 +30,14 @@ Dia:
     @onready var color_rect = $ColorRect
     ```
 
-0. Register it as a scope in the `Stage`, using `add_scope()`.
+0. Register it as a scope in the [TheatreStage], using [`add_scope()`](/class/theatrestage/references/#add_scope).
 
     ```gdscript hl_lines="13"
     extends Control
 
-    var dlg : Dialogue # Load/create Dialogue here
+    var dlg: Dialogue # Load/create Dialogue here
 
-    @export var stage : TheatreStage
+    @export var stage: TheatreStage
     @onready var color_rect = $ColorRect
 
     func _input(event):
@@ -45,7 +45,7 @@ Dia:
             stage.progress()
 
     func _ready():
-        stage.add_scope("ColorRect", color_rect)
+        stage.add_scope("CoolRect", color_rect)
         stage.start(dlg)
     ```
     `add_scope()` requires 2 arguments:
@@ -53,7 +53,10 @@ Dia:
     * The ID/name of the scope object to be used in the written Dialogue.
     * The object itself.
 
-0. We are ready to call functions on our `ColorRect`. We'll append to the Dialogue above.
+    Here, we'll name our [ColorRect] as `CoolRect`.
+
+0. We are ready to call functions (and even do other stuff) on our [ColorRect].
+<!-- We'll append to the dialogue sample above. -->
 
     ``` hl_lines="6"
     :
@@ -61,7 +64,7 @@ Dia:
     :
         "Ta-da~!"
 
-        ColorRect.set_color("#0000FF")
+        CoolRect.set_color("#0000FF")
     ```
 
 ## Code Summary
@@ -79,9 +82,9 @@ MyScene
 ```gdscript hl_lines="6 13"
 extends Control
 
-var dlg : Dialogue # Load/create Dialogue here
+var dlg: Dialogue # Load/create Dialogue here
 
-@export var stage : TheatreStage
+@export var stage: TheatreStage
 @onready var color_rect = $ColorRect
 
 func _input(event):
@@ -89,6 +92,6 @@ func _input(event):
         stage.progress()
 
 func _ready():
-    stage.add_scope("ColorRect", color_rect)
+    stage.add_scope("CoolRect", color_rect)
     stage.start(dlg)
 ```

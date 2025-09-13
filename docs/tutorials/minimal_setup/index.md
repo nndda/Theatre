@@ -14,11 +14,11 @@ This article cover the basic minimal setup for Theatre, like the one created in 
 
     The two highlighted nodes are the Theatre-specific nodes.
 
-    Adjust the size and position of the `PanelContainer` to your liking.
+    Adjust the size and position of the [PanelContainer] to your liking.
 
     <br>
 
-2. Tick the `fit_content` property on the `DialogueLabel`.
+2. Tick the `fit_content` property on the [DialogueLabel].
 
     <div class="grid cards" markdown>
 
@@ -28,18 +28,18 @@ This article cover the basic minimal setup for Theatre, like the one created in 
 
     <br>
 
-3. Attach a script to the scene and create a new `TheatreStage` object variable with `@export`.
+3. Attach a script to the scene and create a new [TheatreStage] object variable with `@export` annotation.
 
     ```gdscript hl_lines="3"
     extends Control
 
-    @export var my_stage : TheatreStage
+    @export var my_stage: TheatreStage
 
     ```
 
     <br>
 
-4. Go to the inspector, and assign the `TheatreStage` node to `stage`.
+4. Go to the inspector, and assign the [TheatreStage] node to the variable named `stage` in the script.
 
     <div class="grid cards" markdown>
 
@@ -51,7 +51,7 @@ This article cover the basic minimal setup for Theatre, like the one created in 
 
     <br>
 
-5. Click the `TheatreStage` node, go to the inspector, and assign the `Label` to `actor_label`, and `DialogueLabel` to `dialogue_label`.
+5. Click the [TheatreStage] node, go to the inspector, and assign the [Label] to [`actor_label`](/class/theatrestage/references/#actor_label), and [DialogueLabel] to [`dialogue_label`](/class/theatrestage/references/#dialogue_label).
 
     <div class="grid cards" markdown>
 
@@ -61,12 +61,12 @@ This article cover the basic minimal setup for Theatre, like the one created in 
 
     <br>
 
-6. Use input event to progress the `TheatreStage`.
+6. Use input event to progress the [TheatreStage].
 
     ```gdscript hl_lines="5 6 7"
     extends Control
 
-    @export var my_stage : TheatreStage
+    @export var my_stage: TheatreStage
 
     func _input(event):
         if event.is_action_pressed("ui_accept"):
@@ -75,14 +75,14 @@ This article cover the basic minimal setup for Theatre, like the one created in 
 
     <br>
 
-7. You can then write/load your `Dialogue`, and start it.
+7. You can then write/load your [Dialogue], and start it.
 
     ```gdscript hl_lines="3 11 12"
     extends Control
 
-    var dlg : Dialogue # Load/create Dialogue here
+    var dlg: Dialogue # Load/create Dialogue here
 
-    @export var my_stage : TheatreStage
+    @export var my_stage: TheatreStage
 
     func _input(event):
         if event.is_action_pressed("ui_accept"):
@@ -108,9 +108,9 @@ MyScene
 ```gdscript
 extends Control
 
-var dlg : Dialogue # Load/create Dialogue here
+var dlg: Dialogue # Load/create Dialogue here
 
-@export var my_stage : TheatreStage
+@export var my_stage: TheatreStage
 
 func _input(event):
     if event.is_action_pressed("ui_accept"):
@@ -121,9 +121,5 @@ func _ready():
 ```
 
 <br>
-
-## Download
-
-[Download scene & script](tutorial-minimal_setup.zip "Drop the directory 'tutorials' directly in your project root folder"){ .md-button download="tutorial-minimal_setup.zip" }
 
 Got any questions? feel free to ask them in the [GitHub Discussions!](https://github.com/nndda/Theatre/discussions/new?category=help){ target="_blank" }

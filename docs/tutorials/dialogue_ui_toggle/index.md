@@ -15,13 +15,13 @@ Dia:
 ```
 
 !!! info "TL;DR"
-    Utilize `TheatreStage`'s signals: `started`, `finished`, and `cancelled` to call `hide()`/`show()` methods on the dialogue UI.
+    Utilize [TheatreStage]'s signals: [`started`](/class/theatrestage/references/#started), [`finished`](/class/theatrestage/references/#finished), and [`cancelled`](/class/theatrestage/references/#cancelled) to call [`hide()`](https://docs.godotengine.org/en/4.4/classes/class_canvasitem.html#class-canvasitem-method-hide)/[`show()`](https://docs.godotengine.org/en/4.4/classes/class_canvasitem.html#class-canvasitem-method-show) methods on the dialogue UI.
 
 Before we begin, let's add a 'start dialogue' button, so we don't have to restart the scene everytime the dialogue ended.
 
-0. Add a `Button`, and we'll rename it to `StartButton`. Adjust its text, size, and position to your liking.
+0. Add a [Button] node, and we'll rename it to `StartButton`. Adjust its text, size, and position to your liking.
 
-0. Set the `focus_mode` property to none. To avoid accidental button press when progressing the dialogue.
+0. Set the [`focus_mode`](https://docs.godotengine.org/en/4.4/classes/class_control.html#class-control-property-focus-mode) property to `none`. To avoid accidental button press when progressing the dialogue.
 
     <div class="grid cards" markdown>
 
@@ -29,7 +29,7 @@ Before we begin, let's add a 'start dialogue' button, so we don't have to restar
 
     </div>
 
-0. Connect the `pressed` signal of the button to a method. In that method, call the `TheatreStage`'s `start()` method. It should looks something like this:
+0. Connect the [`pressed`](https://docs.godotengine.org/en/4.4/classes/class_basebutton.html#class-basebutton-signal-pressed) signal of the button to a method. In that method, call the [TheatreStage]'s [`start()`](/class/theatrestage/references/#start) method. It should looks something like this:
 
     ```gdscript
     func _on_start_button_pressed():
@@ -40,14 +40,14 @@ Before we begin, let's add a 'start dialogue' button, so we don't have to restar
 
 <hr>
 
-0. Let's take a look at the current scene tree. Since `PanelContainer` is the parent of all UI dialogue, let's save it as a variable named `dialogue_container`.
+0. Let's take a look at the current scene tree. Since [PanelContainer] is the parent of all of the UI dialogue, let's save it as a variable named `dialogue_container`.
 
     ```gdscript
-    @export var dialogue_container : PanelContainer
+    @export var dialogue_container: PanelContainer
     ```
 
     !!! note
-        Don't forget to assign the node in the inspector when using `@export` annotation to reference nodes!
+        Don't forget to assign the node in the inspector when using `@export` annotation to reference the nodes!
 
     <br>
 
@@ -63,7 +63,7 @@ Before we begin, let's add a 'start dialogue' button, so we don't have to restar
 
     <br>
 
-0. For now, let's just simply show and hide the dialogue UI, by calling `show()` and `hide()` on `dialogue_container`.
+0. For now, let's just simply show and hide the dialogue UI, by calling [`hide()`](https://docs.godotengine.org/en/4.4/classes/class_canvasitem.html#class-canvasitem-method-hide) and [`show()`](https://docs.godotengine.org/en/4.4/classes/class_canvasitem.html#class-canvasitem-method-show) on `dialogue_container`.
 
     ```gdscript hl_lines="2 5"
     func show_dialogue_ui():
@@ -75,7 +75,7 @@ Before we begin, let's add a 'start dialogue' button, so we don't have to restar
 
     <br>
 
-0. Click your `TheatreStage` node, head over to the `Node`'s Signals dock, and connect the signals `started`, `finished`, and `cancelled` to the 2 methods created previously. More specifically:
+0. Click your [TheatreStage] node, head over to the Node's Signals dock, and connect the signals [`started`](/class/theatrestage/references/#started), [`finished`](/class/theatrestage/references/#finished), and [`cancelled`](/class/theatrestage/references/#cancelled) to the 2 methods created previously. More specifically:
 
     <style>.md-typeset__scrollwrap{ text-align: center; }</style>
 
@@ -107,10 +107,10 @@ MyScene
 ```gdscript hl_lines="6 15 16 18 19 21 22"
 extends Control
 
-var dlg : Dialogue # Load/create Dialogue here
+var dlg: Dialogue # Load/create Dialogue here
 
-@export var my_stage : TheatreStage
-@export var dialogue_container : PanelContainer
+@export var my_stage: TheatreStage
+@export var dialogue_container: PanelContainer
 
 func _input(event):
     if event.is_action_pressed("ui_accept"):
@@ -131,9 +131,5 @@ func hide_dialogue_ui():
 ```
 
 <br>
-
-## Download
-
-[Download scene & script](tutorial-dialogue_ui_toggle.zip "Drop the directory 'tutorials' directly in your project root folder"){ .md-button download="tutorial-dialogue_ui_toggle.zip" }
 
 Got any questions? feel free to ask them in the [GitHub Discussions!](https://github.com/nndda/Theatre/discussions/new?category=help){ target="_blank" }
