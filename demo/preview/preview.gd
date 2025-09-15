@@ -12,10 +12,11 @@ var progress_label_tween : Tween
 
 var tree : SceneTree
 
-var dlg := Dialogue.load(
-    "res://dialogues/preview-advanced.dlg"
+var dlg := Dialogue.new(
+    FileAccess.get_file_as_string("res://dialogues/preview-advanced.dlg")
 )
 var bbcode_regex := RegEx.new()
+var bbcode_img_tag: RegEx = RegEx.create_from_string(r"\[img(?:[^\]]*)\].+?\[\/img\]")
 
 func _ready() -> void:
     restart_label.visible = false
@@ -78,8 +79,12 @@ func _dialogue_label_text_rendered(_rendered_text: String) -> void:
 
 func _stage_progressed_at(_line : int, line_data : Dictionary) -> void:
     progress_bar.value = 0
+    
     progress_bar.max_value = bbcode_regex.sub(
-        line_data[DialogueParser.Key.CONTENT], "", true
+        bbcode_img_tag.sub(
+            line_data[DialogueParser.Key.CONTENT],
+            "#", true
+        ), "", true
     ).length()
 
 func _stage_started() -> void:
