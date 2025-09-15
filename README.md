@@ -28,24 +28,12 @@ Yet another <sub>(linear)</sub> dialogue system<b>/</b>addon<b>/</b>plugin for G
 <tr>
 <td>
 
-<img src="https://github.com/user-attachments/assets/5bbefeed-61bb-4b9d-89a0-69d8300a3c08" alt="Theatre in action" width="368">
+<img src="https://github.com/user-attachments/assets/1933ec1d-ca3f-457c-a689-bf090f17a092" alt="Theatre in action" width="410">
 
 </td>
 <td>
 
-```yaml
-Dia:
-    "Welcome! {d=0.8}to the
-    [fx1]Theatre[/fx1]!
-        d=0.9
-    yet another text-based
-    dialogue addon
-        d=0.3
-    developed for Godot {gd_ver}."
-
-
-    ＼(^ ▽ ^)
-```
+<img alt="Theatre Dialogue script" src="https://github.com/user-attachments/assets/ae9bd7bf-8d5d-45e9-b175-3bb2e8430eb4" width="410">
 
 </td>
 </tr>
