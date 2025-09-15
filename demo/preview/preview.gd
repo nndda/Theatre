@@ -1,8 +1,8 @@
 extends Control
 
 # Script for the preview scene.
-# NOTE: Want to see demo scene instead?
-# Check out res://theatre_demo/1_intro.tscn
+# NOTE: Want to see the demo scene instead?
+# Check out res://demo/1_intro.tscn
 
 @export var stage : TheatreStage
 @export var progress_bar : ProgressBar
