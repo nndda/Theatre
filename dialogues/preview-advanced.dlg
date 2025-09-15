@@ -1,23 +1,24 @@
+
 Dia:
-    "Welcome! {d=.8}to
-    [fx1]Theatre[/fx1]!
-        d=.9
-    yet another text-based dialogue addon
-        d=.3
-    developed for Godot {gd_ver}."
+    "Welcome! {d=0.8}to
+    [img h=20 res://icons/theatre.png]
+    [f=res://fonts/gabriela.tres]
+        [wavy][u]Theatre[/u][/wavy]!
+    [/f]
+    {d=0.9} yet another text-based dialogue addon,
+    {d=0.3} developed for
+    [img h=20 res://icons/godot.png]
+    Godot {( Engine.get_version_info()["major"] )}."
 
 
     ＼(^ ▽ ^)
 
 :
     "The written
-    [c=77dfdf]
-        Dialogue
-    [/c]
-    syntax
+    [img h=20 res://icons/dialogue.svg]
+    [c=77dfdf]Dialogue[/c] syntax
         d=.25
-    is designed
-    to be human-readable.
+    is designed to be human-readable.
         d=.76
     Similar to other data format
         d=.45
