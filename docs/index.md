@@ -51,22 +51,13 @@ Yet another Godot dialogue addon.
 
 ![Dialogue preview](assets/images/theatre-preview.gif){ .preview-img }
 
-<div></div>
-
 </div>
 
-``` { .plain .no-copy }
-Dia:
-    "Welcome! {d=0.8}to
-    [img h=20 res://icons/Theatre-icon.png]
-    [f=res://fonts/gabriela.tres]
-        [wavy][u]Theatre[/u][/wavy]!
-    [/f]
-    {d=0.9} yet another text-based dialogue addon,
-    {d=0.3} developed for
-    [img h=20 res://icons/godot.png]
-    Godot {( Engine.get_version_info()["major"] )}."
-```
+<div class="preview-img-container" markdown>
+
+![Dialogue preview script](assets/images/dialogue-preview-1.png){ .preview-img }
+
+</div>
 
 </div>
 
