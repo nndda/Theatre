@@ -2,8 +2,11 @@
 * text=auto eol=lf
 
 # Only include the addons folder when downloading from the Godot Asset Library.
-/**                 export-ignore
-/addons/Theatre/**  !export-ignore
+/**                     export-ignore
+/addons                 !export-ignore
+/addons/Theatre         !export-ignore
+/addons/Theatre/**      !export-ignore
+/addons/Theatre-dev/**  export-ignore
 
 # Ignore generated files in diff and repository statistic
 /tests/refs/** linguist-generated=true
