@@ -51,7 +51,7 @@ grow_vertical = 2
 script = ExtResource("1_86xvy")
 stage = NodePath("TheatreStage")
 progress_bar = NodePath("PanelContainer/CenterContainer/VBoxContainer/ProgressBar")
-progress_label = NodePath("PanelContainer/CenterContainer/VBoxContainer/ProgressBar/ProgressLabel")
+progress_label = NodePath("PanelContainer/CenterContainer/VBoxContainer/ProgressLabel")
 restart_label = NodePath("PanelContainer/CenterContainer/RestartLabel")
 
 [node name="TheatreStage" type="Node" parent="." node_paths=PackedStringArray("actor_label", "dialogue_label")]
@@ -82,7 +82,7 @@ text = "[center]Press [color=77dfdf]Space[/color] to restart[/center]"
 fit_content = true
 
 [node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/CenterContainer"]
-custom_minimum_size = Vector2(380, 235)
+custom_minimum_size = Vector2(380, 240)
 layout_mode = 2
 
 [node name="Label" type="Label" parent="PanelContainer/CenterContainer/VBoxContainer"]
@@ -119,28 +119,24 @@ max_value = 1.0
 value = 0.1
 show_percentage = false
 
-[node name="ProgressLabel" type="RichTextLabel" parent="PanelContainer/CenterContainer/VBoxContainer/ProgressBar"]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_top = 19.0
-offset_bottom = 51.0
-grow_horizontal = 2
-bbcode_enabled = true
-text = "Press [color=77dfdf]Space[/color] to continue"
-
 [node name="HSeparator2" type="HSeparator" parent="PanelContainer/CenterContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_constants/separation = 18
+theme_override_constants/separation = 1
 theme_override_styles/separator = SubResource("StyleBoxEmpty_pomd1")
+
+[node name="ProgressLabel" type="RichTextLabel" parent="PanelContainer/CenterContainer/VBoxContainer"]
+layout_mode = 2
+bbcode_enabled = true
+text = "Press [color=77dfdf]Space[/color] to continue"
+fit_content = true
 
 [node name="ReferenceRect" type="ReferenceRect" parent="."]
 visible = false
 layout_mode = 0
 offset_left = 360.0
-offset_top = 200.0
+offset_top = 184.0
 offset_right = 792.0
-offset_bottom = 448.0
+offset_bottom = 464.0
 border_width = 5.0
 
 [connection signal="cancelled" from="TheatreStage" to="." method="_stage_cancelled"]
