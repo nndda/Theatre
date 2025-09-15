@@ -28,12 +28,12 @@ Yet another <sub>(linear)</sub> dialogue system<b>/</b>addon<b>/</b>plugin for G
 <tr>
 <td>
 
-<img src="https://github.com/user-attachments/assets/1933ec1d-ca3f-457c-a689-bf090f17a092" alt="Theatre in action" width="400">
+<img src="https://github.com/user-attachments/assets/1933ec1d-ca3f-457c-a689-bf090f17a092" alt="Theatre in action" width="385">
 
 </td>
 <td>
 
-<img alt="Theatre Dialogue script" src="https://github.com/user-attachments/assets/ae9bd7bf-8d5d-45e9-b175-3bb2e8430eb4" width="400">
+<img alt="Theatre Dialogue script" src="https://github.com/user-attachments/assets/ae9bd7bf-8d5d-45e9-b175-3bb2e8430eb4" width="385">
 
 </td>
 </tr>
