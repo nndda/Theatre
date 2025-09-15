@@ -1,10 +1,9 @@
 # Normalize EOL for all files that Git considers text files.
 * text=auto eol=lf
 
-# Only include the addons folder when downloading from the Asset Library.
-/**        export-ignore
-/addons    !export-ignore
-/addons/** !export-ignore
+# Only include the addons folder when downloading from the Godot Asset Library.
+/**                 export-ignore
+/addons/Theatre/**  !export-ignore
 
 # Ignore generated files in diff and repository statistic
 /tests/refs/** linguist-generated=true
