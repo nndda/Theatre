@@ -75,7 +75,7 @@ Dia:
 <br>
 
 <section markdown>
-    
+
 ## Install Theatre <small class="label">Latest</small> { .install-home-heading }
 
 ```sh { .install-sh-home }
@@ -136,6 +136,20 @@ Or [download and install](installation.md) it manually.
 
 <br>
 
+## :fontawesome-solid-heart: Support the Project { .install-home-heading }
+
+<p align="center" markdown class="support-links">
+[:simple-liberapay: Liberapay](https://liberapay.com/nnda){ .liberapay }
+&nbsp;
+•
+&nbsp;
+[:simple-kofi: Ko-fi](https://ko-fi.com/nnda){ .kofi }
+&nbsp;
+•
+&nbsp;
+[:simple-patreon: Patreon](https://patreon.com/nnda){ .patreon }
+</p>
+
 <!-- 
 <p style="text-align: center;">
     <mark>Comprehensive documentation for class references (properties, methods, signals) are accessible in Godot directly.</mark> Press <kbd>F1</kbd> and search for Theatre classes, or hold <kbd>Ctrl</kbd> and click one of the class in the script to see its documentation page. <del>I'm too lazy to migrate all of that stuff here</del> this site is focused for in-depth tutorials and guides.
@@ -145,6 +159,7 @@ Or [download and install](installation.md) it manually.
 <br>
 <br>
 <br>
+
 
 <div class="container" markdown>
 

@@ -53,3 +53,19 @@ a.md-content__button {
 aside.md-source-file {
   display: none !important;
 }
+
+.liberapay {
+  color: #fbe48a !important;
+}
+
+.kofi {
+  color: #ffafad !important;
+}
+
+.patreon {
+  color: #73dff5 !important;
+}
+
+.support-links {
+  font-size: 1.25em;
+}
