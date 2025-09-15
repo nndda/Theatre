@@ -6,3 +6,7 @@
 
 # Temporary files
 *.tmp
+
+# Demo-related assets
+fonts/
+icons/
