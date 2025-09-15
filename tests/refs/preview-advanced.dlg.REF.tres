@@ -9,20 +9,20 @@ _sets = Array[Dictionary]([{
 1: [],
 2: [],
 3: false,
-4: "\"Welcome! to [fx1]Theatre[/fx1]! yet another text-based dialogue addon developed for Godot .\" 
+4: "\"Welcome! to [img height=20]res://icons/theatre.png[/img] [font=res://fonts/gabriela.tres][wavy][u]Theatre[/u][/wavy]! [/font] yet another text-based dialogue addon,  developed for [img height=20]res://icons/godot.png[/img] Godot {#11361171432}.\" 
 
 
 ＼(^ ▽ ^) ",
-5: "\"Welcome! {d=.8}to [fx1]Theatre[/fx1]! {d=.9}yet another text-based dialogue addon {d=.3}developed for Godot {gd_ver}.\" 
+5: "\"Welcome! {d=0.8}to [img height=20]res://icons/theatre.png[/img] [font=res://fonts/gabriela.tres][wavy][u]Theatre[/u][/wavy]! [/font]{d=0.9} yet another text-based dialogue addon, {d=0.3} developed for [img height=20]res://icons/godot.png[/img] Godot {#11361171432}.\" 
 
 
 ＼(^ ▽ ^) ",
-6: 1,
+6: 2,
 7: {
 8: {
 10: 0.8,
-22: 0.9,
-60: 0.3
+24: 0.9,
+64: 0.3
 },
 9: {}
 },
@@ -31,35 +31,39 @@ _sets = Array[Dictionary]([{
 12: PackedInt64Array(),
 13: {},
 14: false,
-15: PackedStringArray("gd_ver"),
+15: PackedStringArray(),
 16: [],
-17: []
+17: [{
+4: " Engine.get_version_info()[\"major\"] ",
+19: "#11361171432",
+20: PackedStringArray("Engine")
+}]
 }, {
 0: "Dia",
 1: [],
 2: [],
 3: false,
-4: "\"The written [color=77dfdf]Dialogue [/color]syntax is designed to be human-readable. Similar to other data format like [color=8ce35d]YAML[/color]. Although, it is far more simplified and limited.\" 
+4: "\"The written [img height=20]res://icons/dialogue.svg[/img] [color=77dfdf]Dialogue[/color] syntax is designed to be human-readable. Similar to other data format like [color=8ce35d]YAML[/color]. Although, it is far more simplified and limited.\" 
 
 
 (｡T ω T｡) ",
-5: "\"The written [color=77dfdf]Dialogue [/color]syntax {d=.25}is designed to be human-readable. {d=.76}Similar to other data format {d=.45}like [color=8ce35d]YAML[/color]. {d=.76}{s=.45}Although, {d=.5}it is far more simplified {d=.4}{s=.25}and limited.\" 
+5: "\"The written [img height=20]res://icons/dialogue.svg[/img] [color=77dfdf]Dialogue[/color] syntax {d=.25}is designed to be human-readable. {d=.76}Similar to other data format {d=.45}like [color=8ce35d]YAML[/color]. {d=.76}{s=.45}Although, {d=.5}it is far more simplified {d=.4}{s=.25}and limited.\" 
 
 
 (｡T ω T｡) ",
-6: 12,
+6: 16,
 7: {
 8: {
-29: 0.25,
-63: 0.76,
-92: 0.45,
-103: 0.76,
-113: 0.5,
-139: 0.4
+31: 0.25,
+65: 0.76,
+94: 0.45,
+105: 0.76,
+115: 0.5,
+141: 0.4
 },
 9: {
-103: 0.45,
-139: 0.25
+105: 0.45,
+141: 0.25
 }
 },
 10: [],
@@ -83,7 +87,7 @@ _sets = Array[Dictionary]([{
 
 
 <(￣︶￣)> ",
-6: 37,
+6: 38,
 7: {
 8: {
 6: 0.9,
@@ -117,7 +121,7 @@ _sets = Array[Dictionary]([{
 
 
 (≧ ω ≦) ",
-6: 59,
+6: 60,
 7: {
 8: {
 30: 1.05,
@@ -139,6 +143,6 @@ _sets = Array[Dictionary]([{
 17: []
 }])
 _source_path = "res://dialogues/preview-advanced.dlg"
-_used_variables = PackedStringArray("gd_ver")
+_used_variables = PackedStringArray()
 _used_function_calls = Dictionary[String, Variant]({})
 _sections = Dictionary[String, int]({})

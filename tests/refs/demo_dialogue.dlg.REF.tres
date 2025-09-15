@@ -32,8 +32,8 @@ _sets = Array[Dictionary]([{
 1: [],
 2: [],
 3: false,
-4: "\"There are 3 main classes that makes part of Theatre plugin: Dialogue,  DialogueLabel,  & Stage\" ",
-5: "\"There are 3 main classes that makes part of Theatre plugin:{d = 0.7} Dialogue, {d = 0.7} DialogueLabel, {d = 0.7} & Stage\" ",
+4: "\"There are 3 main classes that makes part of Theatre plugin: Dialogue,  DialogueLabel,  & TheatreStage\" ",
+5: "\"There are 3 main classes that makes part of Theatre plugin:{d = 0.7} Dialogue, {d = 0.7} DialogueLabel, {d = 0.7} & TheatreStage\" ",
 6: 5,
 7: {
 8: {
@@ -112,13 +112,12 @@ _sets = Array[Dictionary]([{
 1: [],
 2: [],
 3: false,
-4: "\"Most of the classes references are documented directly in the addon. In the editor, press F1 and look for Theatre's classes to see its documentation page.\" ",
-5: "\"Most of the classes references are documented directly in the addon.{d = 0.8} In the editor,{d = 0.8} press F1 and look for Theatre's classes to see its documentation page.\" ",
+4: "\"We have online documentation, live at theatre.nnda.dev\" ",
+5: "\"We have online documentation,{d = 0.2} live at theatre.nnda.dev\" ",
 6: 22,
 7: {
 8: {
-69: 0.8,
-84: 0.8
+30: 0.2
 },
 9: {}
 },
@@ -135,13 +134,34 @@ _sets = Array[Dictionary]([{
 1: [],
 2: [],
 3: false,
-4: "\"We also have online documentation page, live at nndda.github.io/Theatre\" ",
-5: "\"We also have online documentation page,{d = 0.2} live at nndda.github.io/Theatre\" ",
-6: 27,
+4: "\"It contains class references for the various methods, properties, and signals of the Theatre classes.\" ",
+5: "\"It contains class references for the various methods,{d = 0.7} properties,{d = 0.7} and signals of the Theatre classes.\" ",
+6: 26,
 7: {
 8: {
-40: 0.2
+54: 0.7,
+66: 0.7
 },
+9: {}
+},
+10: [],
+11: {},
+12: PackedInt64Array(),
+13: {},
+14: false,
+15: PackedStringArray(),
+16: [],
+17: []
+}, {
+0: "Dia",
+1: [],
+2: [],
+3: false,
+4: "\"As well as tutorials articles and dialogue syntax references page.\" ",
+5: "\"As well as tutorials articles and dialogue syntax references page.\" ",
+6: 32,
+7: {
+8: {},
 9: {}
 },
 10: [],
@@ -159,7 +179,7 @@ _sets = Array[Dictionary]([{
 3: false,
 4: "\"Stay tuned for the next updates!\" ",
 5: "\"Stay tuned for the next updates!\" ",
-6: 31,
+6: 35,
 7: {
 8: {},
 9: {}
