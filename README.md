@@ -40,15 +40,19 @@ Yet another <sub>(linear)</sub> dialogue system<b>/</b>addon<b>/</b>plugin for G
 </table>
 
 ```gdscript
+# Load your epic dialogue!
 var epic_dialogue := Dialogue.load('res://epic_dialogue.dlg')
-
+# Set up the stage
 @export var my_stage: TheatreStage
 
 func _ready():
+    # Start your dialogue
     my_stage.start(epic_dialogue)
 
 func _input(event):
+    # When the space/enter key is pressed,
     if event.is_action_pressed('ui_accept'):
+        # Progress your dialogue
         my_stage.progress()
 ```
 
