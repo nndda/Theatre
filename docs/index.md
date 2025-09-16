@@ -32,7 +32,7 @@ Yet another Godot dialogue addon.
 
 [:material-download: v0.12.0](https://github.com/nndda/Theatre/archive/refs/tags/0.12.0.zip "Download Theatre."){ .label }
 
-[:simple-godotengine: Godot 4.4](https://godotengine.org/ "Compatible with Godot 4.4 or above."){ .label }
+[:simple-godotengine: Godot 4.5](https://godotengine.org/ "Compatible with Godot 4.5 or above."){ .label }
 
 [:material-book-open-variant: Quick Start](quickstart.md "Get started with Theatre."){ .label }
 
