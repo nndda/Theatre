@@ -1,6 +1,8 @@
+# Main demo dialogue sample
 
 Dia:
     "Welcome! {d=0.8}to
+    PartyPopper.pop()
     [img h=20 res://icons/theatre.png]
     [f=res://fonts/gabriela.tres]
         [wavy][u]Theatre[/u][/wavy]!
