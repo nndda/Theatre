@@ -8,5 +8,5 @@
 *.tmp
 
 # Demo-related assets
-fonts/
-icons/
+/fonts/
+/icons/
