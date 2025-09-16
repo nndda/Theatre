@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://c7sx4nn7nbs5t"]
+[gd_scene load_steps=18 format=3 uid="uid://c7sx4nn7nbs5t"]
 
 [ext_resource type="Script" uid="uid://bsmlj2gndtvxt" path="res://demo/preview/preview.gd" id="1_86xvy"]
 [ext_resource type="Script" uid="uid://c4jlgtq7rblbj" path="res://addons/Theatre/classes/TheatreStage.gd" id="2_wv2tv"]
@@ -40,6 +40,40 @@ script = ExtResource("4_6f1ve")
 script = ExtResource("5_low7t")
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_pomd1"]
+
+[sub_resource type="Gradient" id="Gradient_keaox"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_y1ooh"]
+gradient = SubResource("Gradient_keaox")
+width = 6
+height = 6
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_keaox"]
+particle_flag_disable_z = true
+angle_min = -720.0
+angle_max = 720.0
+direction = Vector3(1, -1, 0)
+initial_velocity_min = 250.0
+initial_velocity_max = 750.0
+gravity = Vector3(0, 200, 0)
+linear_accel_min = -100.0
+linear_accel_max = 49.999996
+tangential_accel_min = -2.2351742e-06
+tangential_accel_max = 24.999998
+damping_max = 51.786003
+scale_min = 0.5
+scale_max = 1.35
+hue_variation_min = -1.0
+hue_variation_max = 0.99999994
+turbulence_enabled = true
+turbulence_noise_scale = 6.0
+turbulence_noise_speed_random = 0.0
+turbulence_influence_min = 0.05
+turbulence_initial_displacement_min = 1.490116e-06
+turbulence_initial_displacement_max = 1.490116e-06
+sub_emitter_mode = 4
+sub_emitter_amount_at_start = 3
 
 [node name="Preview" type="Control" node_paths=PackedStringArray("stage", "progress_bar", "progress_label", "restart_label")]
 layout_mode = 3
@@ -138,6 +172,34 @@ offset_top = 184.0
 offset_right = 792.0
 offset_bottom = 464.0
 border_width = 5.0
+
+[node name="PartyPopper" type="GPUParticles2D" parent="."]
+position = Vector2(368, 400)
+emitting = false
+amount = 5
+sub_emitter = NodePath("SubEmitter")
+texture = SubResource("GradientTexture2D_y1ooh")
+lifetime = 15.0
+one_shot = true
+speed_scale = 1.05
+explosiveness = 1.0
+randomness = 1.0
+trail_enabled = true
+trail_lifetime = 0.2
+process_material = SubResource("ParticleProcessMaterial_keaox")
+
+[node name="SubEmitter" type="GPUParticles2D" parent="PartyPopper"]
+emitting = false
+amount = 12
+texture = SubResource("GradientTexture2D_y1ooh")
+lifetime = 15.0
+one_shot = true
+speed_scale = 1.05
+explosiveness = 1.0
+randomness = 1.0
+trail_sections = 3
+trail_section_subdivisions = 2
+process_material = SubResource("ParticleProcessMaterial_keaox")
 
 [connection signal="cancelled" from="TheatreStage" to="." method="_stage_cancelled"]
 [connection signal="finished" from="TheatreStage" to="." method="_stage_finished"]

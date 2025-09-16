@@ -18,11 +18,17 @@ var dlg := Dialogue.new(
 var bbcode_regex := RegEx.new()
 var bbcode_img_tag: RegEx = RegEx.create_from_string(r"\[img(?:[^\]]*)\].+?\[\/img\]")
 
+func pop() -> void:
+    $PartyPopper.emitting = true
+
 func _ready() -> void:
+    DialogueTest.generate_references()
     restart_label.visible = false
     progress_label.modulate = Color.TRANSPARENT
     tree = get_tree()
     bbcode_regex.compile(DialogueParser.REGEX_BBCODE_TAGS)
+
+    stage.add_scope("PartyPopper", self)
 
     # NOTE: Optimize resolution to create preview GIF image.
     # Require display/window/stretch/mode to be set to `disabled`
