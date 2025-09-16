@@ -28,7 +28,7 @@ window/vsync/vsync_mode=0
 [editor]
 
 movie_writer/disable_vsync=true
-movie_writer/fps=25
+movie_writer/fps=30
 script/search_in_file_extensions=PackedStringArray("gd", "gdshader", "dlg")
 
 [editor_plugins]

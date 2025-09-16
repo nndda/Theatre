@@ -39,8 +39,6 @@ script = ExtResource("4_6f1ve")
 [sub_resource type="RichTextEffect" id="RichTextEffect_bysel"]
 script = ExtResource("5_low7t")
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_pomd1"]
-
 [sub_resource type="Gradient" id="Gradient_keaox"]
 colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1)
 
@@ -74,6 +72,8 @@ turbulence_initial_displacement_min = 1.490116e-06
 turbulence_initial_displacement_max = 1.490116e-06
 sub_emitter_mode = 4
 sub_emitter_amount_at_start = 3
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_pomd1"]
 
 [node name="Preview" type="Control" node_paths=PackedStringArray("stage", "progress_bar", "progress_label", "restart_label")]
 layout_mode = 3
@@ -153,28 +153,8 @@ max_value = 1.0
 value = 0.1
 show_percentage = false
 
-[node name="HSeparator2" type="HSeparator" parent="PanelContainer/CenterContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_constants/separation = 1
-theme_override_styles/separator = SubResource("StyleBoxEmpty_pomd1")
-
-[node name="ProgressLabel" type="RichTextLabel" parent="PanelContainer/CenterContainer/VBoxContainer"]
-layout_mode = 2
-bbcode_enabled = true
-text = "Press [color=77dfdf]Space[/color] to continue"
-fit_content = true
-
-[node name="ReferenceRect" type="ReferenceRect" parent="."]
-visible = false
-layout_mode = 0
-offset_left = 360.0
-offset_top = 184.0
-offset_right = 792.0
-offset_bottom = 464.0
-border_width = 5.0
-
-[node name="PartyPopper" type="GPUParticles2D" parent="."]
-position = Vector2(368, 400)
+[node name="PartyPopper" type="GPUParticles2D" parent="PanelContainer/CenterContainer/VBoxContainer/ProgressBar"]
+position = Vector2(-10, 6)
 emitting = false
 amount = 5
 sub_emitter = NodePath("SubEmitter")
@@ -188,7 +168,7 @@ trail_enabled = true
 trail_lifetime = 0.2
 process_material = SubResource("ParticleProcessMaterial_keaox")
 
-[node name="SubEmitter" type="GPUParticles2D" parent="PartyPopper"]
+[node name="SubEmitter" type="GPUParticles2D" parent="PanelContainer/CenterContainer/VBoxContainer/ProgressBar/PartyPopper"]
 emitting = false
 amount = 12
 texture = SubResource("GradientTexture2D_y1ooh")
@@ -200,6 +180,25 @@ randomness = 1.0
 trail_sections = 3
 trail_section_subdivisions = 2
 process_material = SubResource("ParticleProcessMaterial_keaox")
+
+[node name="HSeparator2" type="HSeparator" parent="PanelContainer/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 1
+theme_override_styles/separator = SubResource("StyleBoxEmpty_pomd1")
+
+[node name="ProgressLabel" type="RichTextLabel" parent="PanelContainer/CenterContainer/VBoxContainer"]
+layout_mode = 2
+bbcode_enabled = true
+text = "Press [color=77dfdf]Space[/color] to continue"
+fit_content = true
+
+[node name="ReferenceRect" type="ReferenceRect" parent="."]
+layout_mode = 0
+offset_left = 360.0
+offset_top = 184.0
+offset_right = 792.0
+offset_bottom = 464.0
+border_width = 5.0
 
 [connection signal="cancelled" from="TheatreStage" to="." method="_stage_cancelled"]
 [connection signal="finished" from="TheatreStage" to="." method="_stage_finished"]

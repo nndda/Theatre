@@ -4,6 +4,8 @@ extends Control
 # NOTE: Want to see the demo scene instead?
 # Check out res://demo/1_intro.tscn
 
+@export var create_gif : bool = false
+
 @export var stage : TheatreStage
 @export var progress_bar : ProgressBar
 @export var progress_label : RichTextLabel
@@ -19,7 +21,7 @@ var bbcode_regex := RegEx.new()
 var bbcode_img_tag: RegEx = RegEx.create_from_string(r"\[img(?:[^\]]*)\].+?\[\/img\]")
 
 func pop() -> void:
-    $PartyPopper.emitting = true
+    $PanelContainer/CenterContainer/VBoxContainer/ProgressBar/PartyPopper.emitting = true
 
 func _ready() -> void:
     DialogueTest.generate_references()
@@ -30,10 +32,6 @@ func _ready() -> void:
 
     stage.add_scope("PartyPopper", self)
 
-    # NOTE: Optimize resolution to create preview GIF image.
-    # Require display/window/stretch/mode to be set to `disabled`
-    #DisplayServer.window_set_size($ReferenceRect.size)
-
     stage.dialogue_label.character_drawn.connect(_dialogue_label_character_drawn)
 
     # NOTE: Autoplay Dialogue
@@ -42,6 +40,15 @@ func _ready() -> void:
 
     stage.progressed_at.connect(_stage_progressed_at)
     stage.start(dlg)
+
+    # NOTE: for gif-making:
+    if create_gif:
+        # NOTE: Optimize resolution to create preview GIF image.
+        # Require display/window/stretch/mode to be set to `disabled`
+        tree.root.content_scale_mode = Window.CONTENT_SCALE_MODE_DISABLED
+        DisplayServer.window_set_size($ReferenceRect.size)
+
+        tree.create_timer(8.).timeout.connect(tree.quit)
 
 # NOTE: Autoplay Dialogue
 #func progress_dlg(_text : String) -> void:
