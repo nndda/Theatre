@@ -1,0 +1,9 @@
+[gd_resource type="FontVariation" load_steps=2 format=3 uid="uid://b0oa31uahh761"]
+
+[ext_resource type="FontFile" uid="uid://cbihnbebcpfcg" path="res://theatre_demo/assets/fonts/gabriela.ttf" id="1_ub3py"]
+
+[resource]
+base_font = ExtResource("1_ub3py")
+variation_embolden = 1.0
+spacing_glyph = 1
+spacing_bottom = -1
