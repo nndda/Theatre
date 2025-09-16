@@ -234,7 +234,22 @@ const INDENT_2 := "  "
 const INDENT_4 := "    "
 
 #region RegEx init NOTE: sometimes the RegExes returns null
+static var _is_multi_threaded := false
 static var _regex_initialized := false
+static var _regex_mutex := Mutex.new()
+
+static func _initialize_regex_multi_threaded() -> void:
+    if _regex_initialized:
+        return
+
+    if _is_multi_threaded:
+        _regex_mutex.lock()
+        if not _regex_initialized:
+            _initialize_regex()
+        _regex_mutex.unlock()
+    else:
+        _initialize_regex()
+
 static func _initialize_regex() -> void:
     _regex_dlg_tags = RegEx.create_from_string(REGEX_DLG_TAGS)
     _regex_scope_var_tags = RegEx.create_from_string(REGEX_SCOPE_VAR_TAGS)
@@ -247,13 +262,28 @@ static func _initialize_regex() -> void:
     _regex_indent = RegEx.create_from_string(REGEX_INDENT)
     _regex_valid_dlg = RegEx.create_from_string(REGEX_VALID_DLG)
     _regex_section = RegEx.create_from_string(REGEX_SECTION)
+
+    _regex_initialized = (
+        _regex_dlg_tags and
+        _regex_scope_var_tags and
+        _regex_dlg_tags_newline and
+        _regex_bbcode_tags and
+        _regex_vars_set and
+        _regex_vars_expr and
+        _regex_func_call and
+        _regex_func_vars and
+        _regex_indent and
+        _regex_valid_dlg and
+        _regex_section
+    )
 #endregion
 
 func _init(src : String = "", src_path : String = ""):
     # WHY???
-    if !_regex_initialized:
-        _initialize_regex()
-        _regex_initialized = true
+    _initialize_regex_multi_threaded()
+    #if !_regex_initialized:
+        #_initialize_regex()
+        #_regex_initialized = true
 
     if !src_path.is_empty():
         _source_path = src_path
@@ -572,8 +602,8 @@ func is_indented(string : String) -> bool:
 
 ## Check if [param string] is written in a valid Dialogue string format/syntax or not.
 static func is_valid_source(string : String) -> bool:
-    if _regex_valid_dlg == null:
-        _regex_valid_dlg = RegEx.create_from_string(REGEX_VALID_DLG)
+    #if _regex_valid_dlg == null:
+        #_regex_valid_dlg = RegEx.create_from_string(REGEX_VALID_DLG)
     return _regex_valid_dlg.search(string) != null
 
 # BUG
@@ -581,8 +611,8 @@ static func is_valid_source(string : String) -> bool:
 static func normalize_indentation(string : String) -> String:
     var indents : Array[int] = []
 
-    if _regex_indent == null:
-        _regex_indent = RegEx.create_from_string(REGEX_INDENT)
+    #if _regex_indent == null:
+        #_regex_indent = RegEx.create_from_string(REGEX_INDENT)
 
     for n in _regex_indent.search_all(string):
         var len := n.get_string(1).length()
