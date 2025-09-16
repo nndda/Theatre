@@ -5025,7 +5025,5 @@ _sets = Array[Dictionary]([{
 16: [],
 17: []
 }])
-_source_path = "res://dialogues/plugin_addon.dlg"
+_source_path = "res://addons/Theatre/classes/DialogueImporter.gd:54"
 _used_variables = PackedStringArray()
-_used_function_calls = Dictionary[String, Variant]({})
-_sections = Dictionary[String, int]({})
