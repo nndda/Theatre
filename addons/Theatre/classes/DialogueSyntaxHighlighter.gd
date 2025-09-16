@@ -17,9 +17,11 @@ const __ARG := "arg"
 const __SCOPE := "scope"
 const __VAL := "val"
 const __SYM := "sym"
+const __KEY := "key"
+const __EQ := "eq"
 
 var string : String
-var dict : Dictionary = {}
+var dict : Dictionary[int, Dictionary] = {}
 
 static var actor_name_line : Color
 static var actor_name_line_bg : Color
@@ -114,14 +116,15 @@ func _get_line_syntax_highlighting(line : int) -> Dictionary:
     dict[0] = COL_base_content
 
     if is_indented(string):
-        if DialogueParser._regex_func_call == null:
-            DialogueParser._regex_func_call = RegEx.create_from_string(
-                DialogueParser.REGEX_FUNC_CALL
-            )
+        #if DialogueParser._regex_func_call == null:
+            #DialogueParser._regex_func_call = RegEx.create_from_string(
+                #DialogueParser.REGEX_FUNC_CALL
+            #)
 
         var match_func := DialogueParser._regex_func_call.search(string)
         var match_vars : RegExMatch = null
         var match_newline_tag : RegExMatch = null
+        var match_bb_img : RegExMatch = null
 
         if match_func != null:
             dict[match_func.get_start(__SCOPE)] = COL_scope
@@ -132,10 +135,10 @@ func _get_line_syntax_highlighting(line : int) -> Dictionary:
             dict[match_func.get_end() - 1] = COL_symbol
             dict[match_func.get_end()] = COL_base_content
         else:
-            if DialogueParser._regex_vars_set == null:
-                DialogueParser._regex_vars_set = RegEx.create_from_string(
-                    DialogueParser.REGEX_VARS_SET
-                )
+            #if DialogueParser._regex_vars_set == null:
+                #DialogueParser._regex_vars_set = RegEx.create_from_string(
+                    #DialogueParser.REGEX_VARS_SET
+                #)
             match_vars = DialogueParser._regex_vars_set.search(string)
 
         if match_vars != null:
@@ -146,10 +149,10 @@ func _get_line_syntax_highlighting(line : int) -> Dictionary:
             dict[match_vars.get_start(__VAL)] = COL_func_args
             dict[match_vars.get_end()] = COL_base_content
         else:
-            if DialogueParser._regex_dlg_tags_newline == null:
-                DialogueParser._regex_dlg_tags_newline = RegEx.create_from_string(
-                    DialogueParser.REGEX_DLG_TAGS_NEWLINE
-                )
+            #if DialogueParser._regex_dlg_tags_newline == null:
+                #DialogueParser._regex_dlg_tags_newline = RegEx.create_from_string(
+                    #DialogueParser.REGEX_DLG_TAGS_NEWLINE
+                #)
             match_newline_tag = DialogueParser._regex_dlg_tags_newline.search(string)
 
         if match_newline_tag != null:
@@ -158,10 +161,10 @@ func _get_line_syntax_highlighting(line : int) -> Dictionary:
             dict[match_newline_tag.get_start(__ARG)] = COL_tag_content
 
         else:
-            if DialogueParser._regex_dlg_tags == null:
-                DialogueParser._regex_dlg_tags = RegEx.create_from_string(
-                    DialogueParser.REGEX_DLG_TAGS
-                )
+            #if DialogueParser._regex_dlg_tags == null:
+                #DialogueParser._regex_dlg_tags = RegEx.create_from_string(
+                    #DialogueParser.REGEX_DLG_TAGS
+                #)
             for tag in DialogueParser._regex_dlg_tags.search_all(string):
                 var START : int = tag.get_start()
                 var END : int = tag.get_end()
@@ -179,17 +182,76 @@ func _get_line_syntax_highlighting(line : int) -> Dictionary:
                 if !dict.has(END):
                     dict[END] = COL_base_content
 
-            if DialogueParser._regex_bbcode_tags == null:
-                DialogueParser._regex_bbcode_tags = RegEx.create_from_string(
-                    DialogueParser.REGEX_BBCODE_TAGS
-                )
+            var bb_col_arr : Array[PackedInt32Array] = [] 
+            #if DialogueParser._regex_bbcode_tags == null:
+                #DialogueParser._regex_bbcode_tags = RegEx.create_from_string(
+                    #DialogueParser.REGEX_BBCODE_TAGS
+                #)
+            #if DialogueParser._regex_dlg_tags_img == null:
+                #DialogueParser._regex_dlg_tags_img = RegEx.create_from_string(
+                    #DialogueParser.REGEX_DLG_TAGS_IMG
+                #)
             for bb in DialogueParser._regex_bbcode_tags.search_all(string):
                 var START : int = bb.get_start()
                 var END : int = bb.get_end()
+                var attr_str : String = bb.get_string("attr")
 
                 dict[START] = COL_tag_braces
-
                 dict[bb.get_start(__TAG)] = COL_tag_content
+
+                var END_TAG : int = bb.get_end(__TAG)
+
+                if not attr_str.is_empty():
+                    #if DialogueParser._regex_bbcode_attr == null:
+                        #DialogueParser._regex_bbcode_attr = RegEx.create_from_string(
+                            #DialogueParser.REGEX_BBCODE_ATTR
+                        #)
+                    for attr in DialogueParser._regex_bbcode_attr.search_all(attr_str):
+                        if not attr.get_string(__KEY).is_empty():
+                            dict[END_TAG + attr.get_start(__KEY)] = COL_actor_name_line
+                            dict[END_TAG + attr.get_start(__EQ) + 1] = COL_symbol
+                            dict[END_TAG + attr.get_start(__VAL) + 1] = COL_func_args
+                        else:
+                            dict[END_TAG + attr.get_start(__EQ)] = COL_symbol
+                            dict[END_TAG + attr.get_start(__VAL)] = COL_func_args
+
+                match_bb_img = DialogueParser._regex_dlg_tags_img.search(string)
+                if match_bb_img != null:
+                    dict[match_bb_img.get_start("pathid")] = COL_actor_name_line
+                    dict[
+                        match_bb_img.get_string("pathid").length() +
+                        match_bb_img.get_start("path")
+                    ] = COL_func_args
+
+                dict[END - 1] = COL_tag_braces
+
+                # TODO: these methods are... suboptimals
+                bb_col_arr.append([START, bb.get_start(__TAG), END - 1] as PackedInt32Array)
+
+                if !dict.has(END):
+                    bb_col_arr[-1].append(END)
+                    dict[END] = COL_base_content
+
+            #if DialogueParser._regex_vars_expr == null:
+                #DialogueParser._regex_vars_expr = RegEx.create_from_string(
+                    #DialogueParser.REGEX_VARS_EXPR
+                #)
+            for tag in DialogueParser._regex_vars_expr.search_all(string):
+                var START : int = tag.get_start()
+                var END : int = tag.get_end()
+
+                # TODO: this is very... suboptimal
+                # stupid edge cases
+                for bb_col: PackedInt32Array in bb_col_arr:
+                    if START <= bb_col[0] and bb_col[-1] <= END:
+                        for bb_i: int in bb_col:
+                            dict.erase(bb_i)
+
+                dict[START] = COL_tag_braces
+                dict[START + 1] = COL_symbol
+                dict[START + 2] = COL_func_args
+
+                dict[END - 2] = COL_symbol
                 dict[END - 1] = COL_tag_braces
 
                 if !dict.has(END):

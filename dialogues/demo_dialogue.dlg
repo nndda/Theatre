@@ -6,7 +6,7 @@ Dia:
     "There are 3 main classes that makes part of Theatre plugin:{d = 0.7}
     Dialogue, {d = 0.7}
     DialogueLabel, {d = 0.7}
-    & Stage"
+    & TheatreStage"
 
 :
     "Lets start with Dialogue:{d = 0.8}
@@ -20,13 +20,17 @@ Dia:
     "And {s = 0.9}um{s = 0.04}...{s} Thats it!{s = 0.035}...{s} for now."
 
 :
-    "Most of the classes references are documented directly in the addon.{d = 0.8}
-    In the editor,{d = 0.8} press F1 and look for Theatre's classes
-    to see its documentation page."
+    "We have online documentation,{d = 0.2}
+    live at theatre.nnda.dev"
 
 :
-    "We also have online documentation page,{d = 0.2}
-    live at nndda.github.io/Theatre"
+    "It contains class references for the various
+    methods,{d = 0.7}
+    properties,{d = 0.7}
+    and signals of the Theatre classes."
+
+:
+    "As well as tutorials articles and dialogue syntax references page."
 
 :
     "Stay tuned for the next updates!"

@@ -85,7 +85,10 @@ func _test_tags(target_data : Dictionary, ref_data : Dictionary) -> void:
         var ref_tag_data : Dictionary = ref_data[DialogueParser.Key.TAGS][tag]
 
         if !ref_tag_data.is_empty():
-            log_start("Testing tag '%s'..." % tag)
+            #log_start("Testing tag '%s'..." % {
+                #DialogueParser.Key.TAGS_DELAYS: "delay",
+                #DialogueParser.Key.TAGS_SPEEDS: "speed",
+            #}[tag])
 
             var ref_tag_data_keys := ref_tag_data.keys()
             ref_tag_data_keys.sort()
@@ -104,21 +107,26 @@ func _test_tags(target_data : Dictionary, ref_data : Dictionary) -> void:
                         log_pass("%s == %s" % [ref_tag_data[tag_pos], target_tag_data[tag_pos]])
 
 func _test_finished() -> void:
-    print(
-        _test_ref_source_path + " " +
-        "-".repeat(80 - _test_ref_source_path.length())
-    )
+    #print(
+        #_test_ref_source_path + " " +
+        #"-".repeat(80 - _test_ref_source_path.length())
+    #)
     if _failed_tests <= 0:
-        print("Test passed")
+        print("Test passed\n")
     else:
-        print("Failed tests: %d" % _failed_tests)
+        print("Failed tests: %d\n" % _failed_tests)
+
+static func get_ref_path(dlg_src: String) -> String:
+    return "res://tests/refs/%s.REF.tres" % dlg_src.get_file()
 
 static func create_reference(dlg_src : Variant) -> void:
     if dlg_src is String:
         ResourceSaver.save(
-            load(dlg_src) as Dialogue, dlg_src + ".REF.tres"
+            load(dlg_src) as Dialogue,
+            get_ref_path(dlg_src)
         )
     if dlg_src is Dialogue:
         ResourceSaver.save(
-            dlg_src, dlg_src._source_path + ".REF.tres"
+            dlg_src,
+            get_ref_path(dlg_src._source_path)
         )

@@ -1,0 +1,197 @@
+[gd_resource type="Resource" script_class="Dialogue" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/Theatre/classes/Dialogue.gd" id="1_72kw3"]
+
+[resource]
+script = ExtResource("1_72kw3")
+_sets = Array[Dictionary]([{
+0: "Dia",
+1: [],
+2: [],
+3: false,
+4: "\"Welcome to the Theatre! Hi there! this is a demo dialogue to demonstrate Theatre addon's core feature.\" ",
+5: "\"Welcome to the Theatre!{d = 0.5} Hi there!{d = 0.4} this is a demo dialogue to demonstrate Theatre addon's core feature.\" ",
+6: 1,
+7: {
+8: {
+24: 0.5,
+34: 0.4
+},
+9: {}
+},
+10: [],
+11: {},
+12: PackedInt64Array(),
+13: {},
+14: false,
+15: PackedStringArray(),
+16: [],
+17: []
+}, {
+0: "Dia",
+1: [],
+2: [],
+3: false,
+4: "\"There are 3 main classes that makes part of Theatre plugin: Dialogue,  DialogueLabel,  & TheatreStage\" ",
+5: "\"There are 3 main classes that makes part of Theatre plugin:{d = 0.7} Dialogue, {d = 0.7} DialogueLabel, {d = 0.7} & TheatreStage\" ",
+6: 5,
+7: {
+8: {
+60: 0.7,
+71: 0.7,
+87: 0.7
+},
+9: {}
+},
+10: [],
+11: {},
+12: PackedInt64Array(),
+13: {},
+14: false,
+15: PackedStringArray(),
+16: [],
+17: []
+}, {
+0: "Dia",
+1: [],
+2: [],
+3: false,
+4: "\"Lets start with Dialogue: Its a resource, containing the writing of your... well, dialogue! You write them in a plain text file, the written dialogue then get parsed to a resource, that you can then use in your project\" ",
+5: "\"Lets start with Dialogue:{d = 0.8} Its a resource, containing the writing of your{s = 0.035}...{s} {d = 0.5}well,{d = 0.8} dialogue!{d = 1.0} You write them in a plain text file,{d = 0.9} the written dialogue then get parsed to a resource,{d = 0.9} that you can then use in your project\" ",
+6: 11,
+7: {
+8: {
+26: 0.8,
+77: 0.5,
+82: 0.8,
+92: 1.0,
+129: 0.9,
+181: 0.9
+},
+9: {
+73: 0.035,
+76: 1.0
+}
+},
+10: [],
+11: {},
+12: PackedInt64Array(),
+13: {},
+14: false,
+15: PackedStringArray(),
+16: [],
+17: []
+}, {
+0: "Dia",
+1: [],
+2: [],
+3: false,
+4: "\"And um... Thats it!... for now.\" ",
+5: "\"And {s = 0.9}um{s = 0.04}...{s} Thats it!{s = 0.035}...{s} for now.\" ",
+6: 19,
+7: {
+8: {},
+9: {
+5: 0.9,
+7: 0.04,
+10: 1.0,
+20: 0.035,
+23: 1.0
+}
+},
+10: [],
+11: {},
+12: PackedInt64Array(),
+13: {},
+14: false,
+15: PackedStringArray(),
+16: [],
+17: []
+}, {
+0: "Dia",
+1: [],
+2: [],
+3: false,
+4: "\"We have online documentation, live at theatre.nnda.dev\" ",
+5: "\"We have online documentation,{d = 0.2} live at theatre.nnda.dev\" ",
+6: 22,
+7: {
+8: {
+30: 0.2
+},
+9: {}
+},
+10: [],
+11: {},
+12: PackedInt64Array(),
+13: {},
+14: false,
+15: PackedStringArray(),
+16: [],
+17: []
+}, {
+0: "Dia",
+1: [],
+2: [],
+3: false,
+4: "\"It contains class references for the various methods, properties, and signals of the Theatre classes.\" ",
+5: "\"It contains class references for the various methods,{d = 0.7} properties,{d = 0.7} and signals of the Theatre classes.\" ",
+6: 26,
+7: {
+8: {
+54: 0.7,
+66: 0.7
+},
+9: {}
+},
+10: [],
+11: {},
+12: PackedInt64Array(),
+13: {},
+14: false,
+15: PackedStringArray(),
+16: [],
+17: []
+}, {
+0: "Dia",
+1: [],
+2: [],
+3: false,
+4: "\"As well as tutorials articles and dialogue syntax references page.\" ",
+5: "\"As well as tutorials articles and dialogue syntax references page.\" ",
+6: 32,
+7: {
+8: {},
+9: {}
+},
+10: [],
+11: {},
+12: PackedInt64Array(),
+13: {},
+14: false,
+15: PackedStringArray(),
+16: [],
+17: []
+}, {
+0: "Dia",
+1: [],
+2: [],
+3: false,
+4: "\"Stay tuned for the next updates!\" ",
+5: "\"Stay tuned for the next updates!\" ",
+6: 35,
+7: {
+8: {},
+9: {}
+},
+10: [],
+11: {},
+12: PackedInt64Array(),
+13: {},
+14: false,
+15: PackedStringArray(),
+16: [],
+17: []
+}])
+_source_path = "res://addons/Theatre/classes/DialogueImporter.gd:54"
+_used_variables = PackedStringArray()

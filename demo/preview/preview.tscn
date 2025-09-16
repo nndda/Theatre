@@ -1,11 +1,11 @@
-[gd_scene load_steps=15 format=3 uid="uid://c7sx4nn7nbs5t"]
+[gd_scene load_steps=18 format=3 uid="uid://c7sx4nn7nbs5t"]
 
-[ext_resource type="Script" uid="uid://bsmlj2gndtvxt" path="res://theatre_demo/preview/preview.gd" id="1_86xvy"]
+[ext_resource type="Script" uid="uid://bsmlj2gndtvxt" path="res://demo/preview/preview.gd" id="1_86xvy"]
 [ext_resource type="Script" uid="uid://c4jlgtq7rblbj" path="res://addons/Theatre/classes/TheatreStage.gd" id="2_wv2tv"]
-[ext_resource type="Script" uid="uid://ugop77awwfa0" path="res://theatre_demo/preview/txt_fx1.gd" id="3_ctwg2"]
+[ext_resource type="Script" uid="uid://ugop77awwfa0" path="res://demo/preview/txt_fx1.gd" id="3_ctwg2"]
 [ext_resource type="Script" uid="uid://c3yxlqjl2h54p" path="res://addons/Theatre/classes/DialogueLabel.gd" id="3_fq1xf"]
-[ext_resource type="Script" uid="uid://hdu1ys3g6ty4" path="res://theatre_demo/preview/txt_fx2.gd" id="4_6f1ve"]
-[ext_resource type="Script" uid="uid://b7ich883sc7la" path="res://theatre_demo/preview/txt_fx3.gd" id="5_low7t"]
+[ext_resource type="Script" uid="uid://hdu1ys3g6ty4" path="res://demo/preview/txt_fx2.gd" id="4_6f1ve"]
+[ext_resource type="Script" uid="uid://b7ich883sc7la" path="res://demo/preview/txt_fx3.gd" id="5_low7t"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g2l8a"]
 bg_color = Color(0.0705882, 0.0627451, 0.0941176, 1)
@@ -39,6 +39,40 @@ script = ExtResource("4_6f1ve")
 [sub_resource type="RichTextEffect" id="RichTextEffect_bysel"]
 script = ExtResource("5_low7t")
 
+[sub_resource type="Gradient" id="Gradient_keaox"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_y1ooh"]
+gradient = SubResource("Gradient_keaox")
+width = 6
+height = 6
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_keaox"]
+particle_flag_disable_z = true
+angle_min = -720.0
+angle_max = 720.0
+direction = Vector3(1, -1, 0)
+initial_velocity_min = 250.0
+initial_velocity_max = 750.0
+gravity = Vector3(0, 200, 0)
+linear_accel_min = -100.0
+linear_accel_max = 49.999996
+tangential_accel_min = -2.2351742e-06
+tangential_accel_max = 24.999998
+damping_max = 51.786003
+scale_min = 0.5
+scale_max = 1.35
+hue_variation_min = -1.0
+hue_variation_max = 0.99999994
+turbulence_enabled = true
+turbulence_noise_scale = 6.0
+turbulence_noise_speed_random = 0.0
+turbulence_influence_min = 0.05
+turbulence_initial_displacement_min = 1.490116e-06
+turbulence_initial_displacement_max = 1.490116e-06
+sub_emitter_mode = 4
+sub_emitter_amount_at_start = 3
+
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_pomd1"]
 
 [node name="Preview" type="Control" node_paths=PackedStringArray("stage", "progress_bar", "progress_label", "restart_label")]
@@ -51,7 +85,7 @@ grow_vertical = 2
 script = ExtResource("1_86xvy")
 stage = NodePath("TheatreStage")
 progress_bar = NodePath("PanelContainer/CenterContainer/VBoxContainer/ProgressBar")
-progress_label = NodePath("PanelContainer/CenterContainer/VBoxContainer/ProgressBar/ProgressLabel")
+progress_label = NodePath("PanelContainer/CenterContainer/VBoxContainer/ProgressLabel")
 restart_label = NodePath("PanelContainer/CenterContainer/RestartLabel")
 
 [node name="TheatreStage" type="Node" parent="." node_paths=PackedStringArray("actor_label", "dialogue_label")]
@@ -60,9 +94,6 @@ actor_label = NodePath("../PanelContainer/CenterContainer/VBoxContainer/Label")
 dialogue_label = NodePath("../PanelContainer/CenterContainer/VBoxContainer/DialogueLabel")
 allow_skip = false
 allow_cancel = false
-variables = {
-"gd_ver": 4
-}
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
 layout_mode = 1
@@ -85,7 +116,7 @@ text = "[center]Press [color=77dfdf]Space[/color] to restart[/center]"
 fit_content = true
 
 [node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/CenterContainer"]
-custom_minimum_size = Vector2(380, 235)
+custom_minimum_size = Vector2(380, 240)
 layout_mode = 2
 
 [node name="Label" type="Label" parent="PanelContainer/CenterContainer/VBoxContainer"]
@@ -108,6 +139,7 @@ bbcode_enabled = true
 text = "Dialogue content..."
 fit_content = true
 custom_effects = [SubResource("RichTextEffect_s00e0"), SubResource("RichTextEffect_fvvq4"), SubResource("RichTextEffect_bysel")]
+visible_characters_behavior = 1
 script = ExtResource("3_fq1xf")
 
 [node name="Container" type="Container" parent="PanelContainer/CenterContainer/VBoxContainer"]
@@ -121,28 +153,51 @@ max_value = 1.0
 value = 0.1
 show_percentage = false
 
-[node name="ProgressLabel" type="RichTextLabel" parent="PanelContainer/CenterContainer/VBoxContainer/ProgressBar"]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_top = 19.0
-offset_bottom = 51.0
-grow_horizontal = 2
-bbcode_enabled = true
-text = "Press [color=77dfdf]Space[/color] to continue"
+[node name="PartyPopper" type="GPUParticles2D" parent="PanelContainer/CenterContainer/VBoxContainer/ProgressBar"]
+position = Vector2(-10, 6)
+emitting = false
+amount = 5
+sub_emitter = NodePath("SubEmitter")
+texture = SubResource("GradientTexture2D_y1ooh")
+lifetime = 15.0
+one_shot = true
+speed_scale = 1.05
+explosiveness = 1.0
+randomness = 1.0
+trail_enabled = true
+trail_lifetime = 0.2
+process_material = SubResource("ParticleProcessMaterial_keaox")
+
+[node name="SubEmitter" type="GPUParticles2D" parent="PanelContainer/CenterContainer/VBoxContainer/ProgressBar/PartyPopper"]
+emitting = false
+amount = 12
+texture = SubResource("GradientTexture2D_y1ooh")
+lifetime = 15.0
+one_shot = true
+speed_scale = 1.05
+explosiveness = 1.0
+randomness = 1.0
+trail_sections = 3
+trail_section_subdivisions = 2
+process_material = SubResource("ParticleProcessMaterial_keaox")
 
 [node name="HSeparator2" type="HSeparator" parent="PanelContainer/CenterContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_constants/separation = 18
+theme_override_constants/separation = 1
 theme_override_styles/separator = SubResource("StyleBoxEmpty_pomd1")
 
+[node name="ProgressLabel" type="RichTextLabel" parent="PanelContainer/CenterContainer/VBoxContainer"]
+layout_mode = 2
+bbcode_enabled = true
+text = "Press [color=77dfdf]Space[/color] to continue"
+fit_content = true
+
 [node name="ReferenceRect" type="ReferenceRect" parent="."]
-visible = false
 layout_mode = 0
 offset_left = 360.0
-offset_top = 200.0
+offset_top = 184.0
 offset_right = 792.0
-offset_bottom = 448.0
+offset_bottom = 464.0
 border_width = 5.0
 
 [connection signal="cancelled" from="TheatreStage" to="." method="_stage_cancelled"]

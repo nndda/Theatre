@@ -1,0 +1,15 @@
+[remap]
+
+importer="theatre.dialogue.importer"
+importer_version=2066924420
+type="Resource"
+uid="uid://dh3s7is5qpx3a"
+path="res://.godot/imported/demo_dialogue.dlg-d41cf7462459a8a2b39cdff8d9207fcb.res"
+
+[deps]
+
+source_file="res://dialogues/demo_dialogue.dlg"
+dest_files=["res://.godot/imported/demo_dialogue.dlg-d41cf7462459a8a2b39cdff8d9207fcb.res"]
+
+[params]
+

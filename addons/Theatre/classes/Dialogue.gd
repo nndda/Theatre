@@ -43,12 +43,13 @@ func _from_string(dlg_src : String = "") -> void:
 
     elif DialogueParser.is_valid_source(dlg_src) and\
         dlg_src.split(DialogueParser.NEWLINE, false, 3).size() >= 2:
+
         var stack : Array[Dictionary] = get_stack()
         if stack.size() >= 1:
-            var stack_ln : Dictionary[String, Variant] = stack[-1]
-            print("Parsing Dialogue from raw string: %s:%d" % [
-                stack_ln["source"], stack_ln["line"]
-            ])
+            var stack_ln : Dictionary = stack[-1]
+            #print("Parsing Dialogue from raw string: %s:%d" % [
+                #stack_ln["source"], stack_ln["line"]
+            #])
             _source_path = "%s:%d" % [stack_ln["source"], stack_ln["line"]]
 
         parser = DialogueParser.new(
@@ -59,11 +60,14 @@ func _from_string(dlg_src : String = "") -> void:
         _sections = parser.sections
         _sets = parser.output
         _update_used_variables()
-        _update_used_function_calls()
+        #_update_used_function_calls()
 
         _sections.make_read_only()
         _sets.make_read_only()
         _used_function_calls.make_read_only()
+
+    else:
+        push_error("Error parsing dialogue file %s. Invalid dialogue syntax." % _source_path)
 
 ## Load written [Dialogue] file from [param path]. Use [method Dialogue.new] instead to create a written [Dialogue] directly in the script.
 static func load(path : String) -> Dialogue:
@@ -112,16 +116,16 @@ func get_function_calls() -> Dictionary:
 func get_sections() -> Dictionary:
     return _sections
 
-func _update_used_function_calls() -> void:
-    for n : Dictionary[DialogueParser.Key, Variant] in _sets:
-        for m : Dictionary in n[DialogueParser.Key.FUNC]:
-            if !_used_function_calls.has(m[DialogueParser.Key.SCOPE]):
-                _used_function_calls[m[DialogueParser.Key.SCOPE]] = {}
-
-            _used_function_calls[m[DialogueParser.Key.SCOPE]][m[DialogueParser.Key.LN_NUM]] = {
-                DialogueParser.Key.NAME: m[DialogueParser.Key.NAME],
-                DialogueParser.Key.ARGS: m[DialogueParser.Key.ARGS],
-            }
+#func _update_used_function_calls() -> void:
+    #for n : Dictionary[DialogueParser.Key, Variant] in _sets:
+        #for m : Dictionary in n[DialogueParser.Key.FUNC]:
+            #if !_used_function_calls.has(m[DialogueParser.Key.SCOPE]):
+                #_used_function_calls[m[DialogueParser.Key.SCOPE]] = {}
+#
+            #_used_function_calls[m[DialogueParser.Key.SCOPE]][m[DialogueParser.Key.LINE_NUM]] = {
+                #DialogueParser.Key.NAME: m[DialogueParser.Key.NAME],
+                #DialogueParser.Key.ARGS: m[DialogueParser.Key.ARGS],
+            #}
 
 ## Gets all variables used in the written [Dialogue].
 func get_variables() -> PackedStringArray:

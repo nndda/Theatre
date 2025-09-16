@@ -1,0 +1,155 @@
+[gd_resource type="Resource" script_class="Dialogue" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/Theatre/classes/Dialogue.gd" id="1_wv3q1"]
+
+[resource]
+script = ExtResource("1_wv3q1")
+_sets = Array[Dictionary]([{
+0: "Dia",
+1: [],
+2: [],
+3: false,
+4: "\"Welcome! to [img height=20]res://icons/theatre.png[/img] [font=res://fonts/gabriela.tres][wavy][u]Theatre[/u][/wavy]! [/font] yet another text-based dialogue addon,  developed for [img height=20]res://icons/godot.png[/img] Godot {#13361171432}.\" 
+
+
+＼(^ ▽ ^) ",
+5: "\"Welcome! {d=0.8}to {0}[img height=20]res://icons/theatre.png[/img] [font=res://fonts/gabriela.tres][wavy][u]Theatre[/u][/wavy]! [/font]{d=0.9} yet another text-based dialogue addon, {d=0.3} developed for [img height=20]res://icons/godot.png[/img] Godot {#13361171432}.\" 
+
+
+＼(^ ▽ ^) ",
+6: 3,
+7: {
+8: {
+10: 0.8,
+24: 0.9,
+64: 0.3
+},
+9: {}
+},
+10: [{
+6: 5,
+15: [],
+18: &"PartyPopper",
+19: &"pop",
+20: [],
+21: true
+}],
+11: {
+13: [0]
+},
+12: PackedInt64Array(0),
+13: {},
+14: false,
+15: PackedStringArray(),
+16: [],
+17: [{
+4: " Engine.get_version_info()[\"major\"] ",
+19: "#13361171432",
+20: PackedStringArray("Engine")
+}]
+}, {
+0: "Dia",
+1: [],
+2: [],
+3: false,
+4: "\"The written [img height=20]res://icons/dialogue.svg[/img] [color=77dfdf]Dialogue[/color] syntax is designed to be human-readable. Similar to other data format like [color=8ce35d]YAML[/color]. Although, it is far more simplified and limited.\" 
+
+
+(｡T ω T｡) ",
+5: "\"The written [img height=20]res://icons/dialogue.svg[/img] [color=77dfdf]Dialogue[/color] syntax {d=.25}is designed to be human-readable. {d=.76}Similar to other data format {d=.45}like [color=8ce35d]YAML[/color]. {d=.76}{s=.45}Although, {d=.5}it is far more simplified {d=.4}{s=.25}and limited.\" 
+
+
+(｡T ω T｡) ",
+6: 18,
+7: {
+8: {
+31: 0.25,
+65: 0.76,
+94: 0.45,
+105: 0.76,
+115: 0.5,
+141: 0.4
+},
+9: {
+105: 0.45,
+141: 0.25
+}
+},
+10: [],
+11: {},
+12: PackedInt64Array(),
+13: {},
+14: false,
+15: PackedStringArray(),
+16: [],
+17: []
+}, {
+0: "Dia",
+1: [],
+2: [],
+3: false,
+4: "\"But! You can also do things like [color=ffffaa][u]calling [color=white]functions[/color]()[/u] [/color]and [color=#ffffaa][u] inserting \\{[color=white]variables[/color]\\}! [/u][/color] And that is not the only feature Theatre has to offer!\" 
+
+
+<(￣︶￣)> ",
+5: "{s=1.1}\"But! {d=.9}{s=1}You can also do things {d=.25}like [color=ffffaa][u]calling [color=white]functions[/color]()[/u] [/color]{d=.4}and [color=#ffffaa][u] inserting \\{[color=white]variables[/color]\\}! [/u][/color] {d=.65}And that is not the only feature Theatre has to offer!\" 
+
+
+<(￣︶￣)> ",
+6: 40,
+7: {
+8: {
+6: 0.9,
+29: 0.25,
+54: 0.4,
+83: 0.65
+},
+9: {
+0: 1.1,
+6: 1.0
+}
+},
+10: [],
+11: {},
+12: PackedInt64Array(),
+13: {},
+14: false,
+15: PackedStringArray(),
+16: [],
+17: []
+}, {
+0: "Dia",
+1: [],
+2: [],
+3: false,
+4: "\"There's also [fx2][color=ffffaa]\\{Dialogue tags\\} [/color][/fx2], which allows you to fine tune your dialogue flow. You can also use [color=8ce35d][lb]BBCode[rb] [/color]tags alongside Dialogue tags too!\" 
+
+
+(≧ ω ≦) ",
+5: "\"There's also {s=.23}[fx2][color=ffffaa]\\{Dialogue tags\\} [/color][/fx2]{s=1}{d=1.05}, which allows you to fine tune your dialogue flow. {d=.7}You can also use [color=8ce35d][lb]BBCode[rb] [/color]tags {d=.25}alongside Dialogue tags too!\" 
+
+
+(≧ ω ≦) ",
+6: 62,
+7: {
+8: {
+30: 1.05,
+82: 0.7,
+113: 0.25
+},
+9: {
+14: 0.23,
+30: 1.0
+}
+},
+10: [],
+11: {},
+12: PackedInt64Array(),
+13: {},
+14: false,
+15: PackedStringArray(),
+16: [],
+17: []
+}])
+_source_path = "res://dialogues/preview-advanced.dlg"
+_used_variables = PackedStringArray()

@@ -12,14 +12,13 @@ config_version=5
 
 config/name="Theatre"
 config/description="Demo for Theatre: a text-based DIalogue plugin for Godot 4.3"
-run/main_scene="res://theatre_demo/preview/preview.tscn"
-config/features=PackedStringArray("4.4")
+run/main_scene="uid://c7sx4nn7nbs5t"
+config/features=PackedStringArray("4.5")
 config/icon="res://addons/Theatre/assets/icons/Theatre.svg"
 
 [autoload]
 
 Theatre="*res://addons/Theatre/classes/Theatre.gd"
-DialogueTest="*res://tests/dialogue_test.gd"
 
 [display]
 
@@ -29,12 +28,12 @@ window/vsync/vsync_mode=0
 [editor]
 
 movie_writer/disable_vsync=true
-movie_writer/fps=25
+movie_writer/fps=30
 script/search_in_file_extensions=PackedStringArray("gd", "gdshader", "dlg")
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/Theatre/plugin.cfg")
+enabled=PackedStringArray("res://addons/Theatre-dev/plugin.cfg", "res://addons/Theatre/plugin.cfg")
 
 [filesystem]
 
@@ -47,4 +46,4 @@ locale/locale_filter_mode=0
 
 [rendering]
 
-renderer/rendering_method="gl_compatibility"
+renderer/rendering_method="mobile"

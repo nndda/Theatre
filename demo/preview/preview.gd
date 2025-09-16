@@ -1,8 +1,10 @@
 extends Control
 
 # Script for the preview scene.
-# NOTE: Want to see demo scene instead?
-# Check out res://theatre_demo/1_intro.tscn
+# NOTE: Want to see the demo scene instead?
+# Check out res://demo/1_intro.tscn
+
+@export var create_gif : bool = false
 
 @export var stage : TheatreStage
 @export var progress_bar : ProgressBar
@@ -12,20 +14,23 @@ var progress_label_tween : Tween
 
 var tree : SceneTree
 
-var dlg := Dialogue.load(
-    "res://dialogue/preview-advanced.dlg"
+var dlg := Dialogue.new(
+    FileAccess.get_file_as_string("res://dialogues/preview-advanced.dlg")
 )
 var bbcode_regex := RegEx.new()
+var bbcode_img_tag: RegEx = RegEx.create_from_string(r"\[img(?:[^\]]*)\].+?\[\/img\]")
+
+func pop() -> void:
+    $PanelContainer/CenterContainer/VBoxContainer/ProgressBar/PartyPopper.emitting = true
 
 func _ready() -> void:
+    DialogueTest.generate_references()
     restart_label.visible = false
     progress_label.modulate = Color.TRANSPARENT
     tree = get_tree()
     bbcode_regex.compile(DialogueParser.REGEX_BBCODE_TAGS)
 
-    # NOTE: Optimize resolution to create preview GIF image.
-    # Require display/window/stretch/mode to be set to `disabled`
-    #DisplayServer.window_set_size($ReferenceRect.size)
+    stage.add_scope("PartyPopper", self)
 
     stage.dialogue_label.character_drawn.connect(_dialogue_label_character_drawn)
 
@@ -35,6 +40,15 @@ func _ready() -> void:
 
     stage.progressed_at.connect(_stage_progressed_at)
     stage.start(dlg)
+
+    # NOTE: for gif-making:
+    if create_gif:
+        # NOTE: Optimize resolution to create preview GIF image.
+        # Require display/window/stretch/mode to be set to `disabled`
+        tree.root.content_scale_mode = Window.CONTENT_SCALE_MODE_DISABLED
+        DisplayServer.window_set_size($ReferenceRect.size)
+
+        tree.create_timer(8.).timeout.connect(tree.quit)
 
 # NOTE: Autoplay Dialogue
 #func progress_dlg(_text : String) -> void:
@@ -78,8 +92,12 @@ func _dialogue_label_text_rendered(_rendered_text: String) -> void:
 
 func _stage_progressed_at(_line : int, line_data : Dictionary) -> void:
     progress_bar.value = 0
+    
     progress_bar.max_value = bbcode_regex.sub(
-        line_data[DialogueParser.Key.CONTENT], "", true
+        bbcode_img_tag.sub(
+            line_data[DialogueParser.Key.CONTENT],
+            "#", true
+        ), "", true
     ).length()
 
 func _stage_started() -> void:

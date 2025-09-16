@@ -7,7 +7,7 @@ extends Control
 
 # Write your Dialogue, save it as a *.dlg file
 # and load it using Dialogue.load()
-var epic_dialogue = Dialogue.load('res://dialogue/demo_dialogue.dlg')
+var epic_dialogue = Dialogue.load('res://dialogues/demo_dialogue.dlg')
 
 
 # In your scene, make sure you have:
