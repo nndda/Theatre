@@ -5,11 +5,13 @@ class_name TheatrePlugin
 
 class TheatreConfig extends RefCounted:
     const GENERAL_AUTO_UPDATE := "theatre/general/updates/check_updates_automatically"
+    const GENERAL_PARSER_MULTI_THREADS := "theatre/general/parser/use_multiple_threads"
 
     static func init_configs() -> void:
         print("  Initializing configs...")
         for config_item : Array in [
             [ GENERAL_AUTO_UPDATE, TYPE_BOOL, true, PROPERTY_HINT_NONE, "", ],
+            [ GENERAL_PARSER_MULTI_THREADS, TYPE_BOOL, false, PROPERTY_HINT_NONE, "", ],
         ]:
             if ProjectSettings.has_setting(config_item[0]):
                 print("    %s already exist on ProjectSettings" % config_item[0])
@@ -41,6 +43,8 @@ class TheatreConfig extends RefCounted:
 
     static func _project_settings_changed() -> void:
         DialogueSyntaxHighlighter.initialize_colors()
+        DialogueParser._is_multi_threaded =\
+            ProjectSettings.get_setting(GENERAL_PARSER_MULTI_THREADS, false)
 
 var http_update_req : HTTPRequest
 
@@ -67,16 +71,16 @@ func _enter_tree() -> void:
     # Initialize Theatre config
     print("🎭 Theatre v%s by nnda" % get_plugin_version())
 
-    # Compile DialogueParser RegExes
-    DialogueParser._initialize_regex()
-
-    # Initialize syntax highlighter
-    DialogueSyntaxHighlighter.initialize_colors()
-
     # Initialize project settings
     TheatreConfig.init_configs()
     ProjectSettings.settings_changed.connect(TheatreConfig._project_settings_changed)
     TheatreConfig._project_settings_changed()
+
+    # Compile DialogueParser RegExes
+    DialogueParser._initialize_regex_multi_threaded()
+
+    # Initialize syntax highlighter
+    DialogueSyntaxHighlighter.initialize_colors()
 
     # Add `.dlg` text file extension
     var text_files_ext : String = editor_settings\

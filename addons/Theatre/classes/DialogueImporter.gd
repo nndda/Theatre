@@ -1,6 +1,9 @@
 @tool
 extends EditorImportPlugin
 
+func _can_import_threaded() -> bool:
+    return DialogueParser._is_multi_threaded
+
 func _get_format_version() -> int:
     return 2066924420
     #return "{version}".hash()
