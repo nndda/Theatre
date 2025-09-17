@@ -5,7 +5,7 @@
 
 <img src="/addons/Theatre/assets/icons/Theatre.svg" alt="Theatre logo" height="160" align="right">
 
-<a href="https://godotengine.org/"><img src="https://img.shields.io/badge/4.5-white?style=flat-square&logo=godotengine&logoColor=white&label=Godot&labelColor=%232f5069&color=%233e4c57" alt="Godot 4.5" height="20"></a>
+<a href="https://godotengine.org/"><img src="https://img.shields.io/badge/%E2%89%A54.5-white?style=flat-square&logo=godotengine&logoColor=white&label=Godot&labelColor=%232f5069&color=%233e4c57" alt="Godot 4.5 or above" height="20"></a>
 <a href="https://github.com/nndda/Theatre/actions/workflows/dialogue-test.yml"><img src="https://img.shields.io/github/actions/workflow/status/nndda/Theatre/dialogue-test.yml?branch=main&event=push&style=flat-square&label=CI&labelColor=%23252b30&color=%23306b3d" alt="Build status" height="20"></a>
 <a href="https://nndda.github.io/Theatre/"><img src="https://img.shields.io/website?style=flat-square&label=Docs&labelColor=%23252b30&color=%23306b3d&up_message=online&url=http%3A//nndda.github.io/Theatre" alt="Documentation build" height="20"></a>
 
@@ -68,20 +68,11 @@ Run the command below in your Godot project directory. Or [download and install]
 ```sh
 curl -L 'https://nnda.dev/theatre/latest' | tar zxv --strip-components=1
 ```
+The URL above is just a redirect to the `main` branch tarball :p
+
+<br>
 
 # Features
-
-## Dialogue Tags
-
-Fine-tune your dialogue flow with `{delay}` and `{speed}`.
-```yaml
-Godette:
-    "Hello!{delay = 0.7} Nice to meet you."
-```
-```yaml
-Ritsu:
-    "{speed = 1.5} AAAAAAAAAAAAAAAAA!!!!"
-```
 
 ## Variables & Expressions
 
@@ -101,6 +92,18 @@ Ritsu:
 Dia:
     "Your operating system is {( OS.get_name() )}.
     It is currently {( Time.get_time_string_from_system(false) )}."
+```
+
+## Dialogue Tags
+
+Fine-tune your dialogue flow with `{delay}` and `{speed}`.
+```yaml
+Godette:
+    "Hello!{delay = 0.7} Nice to meet you."
+```
+```yaml
+Ritsu:
+    "{speed = 1.5} AAAAAAAAAAAAAAAAA!!!!"
 ```
 
 ## Manipulate Properties
@@ -142,7 +145,7 @@ Dia:
 <a href="https://nndda.github.io/Theatre/class/dialogue/syntax/">📚 More comprehensive Dialogue features documented here.</a>
 </p>
 
-# (Very) Quick Start
+# _(Very)_ Quick Start
 
 Write your epic Dialogue!
 ```gdscript
