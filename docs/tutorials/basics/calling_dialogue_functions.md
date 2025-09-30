@@ -56,7 +56,6 @@ Dia:
     Here, we'll name our [ColorRect] as `CoolRect`.
 
 0. We are ready to call functions (and even do other stuff) on our [ColorRect].
-<!-- We'll append to the dialogue sample above. -->
 
     ``` hl_lines="6"
     :
