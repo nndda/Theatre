@@ -16,9 +16,9 @@ MyScene
 ```gdscript
 extends Control
 
-var dlg : Dialogue # Load/create Dialogue here
+var dlg: Dialogue # Load/create Dialogue here
 
-@export var stage : TheatreStage
+@export var stage: TheatreStage
 
 func _input(event):
     if event.is_action_pressed("ui_accept"):
