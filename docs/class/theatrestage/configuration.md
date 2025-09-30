@@ -37,10 +37,7 @@ This page cover configurations & properties for [TheatreStage]. You can configur
 
 ### `scope_nodes`
 
-While you can add scopes with [`add_scope()`](/class/theatrestage/references/#add_scope), if the scope is a [Node], and is accessible in the scene tree, you can reference it directly in the inspector in [`scope_nodes`](/class/theatrestage/references/#scope_nodes). The scope name/ID will use the node's name.
-
-!!! warning "Scope name"
-    Make sure that all nodes referenced for scope in [`scope_nodes`](/class/theatrestage/references/#scope_nodes) have unique names from each other. Otherwise, they will conflict.
+While you can add scopes with [`add_scope()`](/class/theatrestage/references/#add_scope), if the scope is a [Node], and is accessible in the scene tree, you can reference it directly in the inspector in [`scope_nodes`](/class/theatrestage/references/#scope_nodes). The key is the ID of the scope that would be used in the written dialogue.
 
 This approach is preferrable in such case. Not only that its more simpler compared to adding the scope through script(1), the scope [Node] will always be synced if it moved in the scene tree.
 { .annotate }

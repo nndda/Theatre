@@ -39,8 +39,8 @@ p [DialogueLabel] dialogue_label null
 The [DialogueLabel] node that will be used to displays the [current_dialogue]. This is **required** to be set before running a dialogue.
 
 
-p   [Array][[Node]]   scope_nodes   []
-[Node] scopes that are in the scene tree.
+p   [Dictionary][[String], [Node]]   scope_nodes   []
+[Node] scopes that are in the scene tree. The key is the scope ID that would be used in the written dialogue. The nodes will be registered as scopes when the scene is ready.
 
 
 p [float] speed_scale 1.0
