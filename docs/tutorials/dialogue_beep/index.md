@@ -1,4 +1,4 @@
-# Adding Dialogue Beep SFX
+# Dialogue Beep SFX
 
 ```
 Dia:
