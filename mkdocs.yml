@@ -27,6 +27,7 @@ nav:
       - "tutorials/basics/calling_dialogue_functions.md"
     - "tutorials/dialogue_ui_toggle/index.md"
     - "tutorials/dialogue_beep/index.md"
+    - "tutorials/continue_indicator/index.md"
     - "tutorials/troubleshooting.md"
 
 
