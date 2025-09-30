@@ -72,7 +72,7 @@ func _enter_tree() -> void:
 
 #region NOTE: Signals ------------------------------------------------------------------------------
 ## Emitted when the text or the [Dialogue] line has finished rendering.
-signal text_rendered(rendered_text : String)
+signal text_rendered
 
 ## Emitted everytime a character drawn.
 signal character_drawn
@@ -203,7 +203,7 @@ func _characters_ticker_timeout() -> void:
     if visible_ratio >= 1.0:
         _characters_ticker.stop()
         _is_rendering = false
-        text_rendered.emit(text)
+        text_rendered.emit()
         _characters_ticker.wait_time = _characters_draw_tick_scaled
 
     if _current_stage._step == -1:
@@ -222,5 +222,5 @@ func _on_stage_skipped() -> void:
             _current_stage._call_function(
                 _current_dialogue_set[DialogueParser.Key.FUNC][i]
             )
-    text_rendered.emit(text)
+    text_rendered.emit()
 #endregion
