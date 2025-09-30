@@ -59,6 +59,17 @@ Start the rendering of the current dialogue line.
 
 
 
+## Signals
+
+- ### <code>character_drawn()</code>
+
+    Emitted everytime each character is drawn.
+
+- ### <code>text_rendered()</code>
+
+    Emitted when the text or the [Dialogue] line has finished rendering.
+
+
 ## Property Descriptions
 
 <!-- property descriptions -->
