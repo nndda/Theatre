@@ -737,3 +737,11 @@ func _exit_tree() -> void:
         scope_nodes.clear()
         clear_variables()
         clear_scopes()
+
+func _get_configuration_warnings() -> PackedStringArray:
+    var warnings : PackedStringArray = []
+    if dialogue_label == null:
+        warnings.append(
+            "No DialogueLabel assigned. Create a DialogueLabel node, and assign it to the dialogue_label variable."
+        )
+    return warnings
