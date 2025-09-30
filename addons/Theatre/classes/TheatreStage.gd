@@ -1,6 +1,9 @@
 @icon("res://addons/Theatre/assets/icons/classes/ticket.svg")
+@tool
 class_name TheatreStage
 extends Node
+
+var is_editor : bool = Engine.is_editor_hint()
 
 ## Run, control, and configure [Dialogue], and reference UIs and Nodes that will be used to display the [Dialogue].
 ##
@@ -34,7 +37,9 @@ func get_actor_label() -> Label:
 
 func set_dialogue_label(node : DialogueLabel) -> void:
     dialogue_label = node
-    if node != null:
+    if is_editor:
+        update_configuration_warnings()
+    elif node != null:
         var cb : Callable = set_dialogue_label.bind(null)
         if not dialogue_label.tree_exiting.is_connected(cb):
             dialogue_label.tree_exiting.connect(cb)
@@ -82,7 +87,7 @@ static var speed_scale_global : float = 1.0
 @export_storage var current_dialogue : Dialogue:
     set(new_dlg):
         current_dialogue = new_dlg
-        if !is_playing():
+        if !is_playing() and !is_editor:
             if new_dlg != null:
                 for n in current_dialogue._sets.size():
                     DialogueParser.update_tags_position(
@@ -105,10 +110,11 @@ static var speed_scale_global : float = 1.0
 func _set_variables(new_var : Dictionary[String, Variant]) -> void:
     variables = new_var
 
-    if is_playing():
-        _update_display()
+    if !is_editor:
+        if is_playing():
+            _update_display()
 
-    _update_variables_dialogue()
+        _update_variables_dialogue()
 
 func _update_variables_dialogue() -> void:
     if current_dialogue != null:
@@ -702,30 +708,32 @@ func _update_display() -> void:
 #endregion
 
 func _enter_tree() -> void:
-    _update_scope()
-    add_scope("TheatreStage", self)
+    if !is_editor:
+        _update_scope()
+        #add_scope("TheatreStage", self)
 
-    if dialogue_label != null:
-        print("assigning stage to dlg label")
-        dialogue_label._current_stage = self
+        if dialogue_label != null:
+            print("assigning stage to dlg label")
+            dialogue_label._current_stage = self
 
-    _update_variables_dialogue()
+        _update_variables_dialogue()
 
-    if !scope_nodes.is_empty():
-        await get_tree().current_scene.ready
-        for node in scope_nodes:
-            if node != null:
-                add_scope(node.name, node)
+        if !scope_nodes.is_empty():
+            await get_tree().current_scene.ready
+            for id: String in scope_nodes.keys():
+                if scope_nodes[id] != null:
+                    add_scope(id, scope_nodes[id])
 
 func _exit_tree() -> void:
-    if dialogue_label != null:
-        if dialogue_label._current_stage == self:
-            dialogue_label._current_stage = null
+    if !is_editor:
+        if dialogue_label != null:
+            if dialogue_label._current_stage == self:
+                dialogue_label._current_stage = null
 
-    actor_label = null
-    dialogue_label = null
-    current_dialogue = null
+        actor_label = null
+        dialogue_label = null
+        current_dialogue = null
 
-    scope_nodes.clear()
-    clear_variables()
-    clear_scopes()
+        scope_nodes.clear()
+        clear_variables()
+        clear_scopes()
