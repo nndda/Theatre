@@ -28,7 +28,7 @@ Yet another <sub>(linear)</sub> dialogue system<b>/</b>addon<b>/</b>plugin for G
 <tr>
 <td>
 
-<img src="https://github.com/user-attachments/assets/c529892a-95e8-4a7b-9794-a46f4416a1b6" alt="Theatre in action" width="385">
+<img src="https://github.com/user-attachments/assets/30b57946-b39c-4e7e-a8c3-487f9a50a100" alt="Theatre in action" width="385">
 
 </td>
 <td>
