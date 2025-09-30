@@ -181,7 +181,7 @@ func clear_variables() -> void:
 
 #region NOTE: Function calls related ---------------------------------------------------------------
 ## Node-based scopes that are in the scene tree.
-@export var scope_nodes : Array[Node] = []
+@export var scope_nodes : Dictionary[String, Node] = {}
 
 static var _scope_built_in : Dictionary[String, WeakRef] = {}
 var _scope_all : Dictionary[String, WeakRef] = {}
