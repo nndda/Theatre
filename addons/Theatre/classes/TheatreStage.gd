@@ -72,7 +72,7 @@ static var speed_scale_global : float = 1.0
         speed_scale = s
         if dialogue_label != null:
             dialogue_label._characters_draw_tick_scaled =\
-                dialogue_label.characters_draw_tick / s
+                dialogue_label._characters_draw_tick / s
             dialogue_label._characters_ticker.wait_time =\
                 dialogue_label._characters_draw_tick_scaled
 

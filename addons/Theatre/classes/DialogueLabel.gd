@@ -11,9 +11,14 @@ extends RichTextLabel
 ## [DialogueLabel] has a partial support for BBCode tags, as for now, the [code][img][/code] tag are not supported.
 ## [member RichTextLabel.bbcode_enabled] will always be [code]true[/code].
 
-## Each string character will be drawn every [param characters_draw_tick] seconds
-@export var characters_draw_tick : float = .015
+## Each string character will be drawn every [param _characters_draw_tick] seconds
+var _characters_draw_tick : float = .015
 var _characters_draw_tick_scaled : float
+
+@export_range(1., 120., 1., "suffix:chars/s") var chars_per_second: float = 1/.015:
+    set(val):
+        chars_per_second = val
+        _characters_draw_tick = 1. / val
 
 #region NOTE: Setup --------------------------------------------------------------------------------
 # NOTE: These are cyclic references right?
@@ -51,6 +56,7 @@ func _validate_property(property: Dictionary) -> void:
 
 func _enter_tree() -> void:
     visible_characters_behavior = TextServer.VC_CHARS_AFTER_SHAPING
+        _characters_draw_tick = 1. / chars_per_second
 
     if !Engine.is_editor_hint():
         _delay_timer = Timer.new()
@@ -112,7 +118,7 @@ func start_render() -> void:
 
     _delay_timer.one_shot = true
 
-    _characters_draw_tick_scaled = characters_draw_tick /\
+    _characters_draw_tick_scaled = _characters_draw_tick /\
         _current_stage.speed_scale_global / _current_stage.speed_scale
     _characters_ticker.start(_characters_draw_tick_scaled)
 
