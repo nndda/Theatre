@@ -11,9 +11,14 @@ extends RichTextLabel
 ## [DialogueLabel] has a partial support for BBCode tags, as for now, the [code][img][/code] tag are not supported.
 ## [member RichTextLabel.bbcode_enabled] will always be [code]true[/code].
 
-## Each string character will be drawn every [param characters_draw_tick] seconds
-@export var characters_draw_tick : float = .015
+## Each string character will be drawn every [param _characters_draw_tick] seconds
+var _characters_draw_tick : float = .015
 var _characters_draw_tick_scaled : float
+
+@export_range(1., 120., 1., "suffix:chars/s") var chars_per_second: float = 1/.015:
+    set(val):
+        chars_per_second = val
+        _characters_draw_tick = 1. / val
 
 #region NOTE: Setup --------------------------------------------------------------------------------
 # NOTE: These are cyclic references right?
@@ -50,9 +55,15 @@ func _validate_property(property: Dictionary) -> void:
         property["usage"] = PROPERTY_USAGE_NO_EDITOR
 
 func _enter_tree() -> void:
-    visible_characters_behavior = TextServer.VC_CHARS_AFTER_SHAPING
+    if Engine.is_editor_hint():
+        const _IS_INITIALIZED_KEY : StringName = &"_is_initialized"
 
-    if !Engine.is_editor_hint():
+        if !get_meta(_IS_INITIALIZED_KEY, false):
+            visible_characters_behavior = TextServer.VC_CHARS_AFTER_SHAPING
+            set_meta(_IS_INITIALIZED_KEY, true)
+    else:
+        _characters_draw_tick = 1. / chars_per_second
+
         _delay_timer = Timer.new()
         _characters_ticker = Timer.new()
 
@@ -72,7 +83,7 @@ func _enter_tree() -> void:
 
 #region NOTE: Signals ------------------------------------------------------------------------------
 ## Emitted when the text or the [Dialogue] line has finished rendering.
-signal text_rendered(rendered_text : String)
+signal text_rendered
 
 ## Emitted everytime a character drawn.
 signal character_drawn
@@ -112,7 +123,7 @@ func start_render() -> void:
 
     _delay_timer.one_shot = true
 
-    _characters_draw_tick_scaled = characters_draw_tick /\
+    _characters_draw_tick_scaled = _characters_draw_tick /\
         _current_stage.speed_scale_global / _current_stage.speed_scale
     _characters_ticker.start(_characters_draw_tick_scaled)
 
@@ -203,7 +214,7 @@ func _characters_ticker_timeout() -> void:
     if visible_ratio >= 1.0:
         _characters_ticker.stop()
         _is_rendering = false
-        text_rendered.emit(text)
+        text_rendered.emit()
         _characters_ticker.wait_time = _characters_draw_tick_scaled
 
     if _current_stage._step == -1:
@@ -222,5 +233,5 @@ func _on_stage_skipped() -> void:
             _current_stage._call_function(
                 _current_dialogue_set[DialogueParser.Key.FUNC][i]
             )
-    text_rendered.emit(text)
+    text_rendered.emit()
 #endregion

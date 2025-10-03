@@ -320,7 +320,12 @@ func _init(src : String = "", src_path : String = ""):
             setsl[Key.LINE_NUM] = ln_num
 
             if dlg_raw_size < i + 1:
-                push_error("Error @%s:%d - actor's name exists without a dialogue body" % [_source_path, ln_num])
+                Theatre.TheatreDebug.log_err(
+                    "@%s:%d - actor's name exists without a dialogue body" % [
+                        _source_path, ln_num,
+                    ],
+                    -1
+                )
 
             var actor_str := n_stripped.trim_suffix(COLON)
             setsl[Key.ACTOR] = StringName(actor_str)
@@ -330,7 +335,12 @@ func _init(src : String = "", src_path : String = ""):
                 actor_str = EMPTY
             elif actor_str.is_empty():
                 if body_pos < 0:
-                    push_error("Error @%s - missing initial actor's name" % _source_path)
+                    Theatre.TheatreDebug.log_err(
+                        "@%s:%d - missing initial actor's name" % [
+                            _source_path, ln_num,
+                        ],
+                        -1
+                    )
                 else:
                     actor_str = output[body_pos][Key.ACTOR]
                     setsl[Key.ACTOR_DYN_HAS] = output[body_pos][Key.ACTOR_DYN_HAS]
@@ -411,7 +421,12 @@ func _init(src : String = "", src_path : String = ""):
                     func_dict[Key.ARGS] = args.execute()
 
                     if args.has_execute_failed():
-                        push_error("Error @%s:%d - %s" % [_source_path, ln_num, args.get_error_text()])
+                        Theatre.TheatreDebug.log_err(
+                            "Failed parsing function call arguments @%s:%d - %s" % [
+                                _source_path, ln_num, args.get_error_text()
+                            ],
+                            -1
+                        )
 
                 else:
                     func_dict[Key.STANDALONE] = false
@@ -467,7 +482,12 @@ func _init(src : String = "", src_path : String = ""):
                     func_dict[Key.ARGS] = val.execute()
 
                     if val.has_execute_failed():
-                        push_error("Error @%s:%d - %s" % [_source_path, ln_num, val.get_error_text()])
+                        Theatre.TheatreDebug.log_err(
+                            "Failed parsing property setter value @%s:%d - %s" % [
+                                _source_path, ln_num, val.get_error_text()
+                            ],
+                            -1
+                        )
 
                 else:
                     func_dict[Key.STANDALONE] = not operator_used
@@ -546,9 +566,12 @@ func _init(src : String = "", src_path : String = ""):
         var content_str : String = output[n][Key.CONTENT_RAW]
 
         if content_str.is_empty():
-            push_error("Error @%s:%d - empty dialogue body for actor '%s'" % [
-                _source_path, output[n][Key.LINE_NUM], output[n][Key.ACTOR]
-            ])
+            Theatre.TheatreDebug.log_err(
+                "@%s:%d - empty dialogue body for actor '%s'" % [
+                    _source_path, output[n][Key.LINE_NUM], output[n][Key.ACTOR]
+                ],
+                -1
+            )
 
         else:
             #region NOTE: Resolve BBCode aliases

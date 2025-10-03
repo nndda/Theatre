@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://c7sx4nn7nbs5t"]
+[gd_scene load_steps=20 format=3 uid="uid://c7sx4nn7nbs5t"]
 
 [ext_resource type="Script" uid="uid://bsmlj2gndtvxt" path="res://demo/preview/preview.gd" id="1_86xvy"]
 [ext_resource type="Script" uid="uid://c4jlgtq7rblbj" path="res://addons/Theatre/classes/TheatreStage.gd" id="2_wv2tv"]
@@ -47,6 +47,13 @@ gradient = SubResource("Gradient_keaox")
 width = 6
 height = 6
 
+[sub_resource type="Gradient" id="Gradient_y1ooh"]
+offsets = PackedFloat32Array(0.16666667, 0.55, 0.875)
+colors = PackedColorArray(0, 1, 1, 1, 1, 0, 0.48235294, 1, 0.9254902, 0.8039216, 0.043137256, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_wdmf4"]
+gradient = SubResource("Gradient_y1ooh")
+
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_keaox"]
 particle_flag_disable_z = true
 angle_min = -720.0
@@ -62,8 +69,7 @@ tangential_accel_max = 24.999998
 damping_max = 51.786003
 scale_min = 0.5
 scale_max = 1.35
-hue_variation_min = -1.0
-hue_variation_max = 0.99999994
+color_initial_ramp = SubResource("GradientTexture1D_wdmf4")
 turbulence_enabled = true
 turbulence_noise_scale = 6.0
 turbulence_noise_speed_random = 0.0
@@ -155,6 +161,7 @@ show_percentage = false
 
 [node name="PartyPopper" type="GPUParticles2D" parent="PanelContainer/CenterContainer/VBoxContainer/ProgressBar"]
 position = Vector2(-10, 6)
+rotation = -0.261799
 emitting = false
 amount = 5
 sub_emitter = NodePath("SubEmitter")
@@ -164,6 +171,8 @@ one_shot = true
 speed_scale = 1.05
 explosiveness = 1.0
 randomness = 1.0
+use_fixed_seed = true
+seed = 2573383250
 trail_enabled = true
 trail_lifetime = 0.2
 process_material = SubResource("ParticleProcessMaterial_keaox")
@@ -177,6 +186,8 @@ one_shot = true
 speed_scale = 1.05
 explosiveness = 1.0
 randomness = 1.0
+use_fixed_seed = true
+seed = 2573383250
 trail_sections = 3
 trail_section_subdivisions = 2
 process_material = SubResource("ParticleProcessMaterial_keaox")

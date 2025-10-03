@@ -81,7 +81,7 @@ func _input(event: InputEvent) -> void:
 func _dialogue_label_character_drawn() -> void:
     progress_bar.value += 1.0
 
-func _dialogue_label_text_rendered(_rendered_text: String) -> void:
+func _dialogue_label_text_rendered() -> void:
     progress_label.scale = Vector2.ONE
     progress_label_tween = create_tween()\
         .set_trans(Tween.TRANS_EXPO)\
