@@ -763,7 +763,6 @@ func _enter_tree() -> void:
         #add_scope("TheatreStage", self)
 
         if dialogue_label != null:
-            print("assigning stage to dlg label")
             dialogue_label._current_stage = self
 
         _update_variables_dialogue()
