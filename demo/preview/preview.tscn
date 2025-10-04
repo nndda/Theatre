@@ -147,6 +147,7 @@ fit_content = true
 custom_effects = [SubResource("RichTextEffect_s00e0"), SubResource("RichTextEffect_fvvq4"), SubResource("RichTextEffect_bysel")]
 visible_characters_behavior = 1
 script = ExtResource("3_fq1xf")
+metadata/_is_initialized = true
 
 [node name="Container" type="Container" parent="PanelContainer/CenterContainer/VBoxContainer"]
 layout_mode = 2
