@@ -1,14 +1,18 @@
 version: 2
 updates:
-  - package-ecosystem: "pip"
-    directory: "/"
+  - package-ecosystem: pip
+    directory: /
     schedule:
-      interval: "weekly"
+      interval: weekly
     versioning-strategy: auto
-    target-branch: "docs"
+    target-branch: docs
+    cooldown:
+      default-days: 7
 
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: github-actions
+    directory: /
     schedule:
-      interval: "weekly"
-    target-branch: "main"
+      interval: weekly
+    target-branch: main
+    cooldown:
+      default-days: 7
