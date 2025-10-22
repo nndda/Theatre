@@ -128,7 +128,7 @@ const SETS_TEMPLATE := {
     Key.ACTOR: EMPTY,
     Key.ACTOR_DYN_VAR: [],
     Key.ACTOR_DYN_EXPR: [],
-    #Key.ACTOR_DYN_HAS: false,
+    Key.ACTOR_DYN_HAS: false,
 
     # Dialogue content, stripped from the Dialogue tags.
     Key.CONTENT: EMPTY,
