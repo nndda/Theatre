@@ -328,12 +328,12 @@ func _init(src : String = "", src_path : String = ""):
                 )
 
             var actor_str := n_stripped.trim_suffix(COLON)
-            setsl[Key.ACTOR] = StringName(actor_str)
-
 
             if actor_str == UNDERSCORE:
                 actor_str = EMPTY
+            # If actor name is blank, use the previously declared actor name
             elif actor_str.is_empty():
+                # If there's no previous dialogue line, return error
                 if body_pos < 0:
                     Theatre.TheatreDebug.log_err(
                         "@%s:%d - missing initial actor's name" % [
@@ -342,6 +342,7 @@ func _init(src : String = "", src_path : String = ""):
                         -1
                     )
                 else:
+                    # Use the previous dialouge line's actor data
                     actor_str = output[body_pos][Key.ACTOR]
                     setsl[Key.ACTOR_DYN_HAS] = output[body_pos][Key.ACTOR_DYN_HAS]
                     setsl[Key.ACTOR_DYN_VAR] = output[body_pos][Key.ACTOR_DYN_VAR]
@@ -367,9 +368,11 @@ func _init(src : String = "", src_path : String = ""):
                     not setsl[Key.ACTOR_DYN_VAR].is_empty() or \
                     not setsl[Key.ACTOR_DYN_EXPR].is_empty()
 
-            setsl[Key.ACTOR] = actor_str
+            setsl[Key.ACTOR] = StringName(actor_str)
+
             output.append(setsl)
             body_pos += 1
+            
             #endregion
 
         elif _regex_section.search(n) != null:
