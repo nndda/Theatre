@@ -328,8 +328,6 @@ func _init(src : String = "", src_path : String = ""):
                 )
 
             var actor_str := n_stripped.trim_suffix(COLON)
-            setsl[Key.ACTOR] = StringName(actor_str)
-
 
             if actor_str == UNDERSCORE:
                 actor_str = EMPTY
@@ -367,7 +365,7 @@ func _init(src : String = "", src_path : String = ""):
                     not setsl[Key.ACTOR_DYN_VAR].is_empty() or \
                     not setsl[Key.ACTOR_DYN_EXPR].is_empty()
 
-            setsl[Key.ACTOR] = actor_str
+            setsl[Key.ACTOR] = StringName(actor_str)
             output.append(setsl)
             body_pos += 1
             #endregion
