@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1_dk7sw")
 _sets = Array[Dictionary]([{
-0: "Dia",
+0: &"Dia",
 1: [],
 2: [],
 3: false,
@@ -25,7 +25,7 @@ _sets = Array[Dictionary]([{
 16: [],
 17: []
 }, {
-0: "Dia",
+0: &"Dia",
 1: [],
 2: [],
 3: false,
@@ -45,7 +45,7 @@ _sets = Array[Dictionary]([{
 16: [],
 17: []
 }, {
-0: "Dia",
+0: &"Dia",
 1: [],
 2: [],
 3: false,
@@ -65,7 +65,7 @@ _sets = Array[Dictionary]([{
 16: [],
 17: []
 }, {
-0: "Dia",
+0: &"Dia",
 1: [],
 2: [],
 3: false,
@@ -85,7 +85,7 @@ _sets = Array[Dictionary]([{
 16: [],
 17: []
 }, {
-0: "Dia",
+0: &"Dia",
 1: [],
 2: [],
 3: false,
@@ -105,7 +105,7 @@ _sets = Array[Dictionary]([{
 16: [],
 17: []
 }, {
-0: "Ritsu",
+0: &"Ritsu",
 1: [],
 2: [],
 3: false,
@@ -125,7 +125,7 @@ _sets = Array[Dictionary]([{
 16: [],
 17: []
 }, {
-0: "Ritsu",
+0: &"Ritsu",
 1: [],
 2: [],
 3: false,
@@ -145,7 +145,7 @@ _sets = Array[Dictionary]([{
 16: [],
 17: []
 }, {
-0: "Ritsu",
+0: &"Ritsu",
 1: [],
 2: [],
 3: false,
@@ -165,7 +165,7 @@ _sets = Array[Dictionary]([{
 16: [],
 17: []
 }, {
-0: "Ritsu",
+0: &"Ritsu",
 1: [],
 2: [],
 3: false,
