@@ -20,7 +20,7 @@ curl -L 'https://nnda.dev/theatre/latest' | tar zxv --strip-components=1
 
 ### via Official Releases
 
-Grab the latest release [:material-download: here](https://github.com/nndda/Theatre/archive/refs/tags/0.12.0.zip), or get it from:
+Grab the latest release [:material-download: here](https://github.com/nndda/Theatre/archive/refs/tags/0.12.1.zip), or get it from:
 
 - [:simple-godotengine: Godot Asset Library](https://godotengine.org/asset-library/asset/2332)
 - [:simple-github: GitHub](https://github.com/nndda/Theatre/releases)
