@@ -11,8 +11,8 @@ A custom [RichTextLabel] made for displaying and rendering [Dialogue]. For most 
 
 | Returns | Property | Default |
 | ---: | :--- | :--- |
-p   [float]     characters_draw_tick   `0.015`
-The time in second for each character in the dialogue to be rendered.
+p   [float]     chars_per_second   `67.7`
+Character count that will be rendered every second.
 
 
 p   [bool]     rendering_paused   `false`
