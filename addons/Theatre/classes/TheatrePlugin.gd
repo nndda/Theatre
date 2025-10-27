@@ -66,10 +66,6 @@ var plugin_submenu : PopupMenu = preload(
 func _enter_tree() -> void:
     plugin_submenu.hide()
 
-    # Initiate Theatre singleton
-    if !Engine.get_singleton_list().has("Theatre"):
-        add_autoload_singleton("Theatre", "res://addons/Theatre/classes/Theatre.gd")
-
     dialogue_importer = DialogueImporter.new()
     dialogue_syntax_highlighter = DialogueSyntaxHighlighter.new()
 

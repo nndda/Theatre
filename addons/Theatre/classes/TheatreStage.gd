@@ -136,7 +136,7 @@ func _update_variables_dialogue() -> void:
 ## See also [method merge_variables], and [method remove_variable], and [method clear_variables].
 func set_variable(var_name : String, value : Variant) -> void:
     if var_name in DialogueParser.BUILT_IN_TAGS:
-        Theatre.TheatreDebug.log_err(
+        TheatreDebug.log_err(
             "Failed to set variable: built-in variable '%s' already exists" % var_name
         )
         return
@@ -156,7 +156,7 @@ func get_variables() -> Dictionary:
 func merge_variables(vars : Dictionary[String, Variant]) -> void:
     for n in vars.keys():
         if n in DialogueParser.BUILT_IN_TAGS:
-            Theatre.TheatreDebug.log_err(
+            TheatreDebug.log_err(
                 "Failed to set multiple variables: user-defined variables can't be any of %s"
                 % DialogueParser.BUILT_IN_TAGS
             )
@@ -186,6 +186,7 @@ func clear_variables() -> void:
 @export var scope_nodes : Dictionary[String, Node] = {}
 
 static var _scope_built_in : Dictionary[String, WeakRef] = {}
+static var _scope_built_in_initialized := false
 var _scope_all : Dictionary[String, WeakRef] = {}
 
 func _update_scope() -> void:
@@ -219,7 +220,7 @@ func add_caller(id : String, object : Object) -> void:
 ## See also [method add_scope], and [method clear_scope].
 func remove_scope(id : String) -> void:
     if !_scope.has(id):
-        Theatre.TheatreDebug.log_err(
+        TheatreDebug.log_err(
             "Cannot remove scope: scope '%s' doesn't exists" % id
         )
     else:
@@ -305,7 +306,7 @@ func _call_function(f : Dictionary) -> void:
 
 func _func_args_inp_get(arg_str : String) -> Object:
     if not _scope_all.has(arg_str):
-        Theatre.TheatreDebug.log_err(
+        TheatreDebug.log_err(
             "Error @%s:%d - scope '%s' doesn't exists" % [
                 current_dialogue._source_path, _current_dialogue_set[DialogueParser.Key.LINE_NUM],
                 arg_str,
@@ -430,7 +431,7 @@ var _step : int = -1
 ## Optionally, set [param to_section] parameter to start the [param dialogue] at a specific line or section.
 func start(dialogue : Dialogue = null, to_section : Variant = 0) -> void:
     if is_playing():
-        Theatre.TheatreDebug.log_err(
+        TheatreDebug.log_err(
             "Cannot start TheatreStage: Theres already a running Dialogue.",
         )
         return
@@ -439,7 +440,7 @@ func start(dialogue : Dialogue = null, to_section : Variant = 0) -> void:
         current_dialogue = dialogue
 
     if current_dialogue == null:
-        Theatre.TheatreDebug.log_err(
+        TheatreDebug.log_err(
             "Cannot start TheatreStage: `dialogue` is null.",
             1
         )
@@ -454,7 +455,7 @@ func start(dialogue : Dialogue = null, to_section : Variant = 0) -> void:
 
     if to_section is int:
         if to_section > _current_dialogue_length:
-            Theatre.TheatreDebug.log_err(
+            TheatreDebug.log_err(
                 "Failed to start Dialogue at line %d: Dialogue length is %d" % [to_section, _current_dialogue_length],
             )
         elif to_section <= -1:
@@ -464,14 +465,14 @@ func start(dialogue : Dialogue = null, to_section : Variant = 0) -> void:
 
     elif to_section is String or to_section is StringName:
         if !dialogue._sections.has(to_section):
-            Theatre.TheatreDebug.log_err(
+            TheatreDebug.log_err(
                 "Failed to start Dialogue at section '%s': section not found." % to_section,
             )
         else:
             _step = dialogue._sections[to_section] - 1
 
     else:
-        Theatre.TheatreDebug.log_err(
+        TheatreDebug.log_err(
             "Failed to start Dialogue at section/line: invalid data type for '%s'." % str(to_section),
         )
 
@@ -482,15 +483,15 @@ func start(dialogue : Dialogue = null, to_section : Variant = 0) -> void:
 ## Both [Dialogue] has to be the same length.
 func switch(dialogue : Dialogue) -> void:
     if current_dialogue == null:
-        Theatre.TheatreDebug.log_err(
+        TheatreDebug.log_err(
             "Failed switching dialogue: current_dialogue is null"
         )
     elif dialogue == null:
-        Theatre.TheatreDebug.log_err(
+        TheatreDebug.log_err(
             "Failed switching dialogue: dialogue is null"
         )
     elif current_dialogue.get_length() != dialogue.get_length():
-        Theatre.TheatreDebug.log_err(
+        TheatreDebug.log_err(
             "Failed switching dialogue: different dialogue length with current_dialogue"
         )
     else:
@@ -506,7 +507,7 @@ func switch(dialogue : Dialogue) -> void:
 ## Reset, and start over the [Dialogue] progres. Functions will be re-called. And [signal started] will also be emitted.
 func restart() -> void:
     if current_dialogue == null:
-        Theatre.TheatreDebug.log_err(
+        TheatreDebug.log_err(
             "Cannot restart TheatreStage: no current Dialogue",
         )
     else:
@@ -517,15 +518,15 @@ var _at_end := false
 
 func _preprogress_check() -> bool:
     if current_dialogue == null:
-        Theatre.TheatreDebug.log_err(
+        TheatreDebug.log_err(
             "Failed to progress TheatreStage: no Dialogue present"
         )
     elif dialogue_label == null:
-        Theatre.TheatreDebug.log_err(
+        TheatreDebug.log_err(
             "Failed to progress TheatreStage: no DialogueLabel"
         )
     elif dialogue_label.rendering_paused:
-        Theatre.TheatreDebug.log_err(
+        TheatreDebug.log_err(
             "Attempt to progress Dialogue while rendering_paused is true on DialogueLabel"
         )
     else:
@@ -617,7 +618,7 @@ func _dyn_var_get(
         )
 
         if _expression_args.has_execute_failed() or expr_err != OK:
-            Theatre.TheatreDebug.log_err(
+            TheatreDebug.log_err(
                 "Failed executing dynamic value @%s:%d - %s" % [
                     current_dialogue._source_path, _current_dialogue_set[DialogueParser.Key.LINE_NUM],
                     _expression_args.get_error_text(),
@@ -641,7 +642,7 @@ func jump_to_line(line : int) -> void:
 func jump_to_section(section : String) -> void:
     if _preprogress_check():
         if !current_dialogue._sections.has(section):
-            Theatre.TheatreDebug.log_err(
+            TheatreDebug.log_err(
                 "Failed to jump to Dialogue section '%s': section not found." % section
             )
         else:
@@ -657,13 +658,13 @@ func jump_to(id : Variant) -> void:
     elif id is String or id is StringName:
         jump_to_section(id)
     else:
-        Theatre.TheatreDebug.log_err(
+        TheatreDebug.log_err(
             "Failed to jump to Dialogue section/line: invalid data type for '%s'." % str(id)
         )
 
 func _goto_line(line : int) -> void:
     if line > _current_dialogue_length:
-        Theatre.TheatreDebug.log_err(
+        TheatreDebug.log_err(
             "Failed to jump to Dialogue line %d: Dialogue length is %d" % [
                 line, _current_dialogue_length
             ]
@@ -684,7 +685,7 @@ func cancel(keep_dialogue : bool = false) -> void:
         if current_dialogue != null:
             _reset_progress(keep_dialogue)
         else:
-            Theatre.TheatreDebug.log_err(
+            TheatreDebug.log_err(
                 "Cannot cancel TheatreStage: no Dialogue present"
             )
 
@@ -759,6 +760,16 @@ func _update_display() -> void:
 
 func _enter_tree() -> void:
     if !is_editor:
+        if !_scope_built_in_initialized:
+            var tree := get_tree()
+
+            for singleton in Engine.get_singleton_list():
+                _scope_built_in[singleton] = weakref(Engine.get_singleton(singleton))
+
+            for autoload: Node in tree.root.get_children():
+                if autoload != tree.current_scene:
+                    _scope_built_in[String(autoload.name)] = weakref(autoload)
+
         _update_scope()
         #add_scope("TheatreStage", self)
 

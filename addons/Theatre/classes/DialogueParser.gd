@@ -320,7 +320,7 @@ func _init(src : String = "", src_path : String = ""):
             setsl[Key.LINE_NUM] = ln_num
 
             if dlg_raw_size < i + 1:
-                Theatre.TheatreDebug.log_err(
+                TheatreDebug.log_err(
                     "@%s:%d - actor's name exists without a dialogue body" % [
                         _source_path, ln_num,
                     ],
@@ -335,7 +335,7 @@ func _init(src : String = "", src_path : String = ""):
             elif actor_str.is_empty():
                 # If there's no previous dialogue line, return error
                 if body_pos < 0:
-                    Theatre.TheatreDebug.log_err(
+                    TheatreDebug.log_err(
                         "@%s:%d - missing initial actor's name" % [
                             _source_path, ln_num,
                         ],
@@ -424,7 +424,7 @@ func _init(src : String = "", src_path : String = ""):
                     func_dict[Key.ARGS] = args.execute()
 
                     if args.has_execute_failed():
-                        Theatre.TheatreDebug.log_err(
+                        TheatreDebug.log_err(
                             "Failed parsing function call arguments @%s:%d - %s" % [
                                 _source_path, ln_num, args.get_error_text()
                             ],
@@ -485,7 +485,7 @@ func _init(src : String = "", src_path : String = ""):
                     func_dict[Key.ARGS] = val.execute()
 
                     if val.has_execute_failed():
-                        Theatre.TheatreDebug.log_err(
+                        TheatreDebug.log_err(
                             "Failed parsing property setter value @%s:%d - %s" % [
                                 _source_path, ln_num, val.get_error_text()
                             ],
@@ -569,7 +569,7 @@ func _init(src : String = "", src_path : String = ""):
         var content_str : String = output[n][Key.CONTENT_RAW]
 
         if content_str.is_empty():
-            Theatre.TheatreDebug.log_err(
+            TheatreDebug.log_err(
                 "@%s:%d - empty dialogue body for actor '%s'" % [
                     _source_path, output[n][Key.LINE_NUM], output[n][Key.ACTOR]
                 ],
