@@ -30,7 +30,7 @@ Yet another Godot dialogue addon.
 
 <p markdown>
 
-[:material-download: v0.12.1](https://github.com/nndda/Theatre/archive/refs/tags/0.12.1.zip "Download Theatre."){ .label }
+[:material-download: v0.12.2](https://github.com/nndda/Theatre/archive/refs/tags/0.12.2.zip "Download Theatre."){ .label }
 
 [:simple-godotengine: Godot 4.5](https://godotengine.org/ "Compatible with Godot 4.5 or above."){ .label }
 
