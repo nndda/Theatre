@@ -65,6 +65,7 @@ var plugin_submenu : PopupMenu = preload(
 
 func _enter_tree() -> void:
     plugin_submenu.hide()
+
     dialogue_importer = DialogueImporter.new()
     dialogue_syntax_highlighter = DialogueSyntaxHighlighter.new()
 
@@ -101,10 +102,6 @@ func _enter_tree() -> void:
     # Initialize plugin submenu
     plugin_submenu.id_pressed.connect(tool_submenu_id_pressed)
     add_tool_submenu_item("🎭 Theatre", plugin_submenu)
-
-    # Initiate Theatre singleton
-    if !Engine.get_singleton_list().has("Theatre"):
-        add_autoload_singleton("Theatre", "res://addons/Theatre/classes/Theatre.gd")
 
     # Initialize Dialogue importer
     add_import_plugin(dialogue_importer)

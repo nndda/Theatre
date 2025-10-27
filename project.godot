@@ -16,10 +16,6 @@ run/main_scene="uid://c7sx4nn7nbs5t"
 config/features=PackedStringArray("4.5")
 config/icon="res://addons/Theatre/assets/icons/Theatre.svg"
 
-[autoload]
-
-Theatre="*res://addons/Theatre/classes/Theatre.gd"
-
 [display]
 
 window/stretch/mode="canvas_items"
