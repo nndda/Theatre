@@ -5,7 +5,7 @@ func _can_import_threaded() -> bool:
     return DialogueParser._is_multi_threaded
 
 func _get_format_version() -> int:
-    return 2066924421
+    return 2066924422
     #return "{version}".hash()
 
 func _get_import_options(path: String, preset_index: int) -> Array[Dictionary]:
