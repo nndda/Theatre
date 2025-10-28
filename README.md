@@ -167,19 +167,15 @@ Dia:
 """)
 ```
 
+<img align="right" width="261" height="197" alt="A scene tree, with Stage and PanelContainer" src="https://github.com/user-attachments/assets/2fe8cc77-d35a-4eae-911d-8f3e0b6410dc" />
+
 Set the Stage! Add
 <code><img src="addons/Theatre/assets/icons/classes/ticket.svg" height="13"> TheatreStage</code>
 and
 <code><img src="addons/Theatre/assets/icons/classes/message.svg" height="13"> DialogueLabel</code>
-node to your scene. Structure your scene like the following:
+node to your scene. Structure your scene like the following image:
 
-<div align="center">
-<img width="261" height="197" alt="A scene tree, with Stage and PanelContainer" src="https://github.com/user-attachments/assets/2fe8cc77-d35a-4eae-911d-8f3e0b6410dc" />
-</div>
-
-<br>
-
-Adjust the position and size of the
+And adjust the position and size of the
 <code><img src="https://raw.githubusercontent.com/godotengine/godot/refs/heads/master/editor/icons/PanelContainer.svg" height="13"> PanelContainer</code>
 to your liking.
 
@@ -192,6 +188,8 @@ node, and reference the
 node to display your Dialogue. Adjust and configure your
 <code><img src="addons/Theatre/assets/icons/classes/ticket.svg" height="13"> TheatreStage</code>
 via the inspector. Alternatively, you can also set them in script:
+
+<br>
 
 <table align="center">
 <tr align="center">
