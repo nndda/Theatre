@@ -190,9 +190,10 @@ func tool_submenu_id_pressed(id : int) -> void:
 
 func reimport_dialogues() -> void:
     const IMPORTED_PATH := "res://.godot/imported/"
+    var import_file_regex : RegEx = RegEx.create_from_string(REGEX_IMPORTED_DLG)
     if DirAccess.dir_exists_absolute(IMPORTED_PATH):
         for file in DirAccess.get_files_at(IMPORTED_PATH):
-            if RegEx.create_from_string(REGEX_IMPORTED_DLG).search(file) != null:
+            if import_file_regex.search(file) != null:
                 DirAccess.remove_absolute(IMPORTED_PATH + file)
 
         editor_resource_filesystem.scan_sources()
