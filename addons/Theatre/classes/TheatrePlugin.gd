@@ -13,9 +13,7 @@ class TheatreConfig extends RefCounted:
             [ GENERAL_AUTO_UPDATE, TYPE_BOOL, true, PROPERTY_HINT_NONE, "", ],
             [ GENERAL_PARSER_MULTI_THREADS, TYPE_BOOL, false, PROPERTY_HINT_NONE, "", ],
         ]:
-            if ProjectSettings.has_setting(config_item[0]):
-                print("    %s already exist on ProjectSettings" % config_item[0])
-            else:
+            if !ProjectSettings.has_setting(config_item[0]):
                 ProjectSettings.set_setting(config_item[0], config_item[2])
                 ProjectSettings.add_property_info({
                     "name": config_item[0],
@@ -31,6 +29,7 @@ class TheatreConfig extends RefCounted:
     static func remove_configs() -> void:
         for config_item : String in [
             GENERAL_AUTO_UPDATE,
+            GENERAL_PARSER_MULTI_THREADS,
         ]:
             ProjectSettings.set_setting(config_item, null)
 
@@ -136,8 +135,7 @@ func _ready() -> void:
 func _exit_tree() -> void:
     print("🎭 Disabling Theatre...")
 
-    # Clear project settings
-    TheatreConfig.remove_configs()
+    # Disconnect project settings signal
     ProjectSettings.settings_changed.disconnect(TheatreConfig._project_settings_changed)
 
     # Clear update check
@@ -159,6 +157,9 @@ func _exit_tree() -> void:
     editor_resource_filesystem = null
 
 func _disable_plugin() -> void:
+    # Clear project settings
+    TheatreConfig.remove_configs()
+
     # Remove `dlg` from search in file extensions
     var text_files_find_ext : PackedStringArray =\
         ProjectSettings.get_setting("editor/script/search_in_file_extensions")
