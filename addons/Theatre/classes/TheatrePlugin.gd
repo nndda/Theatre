@@ -120,13 +120,16 @@ func _ready() -> void:
             await get_tree().create_timer(2.5).timeout
             update_check()
 
-        var theatre_record := FileAccess.open("res://.godot/.theatre", FileAccess.WRITE_READ)
+        var theatre_record := FileAccess.open("res://.godot/.theatre", FileAccess.READ_WRITE)
 
         if theatre_record == null:
             push_error("Error opening .theatre file: ", error_string(FileAccess.get_open_error()))
         else:
             var ver := get_plugin_version().strip_edges()
-            if theatre_record.get_as_text().strip_edges() != ver:
+            var ver_prev := theatre_record.get_as_text().strip_edges()
+            if ver_prev != ver:
+                if !ver_prev.is_empty():
+                    print("  Theatre version change detected: %s -> %s, reimporting dialogues" % [ver_prev, ver])
                 reimport_dialogues()
                 theatre_record.store_string(ver)
 
