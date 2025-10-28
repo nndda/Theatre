@@ -159,9 +159,6 @@ func _exit_tree() -> void:
     editor_resource_filesystem = null
 
 func _disable_plugin() -> void:
-    # Clear Theatre singleton
-    remove_autoload_singleton("Theatre")
-
     # Remove `dlg` from search in file extensions
     var text_files_find_ext : PackedStringArray =\
         ProjectSettings.get_setting("editor/script/search_in_file_extensions")
