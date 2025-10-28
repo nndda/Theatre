@@ -176,7 +176,7 @@ func _disable_plugin() -> void:
         )
 
 func _save_external_data() -> void:
-    editor_resource_filesystem.scan()
+    editor_resource_filesystem.scan_sources()
 
 func _handles(object: Object) -> bool:
     return object is Dialogue
@@ -195,7 +195,7 @@ func reimport_dialogues() -> void:
             if RegEx.create_from_string(REGEX_IMPORTED_DLG).search(file) != null:
                 DirAccess.remove_absolute(IMPORTED_PATH + file)
 
-        editor_resource_filesystem.scan()
+        editor_resource_filesystem.scan_sources()
 
 func update_check() -> void:
     print("  Checking for updates...")
