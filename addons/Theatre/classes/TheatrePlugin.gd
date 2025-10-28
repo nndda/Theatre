@@ -13,9 +13,7 @@ class TheatreConfig extends RefCounted:
             [ GENERAL_AUTO_UPDATE, TYPE_BOOL, true, PROPERTY_HINT_NONE, "", ],
             [ GENERAL_PARSER_MULTI_THREADS, TYPE_BOOL, false, PROPERTY_HINT_NONE, "", ],
         ]:
-            if ProjectSettings.has_setting(config_item[0]):
-                print("    %s already exist on ProjectSettings" % config_item[0])
-            else:
+            if !ProjectSettings.has_setting(config_item[0]):
                 ProjectSettings.set_setting(config_item[0], config_item[2])
                 ProjectSettings.add_property_info({
                     "name": config_item[0],
@@ -31,6 +29,7 @@ class TheatreConfig extends RefCounted:
     static func remove_configs() -> void:
         for config_item : String in [
             GENERAL_AUTO_UPDATE,
+            GENERAL_PARSER_MULTI_THREADS,
         ]:
             ProjectSettings.set_setting(config_item, null)
 
@@ -121,13 +120,16 @@ func _ready() -> void:
             await get_tree().create_timer(2.5).timeout
             update_check()
 
-        var theatre_record := FileAccess.open("res://.godot/.theatre", FileAccess.WRITE_READ)
+        var theatre_record := FileAccess.open("res://.godot/.theatre", FileAccess.READ_WRITE)
 
         if theatre_record == null:
             push_error("Error opening .theatre file: ", error_string(FileAccess.get_open_error()))
         else:
             var ver := get_plugin_version().strip_edges()
-            if theatre_record.get_as_text().strip_edges() != ver:
+            var ver_prev := theatre_record.get_as_text().strip_edges()
+            if ver_prev != ver:
+                if !ver_prev.is_empty():
+                    print("  Theatre version change detected: %s -> %s, reimporting dialogues" % [ver_prev, ver])
                 reimport_dialogues()
                 theatre_record.store_string(ver)
 
@@ -136,8 +138,7 @@ func _ready() -> void:
 func _exit_tree() -> void:
     print("🎭 Disabling Theatre...")
 
-    # Clear project settings
-    TheatreConfig.remove_configs()
+    # Disconnect project settings signal
     ProjectSettings.settings_changed.disconnect(TheatreConfig._project_settings_changed)
 
     # Clear update check
@@ -159,8 +160,8 @@ func _exit_tree() -> void:
     editor_resource_filesystem = null
 
 func _disable_plugin() -> void:
-    # Clear Theatre singleton
-    remove_autoload_singleton("Theatre")
+    # Clear project settings
+    TheatreConfig.remove_configs()
 
     # Remove `dlg` from search in file extensions
     var text_files_find_ext : PackedStringArray =\
@@ -175,7 +176,7 @@ func _disable_plugin() -> void:
         )
 
 func _save_external_data() -> void:
-    editor_resource_filesystem.scan()
+    editor_resource_filesystem.scan_sources()
 
 func _handles(object: Object) -> bool:
     return object is Dialogue
@@ -189,12 +190,13 @@ func tool_submenu_id_pressed(id : int) -> void:
 
 func reimport_dialogues() -> void:
     const IMPORTED_PATH := "res://.godot/imported/"
+    var import_file_regex : RegEx = RegEx.create_from_string(REGEX_IMPORTED_DLG)
     if DirAccess.dir_exists_absolute(IMPORTED_PATH):
         for file in DirAccess.get_files_at(IMPORTED_PATH):
-            if RegEx.create_from_string(REGEX_IMPORTED_DLG).search(file) != null:
+            if import_file_regex.search(file) != null:
                 DirAccess.remove_absolute(IMPORTED_PATH + file)
 
-        editor_resource_filesystem.scan()
+        editor_resource_filesystem.scan_sources()
 
 func update_check() -> void:
     print("  Checking for updates...")
