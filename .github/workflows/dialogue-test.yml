@@ -26,28 +26,48 @@ on:
       - 'tests/**_ci.gd'
   workflow_dispatch:
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   test:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+        godot-version: 
+          - 4.4
+          - 4.5
+
+    runs-on: ${{ matrix.os }}
 
     env:
-      GODOT_VERSION: 4.5-stable
-      GODOT_BINARY: Godot_v4.5-stable_linux.x86_64
+      GODOT_VERSION: ${{ matrix.godot-version }}-stable
 
     steps:
       - uses: actions/checkout@v5
+
+      - name: Set Godot binary for Linux
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: echo "GODOT_BINARY=Godot_v${{ matrix.godot-version }}-stable_linux.x86_64" >> $GITHUB_ENV
+
+      - name: Set Godot binary for Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: echo "GODOT_BINARY=Godot_v${{ matrix.godot-version }}-stable_win64.exe" >> $GITHUB_ENV
 
       - name: Cache Godot binary
         id: godotbin-cache
         uses: actions/cache@v4
         with:
           path: ./${{ env.GODOT_BINARY }}
-          key: ${{ env.GODOT_VERSION }}
+          key: ${{ env.GODOT_BINARY }}
 
       - name: Download Godot if not cached
         if: steps.godotbin-cache.outputs.cache-hit != 'true'
         run: |
-          wget --no-verbose https://github.com/godotengine/godot/releases/download/${{ env.GODOT_VERSION }}/${{ env.GODOT_BINARY }}.zip
+          curl -L -o ${{ env.GODOT_BINARY }}.zip https://github.com/godotengine/godot/releases/download/${{ env.GODOT_VERSION }}/${{ env.GODOT_BINARY }}.zip
           unzip -o ./${{ env.GODOT_BINARY }}.zip
 
       - name: Run test
