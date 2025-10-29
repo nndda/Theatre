@@ -9,6 +9,8 @@ func _init(
 ) -> void:
     _parser_warmup()
 
+    var time_start_mark : int = Time.get_ticks_usec()
+
     var dlg_data : Dictionary[String, Dictionary] = {}
 
     for dlg_path in dialogue_paths:
@@ -22,8 +24,27 @@ func _init(
             &"lines": dlg_obj.get_length(),
         }
 
-    print("CPU: %s, %d cores" % [OS.get_processor_name(), OS.get_processor_count()])
-    print("Static memory peak usage: %s" % String.humanize_size(OS.get_static_memory_peak_usage()))
+    var memory_info: Dictionary = OS.get_memory_info()
+
+    print("CPU: %s, %d cores\nMEMORY: %s\n" % [OS.get_processor_name(), OS.get_processor_count(), String.humanize_size(memory_info["available"])])
+
+    const PERF_TEMPLATE := "%-20s %-12s %-12s %-12s"
+
+    var perf_static_memory_peak : int = 0
+    var perf_static_memory_used : int = 0
+    var perf_object_count : int = 0
+    var perf_resource_count : int = 0
+
+    var perf_static_memory_peak_post : int = 0
+    var perf_static_memory_used_post : int = 0
+    var perf_object_count_post : int = 0
+    var perf_resource_count_post : int = 0
+
+    perf_static_memory_peak = OS.get_static_memory_peak_usage()
+    perf_static_memory_used = int(Performance.get_monitor(Performance.MEMORY_STATIC))
+    perf_object_count = int(Performance.get_monitor(Performance.OBJECT_COUNT))
+    perf_resource_count = int(Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT))
+
     print("Starting dialogue benchmark of %d iterations, on %d dialogues..." % [iterations, dialogue_paths.size()])
 
     print("%-38s %-7s %-10s %-12s %-9s %-12s %-9s %-9s" % ["Dialogue", "lines", "size", "total (ms)", "avg (ms)", "median (ms)", "min (ms)", "max (ms)"])
@@ -75,4 +96,36 @@ func _init(
             time_max / 1000.,
         ])
 
-    print("Static memory peak usage: %s" % String.humanize_size(OS.get_static_memory_peak_usage()))
+    perf_static_memory_peak_post = OS.get_static_memory_peak_usage()
+    perf_static_memory_used_post = int(Performance.get_monitor(Performance.MEMORY_STATIC))
+    perf_object_count_post = int(Performance.get_monitor(Performance.OBJECT_COUNT))
+    perf_resource_count_post = int(Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT))
+
+    print("\n", PERF_TEMPLATE % ["", "pre", "post", "diff"])
+    print(PERF_TEMPLATE % [
+        "Static memory peak",
+        String.humanize_size(perf_static_memory_peak),
+        String.humanize_size(perf_static_memory_peak_post),
+        String.humanize_size(perf_static_memory_peak - perf_static_memory_peak_post),
+    ])
+    print(PERF_TEMPLATE % [
+        "Static memory used",
+        String.humanize_size(perf_static_memory_used),
+        String.humanize_size(perf_static_memory_used_post),
+        String.humanize_size(perf_static_memory_used - perf_static_memory_used_post),
+    ])
+    print(PERF_TEMPLATE % [
+        "Object count",
+        str(perf_object_count),
+        str(perf_object_count_post),
+        str(perf_object_count - perf_object_count_post),
+    ])
+    print(PERF_TEMPLATE % [
+        "Resource count",
+        str(perf_resource_count),
+        str(perf_resource_count_post),
+        str(perf_resource_count - perf_resource_count_post),
+    ])
+
+    print("")
+    print("Finished in %0.2fms" % ((Time.get_ticks_usec() - time_start_mark) / 1000.))
