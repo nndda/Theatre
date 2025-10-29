@@ -71,7 +71,7 @@ jobs:
           unzip -o ./${{ env.GODOT_BINARY }}.zip
 
       - name: Import project assets
-        run |
+        run: |
           ./${{ env.GODOT_BINARY }} \
             --headless \
             --import
