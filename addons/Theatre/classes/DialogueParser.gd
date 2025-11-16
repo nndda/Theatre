@@ -464,10 +464,14 @@ func _init(src : String = "", src_path : String = ""):
                 # Operator assignment type if used
                 #       += -= *= /=
                 #       +  -  *  /
-                var operator := regex_vars_match.get_string(
-                    regex_vars_match.names[__OP]
-                )
-                var operator_used := not operator.is_empty()
+                var operator := ""
+                var operator_used := false
+
+                if regex_vars_match.names.has(__OP):
+                    operator = regex_vars_match.get_string(
+                        regex_vars_match.names[__OP]
+                    )
+                    operator_used = true
 
                 # Value
                 var val_raw := regex_vars_match.get_string(
