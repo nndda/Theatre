@@ -246,7 +246,7 @@ func _call_function(f : Dictionary) -> void:
         return
 
     var func_scope : StringName = f[DialogueParser.Key.SCOPE]
-    var func_name : StringName = f[DialogueParser.Key.NAME]
+    var func_path : NodePath = f[DialogueParser.Key.PROPERTY_PATH]
     var func_vars : Array = f[DialogueParser.Key.VARS]
 
     #region general error checks
@@ -268,17 +268,19 @@ func _call_function(f : Dictionary) -> void:
         )
         return
 
-    if !scope_obj.has_method(func_name):
+    var scope_obj_path := scope_obj.get_indexed(func_path)
+
+    if scope_obj_path == null:
         printerr(
             "Cannot call dialogue function: function '%s.%s()' doesn't exists.\n  dialogue: %s:%d" % [
-                func_scope, func_name, current_dialogue._source_path, f[DialogueParser.Key.LINE_NUM],
+                func_scope, str(func_path).replace(DialogueParser.COLON, DialogueParser.DOT), current_dialogue._source_path, f[DialogueParser.Key.LINE_NUM],
             ],
         )
         return
     #endregion
 
     if f[DialogueParser.Key.STANDALONE]:
-        scope_obj.callv(func_name, f[DialogueParser.Key.ARGS])
+        scope_obj_path.callv(f[DialogueParser.Key.ARGS])
         return
 
     if func_vars.any(_func_args_inp_check_scope.bind(_scope_all.keys())):
@@ -302,7 +304,7 @@ func _call_function(f : Dictionary) -> void:
         )
         return
 
-    scope_obj.callv(func_name, expr_args)
+    scope_obj_path.callv(expr_args)
 
 func _func_args_inp_get(arg_str : String) -> Object:
     if not _scope_all.has(arg_str):

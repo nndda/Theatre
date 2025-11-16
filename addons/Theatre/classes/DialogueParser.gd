@@ -45,7 +45,7 @@ const REGEX_BBCODE_ATTR :=\
 #       Scope.name = value
 #       Scope.name += value
 const REGEX_VARS_SET :=\
-    r"(?<scope>\w+)\.(?<name>\w+)\s*(?<op>[\+\-\*\/])?\=\s*(?<val>.+)$";\
+    r"(?<scope>\w+)\.(?<path>[\w\.]+)\s*(?<op>[\+\-\*\/])?\=\s*(?<val>.+)$";\
     static var _regex_vars_set := RegEx.create_from_string(REGEX_VARS_SET)
 
 # Match expressions-as-variable tag
@@ -57,7 +57,7 @@ const REGEX_VARS_EXPR :=\
 # Match function calls:
 #       Scope.name(args)
 const REGEX_FUNC_CALL :=\
-    r"(?<scope>\w+)\.(?<name>\w+)\((?<args>.*)\)$";\
+    r"(?<scope>\w+)\.(?<path>[\w\.]+)\((?<args>.*)\)$";\
     static var _regex_func_call := RegEx.create_from_string(REGEX_FUNC_CALL)
 
 # Match object/property access in function arguments or variables expressions:
@@ -86,6 +86,7 @@ const __SYM := "sym"
 
 const __SCOPE := "scope"
 const __NAME := "name"
+const __PATH := "path"
 const __ARGS := "args"
 const __OP := "op"
 #endregion
@@ -119,6 +120,8 @@ enum Key {
     
     POS,
     PLACEHOLDER,
+
+    PROPERTY_PATH,
 }
 #endregion
 
@@ -175,8 +178,8 @@ const FUNC_TEMPLATE := {
     # Function's scope name/id.
     Key.SCOPE: EMPTY,
 
-    # Function name.
-    Key.NAME: EMPTY,
+    # NodePath of the scope's property path
+    Key.PROPERTY_PATH: EMPTY,
 
     # Arguments used.
     Key.ARGS: null,
@@ -404,9 +407,9 @@ func _init(src : String = "", src_path : String = ""):
                 func_dict[Key.SCOPE] = StringName(regex_func_match.get_string(
                     regex_func_match.names[__SCOPE]
                 ))
-                func_dict[Key.NAME] = StringName(regex_func_match.get_string(
-                    regex_func_match.names[__NAME]
-                ))
+                func_dict[Key.PROPERTY_PATH] = NodePath(regex_func_match.get_string(
+                    regex_func_match.names[__PATH]
+                ).replace(DOT, COLON))
 
                 # Function arguments
                 var args_raw := regex_func_match.get_string(
@@ -451,15 +454,15 @@ func _init(src : String = "", src_path : String = ""):
                 var var_scope := regex_vars_match.get_string(
                     regex_vars_match.names[__SCOPE]
                 )
-                var var_name := regex_vars_match.get_string(
-                    regex_vars_match.names[__NAME]
-                )
+                var var_path := regex_vars_match.get_string(
+                    regex_vars_match.names[__PATH]
+                ).replace(DOT, COLON)
 
                 func_dict[Key.SCOPE] = StringName(var_scope)
-                func_dict[Key.NAME] = &"set"
+                func_dict[Key.PROPERTY_PATH] = ^"set_indexed"
                 func_dict[Key.LINE_NUM] = ln_num
 
-                var prop_name := "StringName(\"" + var_name + "\")"
+                var prop_path := "NodePath(\"" + var_path + "\")"
 
                 # Operator assignment type if used
                 #       += -= *= /=
@@ -480,7 +483,7 @@ func _init(src : String = "", src_path : String = ""):
                 
                 # Parse value
                 var val := Expression.new()
-                var val_err := val.parse("[" + prop_name + ", (" + val_raw + ")]")
+                var val_err := val.parse("[" + prop_path + ", (" + val_raw + ")]")
                 var val_obj_matches := _regex_func_vars.search_all(val_raw)
 
                 if val_obj_matches.is_empty() and\
@@ -498,9 +501,9 @@ func _init(src : String = "", src_path : String = ""):
 
                 else:
                     func_dict[Key.STANDALONE] = not operator_used
-                    func_dict[Key.ARGS] = "[" + prop_name + ", (" + (
+                    func_dict[Key.ARGS] = "[" + prop_path + ", (" + (
                         # 'Scope.name'   ' + - * / ' 
-                        var_scope + DOT + var_name + operator if operator_used
+                        var_scope + ".get_indexed(NodePath(\"" + var_path + "\"))" + operator if operator_used
                         else EMPTY
                     ) + val_raw + ")]"
 
