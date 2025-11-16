@@ -33,6 +33,10 @@ const REGEX_DLG_TAGS_NEWLINE :=\
     r"^\s*(?<tag>\w+)\=((?<arg>.+))*$";\
     static var _regex_dlg_tags_newline := RegEx.create_from_string(REGEX_DLG_TAGS_NEWLINE)
 
+const REGEX_CURLY_BRACKETS_ESCAPED :=\
+    r"\\(\{|\})";\
+    static var _regex_curly_brackets_escaped := RegEx.create_from_string(REGEX_CURLY_BRACKETS_ESCAPED)
+
 const REGEX_BBCODE_TAGS :=\
     r"(?<!\\)\[(?<tag>\/?(?<tag_name>\w+))\s*(?<attr>[^\[\]]+?)?(?<!\\)\]";\
     static var _regex_bbcode_tags := RegEx.create_from_string(REGEX_BBCODE_TAGS)
@@ -207,12 +211,12 @@ const BUILT_IN_TAGS : PackedStringArray = (
 )
 
 const VARS_BUILT_IN : Dictionary[String, String] = {
-    "n" : "\n",
-    "spc" : " ",
-    "eq" : "=",
+    "n": NEWLINE,
+    "spc": EMPTY,
+    "eq": "=",
 }
 
-const BB_ALIASES := {
+const BB_ALIASES : Dictionary[String, String] = {
     "bg": "bgcolor",
     "fg": "fgcolor",
     "col": "color",
@@ -257,6 +261,7 @@ static func _initialize_regex() -> void:
     _regex_dlg_tags = RegEx.create_from_string(REGEX_DLG_TAGS)
     _regex_scope_var_tags = RegEx.create_from_string(REGEX_SCOPE_VAR_TAGS)
     _regex_dlg_tags_newline = RegEx.create_from_string(REGEX_DLG_TAGS_NEWLINE)
+    _regex_curly_brackets_escaped = RegEx.create_from_string(REGEX_CURLY_BRACKETS_ESCAPED)
     _regex_bbcode_tags = RegEx.create_from_string(REGEX_BBCODE_TAGS)
     _regex_vars_set = RegEx.create_from_string(REGEX_VARS_SET)
     _regex_vars_expr = RegEx.create_from_string(REGEX_VARS_EXPR)
@@ -270,6 +275,7 @@ static func _initialize_regex() -> void:
         _regex_dlg_tags and
         _regex_scope_var_tags and
         _regex_dlg_tags_newline and
+        _regex_curly_brackets_escaped and
         _regex_bbcode_tags and
         _regex_vars_set and
         _regex_vars_expr and
@@ -281,7 +287,7 @@ static func _initialize_regex() -> void:
     )
 #endregion
 
-func _init(src : String = "", src_path : String = ""):
+func _init(src : String = EMPTY, src_path : String = EMPTY):
     # WHY???
     _initialize_regex_multi_threaded()
     #if !_regex_initialized:
@@ -302,14 +308,22 @@ func _init(src : String = "", src_path : String = ""):
     var regex_vars_match : RegExMatch
     var regex_img_match : RegExMatch
 
+    var ln_num : int
+    var n : String
+    var n_stripped : String
+    var is_valid_line : bool
+    var current_processed_string : String
+
+    var dlg_body : String
+
     # Per raw string line
     for i in dlg_raw_size:
-        var ln_num : int = i + 1
-        var n := dlg_raw[i]
-        var n_stripped := n.strip_edges()
-        var is_valid_line := !n.begins_with(HASH) and !n.is_empty()
+        ln_num = i + 1
+        n = dlg_raw[i]
+        n_stripped = n.strip_edges()
+        is_valid_line = !n.begins_with(HASH) and !n.is_empty()
 
-        var current_processed_string : String
+        current_processed_string = ""
 
         if is_valid_line \
             and !is_indented(n) \
@@ -467,7 +481,7 @@ func _init(src : String = "", src_path : String = ""):
                 # Operator assignment type if used
                 #       += -= *= /=
                 #       +  -  *  /
-                var operator := ""
+                var operator := EMPTY
                 var operator_used := false
 
                 if regex_vars_match.names.has(__OP):
@@ -558,7 +572,7 @@ func _init(src : String = "", src_path : String = ""):
 
                 if newline_stack > 0:
                     newline_stack += 1
-                var dlg_body := NEWLINE.repeat(newline_stack)\
+                dlg_body = NEWLINE.repeat(newline_stack)\
                     + current_processed_string\
                     + (
                         EMPTY if current_processed_string.ends_with(NEWLINE)
@@ -570,15 +584,16 @@ func _init(src : String = "", src_path : String = ""):
                 output[body_pos][Key.CONTENT_RAW] += dlg_body
                 output[body_pos][Key.CONTENT] += dlg_body
 
+    var content_str : String
+
     # Per dialogue line
-    for n in output.size():
-        var body : String
-        var content_str : String = output[n][Key.CONTENT_RAW]
+    for i in output.size():
+        content_str = output[i][Key.CONTENT_RAW]
 
         if content_str.is_empty():
             TheatreDebug.log_err(
                 "@%s:%d - empty dialogue body for actor '%s'" % [
-                    _source_path, output[n][Key.LINE_NUM], output[n][Key.ACTOR]
+                    _source_path, output[i][Key.LINE_NUM], output[i][Key.ACTOR]
                 ],
                 -1
             )
@@ -618,16 +633,16 @@ func _init(src : String = "", src_path : String = ""):
                         .insert(start, bracket)
             #endregion
 
-            output[n][Key.CONTENT_RAW] = content_str
+            output[i][Key.CONTENT_RAW] = content_str
 
-            body = content_str
+            dlg_body = content_str
             for tag in _regex_dlg_tags.search_all(content_str):
-                body = body.replace(tag.strings[0], EMPTY)
+                dlg_body = dlg_body.replace(tag.strings[0], EMPTY)
 
-            output[n].merge(parse_tags(content_str), true)
+            output[i].merge(parse_tags(content_str), true)
 
-        output[n][Key.FUNC].make_read_only()
-        output[n][Key.CONTENT] = body
+        output[i][Key.FUNC].make_read_only()
+        output[i][Key.CONTENT] = dlg_body
 
 ## Check if [param string] is indented with tabs or spaces.
 func is_indented(string : String) -> bool:
@@ -668,7 +683,7 @@ func parse_img_tag(img_tag_match : RegExMatch) -> String:
         #_regex_dlg_tags_img = RegEx.create_from_string(REGEX_DLG_TAGS_IMG)
 
     #var img_tag_match := _regex_dlg_tags_img.search(string)
-    var attrs : String = ""
+    var attrs : String = EMPTY
 
     var n := img_tag_match.get_string("width")
     if not n.is_empty():
@@ -832,17 +847,15 @@ static func parse_tags(string : String) -> Dictionary:
 
     # Escaped Curly Brackets ===============================================
     # 💀💀💀💀💀💀💀💀💀💀💀
-    var regex_curly_brackets := RegEx.create_from_string(r"\\(\{|\})")
-
     var esc_curly_brackets : Dictionary = {}
 
-    for cb in regex_curly_brackets.search_all(
+    for cb in _regex_curly_brackets_escaped.search_all(
         _regex_dlg_tags.sub(string, EMPTY, true)
         ):
         esc_curly_brackets[cb.get_start()] = cb.strings[0]
 
     if !esc_curly_brackets.is_empty():
-        string = regex_curly_brackets.sub(string, HASH, true)
+        string = _regex_curly_brackets_escaped.sub(string, HASH, true)
 
     # Dialogue tags ========================================================
     var tag_pos_offset : int = 0
