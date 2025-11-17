@@ -120,24 +120,18 @@ func _ready() -> void:
             await get_tree().create_timer(2.5).timeout
             update_check()
 
-        const DOT_THEATRE_PATH : String = "res://.godot/.theatre"
-        var theatre_record : FileAccess = FileAccess.open(DOT_THEATRE_PATH, FileAccess.READ_WRITE)
+    const THEATRE_VER_LOG : String = "theatre/general/updates/version"
+    var ver : String = get_plugin_version()
+    if ProjectSettings.has_setting(THEATRE_VER_LOG):
+        var ver_prev : String = ProjectSettings.get_setting(THEATRE_VER_LOG)
+        if ver_prev != ver:
+            print("  Theatre version change detected: %s -> %s, reimporting dialogues" % [ver_prev, ver])            
+            reimport_dialogues()
 
-        if theatre_record == null:
-            if FileAccess.get_open_error() == ERR_FILE_NOT_FOUND:
-                theatre_record = FileAccess.open(DOT_THEATRE_PATH, FileAccess.WRITE)
-                theatre_record.store_string(get_plugin_version())
-            else:
-                push_error("Error opening .theatre file: ", error_string(FileAccess.get_open_error()))
-        else:
-            var ver := get_plugin_version()
-            var ver_prev := theatre_record.get_as_text().strip_edges()
-            if ver_prev != ver:
-                print("  Theatre version change detected: %s -> %s, reimporting dialogues" % [ver_prev, ver])
-                reimport_dialogues()
-                theatre_record.store_string(ver)
+    ProjectSettings.set_setting(THEATRE_VER_LOG, ver)
+    ProjectSettings.set_as_internal(THEATRE_VER_LOG, true)
 
-            theatre_record.close()
+    ProjectSettings.save()
 
 func _exit_tree() -> void:
     print("🎭 Disabling Theatre...")
