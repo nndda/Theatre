@@ -41,19 +41,19 @@ Yet another <sub>(linear)</sub> dialogue system<b>/</b>addon<b>/</b>plugin for G
 
 ```gdscript
 # Load your epic dialogue!
-var epic_dialogue := Dialogue.load('res://epic_dialogue.dlg')
+var dialogue: Dialogue = load('res://dialogue.dlg')
 # Set up the stage
-@export var my_stage: TheatreStage
+@export var stage: TheatreStage
 
 func _ready():
     # Start your dialogue
-    my_stage.start(epic_dialogue)
+    stage.start(epic_dialogue)
 
 func _input(event):
     # When the space/enter key is pressed,
     if event.is_action_pressed('ui_accept'):
         # Progress your dialogue
-        my_stage.progress()
+        stage.progress()
 ```
 
 <br>
@@ -150,10 +150,12 @@ Dia:
 Write your epic Dialogue!
 ```gdscript
 # Write it in a *.dlg file, and load it.
-var epic_dialogue := Dialogue.load("res://epic_dialogue.dlg")
+var dialogue: Dialogue = load('res://dialogue.dlg')
+# or
+var dialogue := Dialogue.load('res://dialogue.dlg')
 
 # Write it directly with triple quotation marks.
-var epic_dialogue := Dialogue.new("""
+var dialogue := Dialogue.new("""
 
 Dia:
     "Loading the Dialogue written in a *.dlg file
@@ -210,12 +212,12 @@ via the inspector. Alternatively, you can also set them in script:
 <td>
 
 ```gdscript
-@onready var my_stage: TheatreStage = $TheatreStage
+@onready var stage: TheatreStage = $TheatreStage
 
 func _ready():
-    my_stage.actor_label =\
+    stage.actor_label =\
         $PanelContainer/VBoxContainer/Label
-    my_stage.dialogue_label =\
+    stage.dialogue_label =\
         $PanelContainer/VBoxContainer/DialogueLabel
 
 ```
@@ -232,16 +234,16 @@ node in the script, and set up a way to progress your Dialogue with `TheatreStag
 ```gdscript
 func _input(event):
     if event.is_action_pressed('ui_accept'):
-        my_stage.progress()
+        stage.progress()
 ```
 
 And finally, start the
 <code><img src="addons/Theatre/assets/icons/classes/ticket.svg" height="13"> TheatreStage</code>
-with your `epic_dialogue`.
+with your `dialogue`.
 
 ```gdscript
 func _ready():
-    my_stage.start(epic_dialogue)
+    stage.start(dialogue)
 ```
 
 <p align="center">
