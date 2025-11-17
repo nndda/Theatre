@@ -281,6 +281,7 @@ func _call_function(f : Dictionary) -> void:
 
     if f[DialogueParser.Key.STANDALONE]:
         scope_obj_path.callv(f[DialogueParser.Key.ARGS])
+        function_called.emit(f)
         return
 
     if func_vars.any(_func_args_inp_check_scope.bind(_scope_all.keys())):
@@ -305,6 +306,7 @@ func _call_function(f : Dictionary) -> void:
         return
 
     scope_obj_path.callv(expr_args)
+    function_called.emit(f)
 
 func _func_args_inp_get(arg_str : String) -> Object:
     if not _scope_all.has(arg_str):
@@ -353,6 +355,9 @@ signal cancelled_at(line : int, line_data : Dictionary)
 
 ## Emitted when the [Dialogue] is switched using [method switch].
 signal dialogue_switched(old_dialogue : Dialogue, new_dialogue : Dialogue)
+
+## Emitted when a function is called.
+signal function_called(func_data : Dictionary)
 
 #signal locale_changed(lang : String)
 
