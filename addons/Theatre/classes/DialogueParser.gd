@@ -69,7 +69,7 @@ const REGEX_FUNC_CALL :=\
 #       Scope.name(Object.value)
 #           -> Object.value
 const REGEX_FUNC_VARS :=\
-    r"(?<![\"\'\d])\b([a-zA-Z_]\w*)\s*\.\s*([a-zA-Z_]\w*)\b(?![\"\'\d])";\
+    r"[\"\'](?:.|[^\"\'])*[\"\'](*SKIP)(*FAIL)|\b([a-zA-Z_]\w*)\.([a-zA-Z_]\w*(?:\.[a-zA-Z_]\w*)*)";\
     static var _regex_func_vars := RegEx.create_from_string(REGEX_FUNC_VARS)
 
 const REGEX_INDENT :=\
