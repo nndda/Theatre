@@ -47,7 +47,7 @@ var dialogue: Dialogue = load('res://dialogue.dlg')
 
 func _ready():
     # Start your dialogue
-    stage.start(epic_dialogue)
+    stage.start(dialogue)
 
 func _input(event):
     # When the space/enter key is pressed,
