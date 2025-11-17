@@ -103,7 +103,7 @@ Godette:
 ```
 ```yaml
 Ritsu:
-    "{speed = 1.5} AAAAAAAAAAAAAAAAA!!!!"
+    "{speed = 1.5}AAAAAAAAAAAAAAAAA!!!!"
 ```
 
 ## Manipulate Properties
@@ -111,7 +111,7 @@ Ritsu:
 Manipulate in-game object properties &amp; variables.
 ```yaml
 Ritsu:
-    UI.portrait = "ritsu_smile.png"
+    UI.portrait.current = "ritsu_smile.png"
     "Cheers!"
 ```
 ```yaml
