@@ -56,8 +56,6 @@ var dialogue_syntax_highlighter : DialogueSyntaxHighlighter
 static var editor_settings := EditorInterface.get_editor_settings()
 var editor_resource_filesystem := EditorInterface.get_resource_filesystem()
 
-const REGEX_IMPORTED_DLG := r"^.+\.dlg-[A-Fa-f0-9]+\."
-
 var plugin_submenu : PopupMenu = preload(
     "res://addons/Theatre/components/tool_submenu.tscn"
 ).instantiate()
@@ -194,13 +192,14 @@ func tool_submenu_id_pressed(id : int) -> void:
 
 func reimport_dialogues() -> void:
     const IMPORTED_PATH := "res://.godot/imported/"
-    var import_file_regex : RegEx = RegEx.create_from_string(REGEX_IMPORTED_DLG)
+    var import_file_regex : RegEx = RegEx.create_from_string(r"^.+\.dlg-[A-Fa-f0-9]+\.")
     if DirAccess.dir_exists_absolute(IMPORTED_PATH):
         for file in DirAccess.get_files_at(IMPORTED_PATH):
             if import_file_regex.search(file) != null:
                 DirAccess.remove_absolute(IMPORTED_PATH + file)
 
-        editor_resource_filesystem.scan()
+        if !editor_resource_filesystem.is_scanning():
+            editor_resource_filesystem.scan()
 
 func _init_update_req() -> Callable:
     http_update_req = HTTPRequest.new()
