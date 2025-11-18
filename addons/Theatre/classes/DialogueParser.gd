@@ -165,7 +165,7 @@ const SETS_TEMPLATE := {
     # Function index tags.
     Key.FUNC_IDX: [],
 
-    Key.OFFSETS: {},
+    #Key.OFFSETS: {},
         #   start, end
         #   15: 20
 
