@@ -61,7 +61,7 @@ var plugin_submenu : PopupMenu = preload(
 ).instantiate()
 
 func _enter_tree() -> void:
-    plugin_submenu.hide()
+    plugin_submenu.visible = false
 
     dialogue_importer = DialogueImporter.new()
     dialogue_syntax_highlighter = DialogueSyntaxHighlighter.new()
