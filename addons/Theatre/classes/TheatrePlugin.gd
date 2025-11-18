@@ -112,13 +112,13 @@ func _ready() -> void:
     if DisplayServer.get_name() != "headless":
         # Initialize update check
         http_update_req = HTTPRequest.new()
-        http_update_req.timeout = 3.0
         http_update_req.request_completed.connect(_update_response)
-        add_child(http_update_req)
+        http_update_req.ready.connect(http_update_req.set.bind(&"timeout", 3.), Object.CONNECT_ONE_SHOT)
 
         if ProjectSettings.get_setting(TheatreConfig.GENERAL_AUTO_UPDATE, true):
-            await get_tree().create_timer(2.5).timeout
-            update_check()
+            http_update_req.tree_entered.connect(update_check, Object.CONNECT_ONE_SHOT)
+
+        call_deferred(&"add_child", http_update_req)
 
     const THEATRE_VER_LOG : String = "theatre/general/updates/version"
     var ver : String = get_plugin_version()
