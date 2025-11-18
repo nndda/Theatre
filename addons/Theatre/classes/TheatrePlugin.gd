@@ -121,7 +121,7 @@ func _ready() -> void:
 
         call_deferred(&"add_child", http_update_req)
 
-    const THEATRE_VER_LOG : String = "theatre/general/updates/version"
+    const THEATRE_VER_LOG : String = "theatre/version"
     var ver : String = get_plugin_version()
     if ProjectSettings.has_setting(THEATRE_VER_LOG):
         var ver_prev : String = ProjectSettings.get_setting(THEATRE_VER_LOG)

@@ -46,4 +46,4 @@ renderer/rendering_method="mobile"
 
 [theatre]
 
-general/updates/version="0.12.2"
+version="0.12.2"
