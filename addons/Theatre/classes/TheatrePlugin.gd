@@ -123,16 +123,21 @@ func _ready() -> void:
 
     const THEATRE_VER_LOG : String = "theatre/version"
     var ver : String = get_plugin_version()
+    var update_needed: bool = true
+
     if ProjectSettings.has_setting(THEATRE_VER_LOG):
         var ver_prev : String = ProjectSettings.get_setting(THEATRE_VER_LOG)
-        if ver_prev != ver:
+        update_needed = ver_prev != ver
+
+        if update_needed:
             print("  Theatre version change detected: %s -> %s, reimporting dialogues" % [ver_prev, ver])            
             reimport_dialogues()
 
-    ProjectSettings.set_setting(THEATRE_VER_LOG, ver)
-    ProjectSettings.set_as_internal(THEATRE_VER_LOG, true)
+    if update_needed:
+        ProjectSettings.set_setting(THEATRE_VER_LOG, ver)
+        ProjectSettings.set_as_internal(THEATRE_VER_LOG, true)
 
-    ProjectSettings.save()
+        TheatreConfig.update()
 
 func _exit_tree() -> void:
     print("🎭 Disabling Theatre...")
