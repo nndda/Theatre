@@ -4,12 +4,13 @@ extends EditorPlugin
 class_name TheatrePlugin
 
 class TheatreConfig extends RefCounted:
+    const GENERAL_PRINT_HEADER := "theatre/general/print_header"
     const GENERAL_AUTO_UPDATE := "theatre/general/updates/check_updates_automatically"
     const GENERAL_PARSER_MULTI_THREADS := "theatre/general/parser/use_multiple_threads"
 
     static func init_configs() -> void:
-        print("  Initializing configs...")
         for config_item : Array in [
+            [ GENERAL_PRINT_HEADER, TYPE_BOOL, true, PROPERTY_HINT_NONE, "", ],
             [ GENERAL_AUTO_UPDATE, TYPE_BOOL, true, PROPERTY_HINT_NONE, "", ],
             [ GENERAL_PARSER_MULTI_THREADS, TYPE_BOOL, false, PROPERTY_HINT_NONE, "", ],
         ]:
@@ -28,6 +29,7 @@ class TheatreConfig extends RefCounted:
 
     static func remove_configs() -> void:
         for config_item : String in [
+            GENERAL_PRINT_HEADER,
             GENERAL_AUTO_UPDATE,
             GENERAL_PARSER_MULTI_THREADS,
         ]:
@@ -67,7 +69,8 @@ func _enter_tree() -> void:
     dialogue_syntax_highlighter = DialogueSyntaxHighlighter.new()
 
     # Initialize Theatre config
-    print("🎭 Theatre v%s by nnda" % get_plugin_version())
+    if ProjectSettings.get_setting(TheatreConfig.GENERAL_PRINT_HEADER, true):
+        print("🎭 Theatre v%s by nnda" % get_plugin_version())
 
     # Initialize project settings
     TheatreConfig.init_configs()
@@ -138,7 +141,8 @@ func _ready() -> void:
         TheatreConfig.update()
 
 func _exit_tree() -> void:
-    print("🎭 Disabling Theatre...")
+    if ProjectSettings.get_setting(TheatreConfig.GENERAL_PRINT_HEADER, true):
+        print("🎭 Disabling Theatre...")
 
     # Disconnect project settings signal
     ProjectSettings.settings_changed.disconnect(TheatreConfig._project_settings_changed)
