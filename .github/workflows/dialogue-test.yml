@@ -47,7 +47,7 @@ jobs:
       GODOT_VERSION: ${{ matrix.godot-version }}-stable
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Set Godot binary for Linux
         if: ${{ matrix.os == 'ubuntu-latest' }}
