@@ -59,7 +59,7 @@ jobs:
 
       - name: Cache Godot binary
         id: godotbin-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ./${{ env.GODOT_BINARY }}
           key: ${{ env.GODOT_BINARY }}
