@@ -82,6 +82,10 @@ Dia:
     "Let's meet {player}. Don't keep {player_pronoun} waiting."
 ```
 ...or dynamic variables.
+```yaml
+Dia:
+    "Good {Game.day_state}, {Game.player.name}."
+```
 
 Execute, evaluate, and insert any valid GDScript expressions to the dialogue.
 ```yaml
