@@ -20,6 +20,32 @@ extends Resource
 ## @tutorial(Dialogue Syntax): https://nndda.github.io/Theatre/class/dialogue/syntax/
 ## @tutorial(Theatre's tutorial page): https://nndda.github.io/Theatre/tutorials/
 
+#region NOTE: dialogue data keys -------------------------------------------------------------------
+const ACTOR := DialogueParser.Key.ACTOR
+
+const CONTENT := DialogueParser.Key.CONTENT
+const CONTENT_RAW := DialogueParser.Key.CONTENT_RAW
+
+const LINE_NUM := DialogueParser.Key.LINE_NUM
+
+const TAG_VARS := DialogueParser.Key.VARS
+const TAG_SCOPED_VARS := DialogueParser.Key.VARS_SCOPE
+const TAG_EXPRESSIONS := DialogueParser.Key.VARS_EXPR
+
+const FUNCS := DialogueParser.Key.FUNC
+
+const TAGS := DialogueParser.Key.TAGS
+const TAG_SPEED := DialogueParser.Key.TAGS_SPEEDS
+const TAG_DELAY := DialogueParser.Key.TAGS_DELAYS
+
+# FUNC_TEMPLATE
+const FUNC_SCOPE := DialogueParser.Key.SCOPE
+const FUNC_NAME := DialogueParser.Key.NAME
+const FUNC_ARGS := DialogueParser.Key.ARGS
+const FUNC_ARGS_SCOPE := DialogueParser.Key.VARS
+const FUNC_STANDALONE := DialogueParser.Key.STANDALONE
+#endregion
+
 #region NOTE: Stored variables ---------------------------------------------------------------------
 @export_storage var _sets : Array[Dictionary] = []
 @export_storage var _source_path : String
