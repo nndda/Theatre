@@ -145,6 +145,30 @@ Dia:
     there we go."
 ```
 
+## Extensible API
+Here's some signals, here's some dialogue data, do whatever you want.
+
+```gdscript
+func _progressed_on(dialogue_data):
+    var speaker = dialogue_data[Dialogue.ACTOR]
+    var text = dialogue_data[Dialogue.CONTENT]
+
+    if speaker == "Dia":
+        portrait.change("dia.png")
+        dialogue_label.text_color = Color.LIGHT_BLUE
+    elif speaker == "Ritsu":
+        portrait.change("ritsu.png")
+        dialogue_label.text_color = Color.PINK
+    else:
+        portrait.change("blank.png")
+        dialogue_label.text_color = Color.WHITE
+
+    history_log.push({
+        "speaker": speaker,
+        "text": text
+    })
+```
+
 <p align="center">
 <a href="https://nndda.github.io/Theatre/class/dialogue/syntax/">📚 More comprehensive Dialogue features documented here.</a>
 </p>
