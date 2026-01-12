@@ -613,8 +613,8 @@ func _dyn_var_get(
         if _scope_all.has(scoped_vars[1]):
             var scope_obj : Object = _scope_all[scoped_vars[1]].get_ref()
 
-            if scoped_vars[2] in scope_obj:
-                dyn_vars_defs[scoped_vars[0]] = scope_obj.get(scoped_vars[2])
+            if scope_obj.get_indexed(scoped_vars[2]) != null:
+                dyn_vars_defs[scoped_vars[0]] = scope_obj.get_indexed(scoped_vars[2])
 
     for expr_vars : Dictionary in vars_expr:
         var expr_err := _expression_args.parse(expr_vars[DialogueParser.Key.CONTENT], expr_vars[DialogueParser.Key.ARGS])

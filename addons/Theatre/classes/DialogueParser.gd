@@ -16,7 +16,7 @@ const REGEX_DLG_TAGS :=\
     static var _regex_dlg_tags := RegEx.create_from_string(REGEX_DLG_TAGS)
 
 const REGEX_SCOPE_VAR_TAGS :=\
-    r"(?<!\\)(?:\\\\)*\{(?<name>\s*(?<scope>\w+)\s*\.\s*(?<val>(?:[^\\\{\}]|\\[\{\}])*?)\s*(?<!\\))\}";\
+    r"(?<!\\)(?:\\\\)*\{(?<name>\s*(?<scope>\w+)\s*\.\s*(?<path>(?:[^\\\{\}]|\\[\{\}])*?)\s*(?<!\\))\}";\
     static var _regex_scope_var_tags := RegEx.create_from_string(REGEX_SCOPE_VAR_TAGS)
 
 # Match Dialogue tags [img] syntax:
@@ -715,7 +715,7 @@ func parse_var_scope_tags(string : String, line_num : int = 0) -> Array[Array]:
             [
                 tag.get_string(__NAME),
                 tag.get_string(__SCOPE),
-                StringName(tag.get_string(__VAL)),
+                NodePath(tag.get_string(__PATH).replace(DOT, COLON)),
                 line_num,
             ]
         )
