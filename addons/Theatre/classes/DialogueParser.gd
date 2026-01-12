@@ -169,8 +169,6 @@ const SETS_TEMPLATE := {
         #   start, end
         #   15: 20
 
-    Key.HAS_VARS: false,
-
     # User-defined variables used.
     Key.VARS: [],
     Key.VARS_SCOPE: [],

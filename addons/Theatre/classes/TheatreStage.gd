@@ -739,25 +739,6 @@ func _update_display() -> void:
         dialogue_label.text = DialogueParser.escape_brackets(
             _dialogue_full_string.format(variables)
         )
-    # TODO
-    #if _current_dialogue_set[DialogueParser.Key.HAS_VARS]:
-        #if actor_label != null:
-            #actor_label.text = DialogueParser.escape_brackets(
-                #_current_dialogue_set[DialogueParser.Key.ACTOR].format(variables)
-            #)
-        #if dialogue_label != null:
-            #dialogue_label.text = DialogueParser.escape_brackets(
-                #_dialogue_full_string.format(variables)
-            #)
-    #else:
-        #if actor_label != null:
-            #actor_label.text = DialogueParser.escape_brackets(
-                #_current_dialogue_set[DialogueParser.Key.ACTOR]
-            #)
-        #if dialogue_label != null:
-            #dialogue_label.text = DialogueParser.escape_brackets(
-                #_dialogue_full_string
-            #)
 
 # TODO:
 #func switch_dialogue(dialogue : Dialogue, current_line : bool = true) -> void:
