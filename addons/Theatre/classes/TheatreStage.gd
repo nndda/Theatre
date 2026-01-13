@@ -240,10 +240,42 @@ func clear_scopes() -> void:
 func clear_callers() -> void:
     clear_scopes()
 
+
+## Custom [Callable] that have the called function data as the parameter. Return[code]true[/code] to execute the function, and [code]false[/code] to skip the function call..
+var func_call_filter : Callable:
+    set(c):
+        var args_count : int = c.get_argument_count()
+        if args_count != 1:
+            TheatreDebug.log_err(
+                "'func_call_filter' callable argument != 1 (%d)" % args_count, 1
+            )
+        else:
+            func_call_filter = c
+
+
 var _expression_args := Expression.new()
 func _call_function(f : Dictionary) -> void:
     if !allow_func:
         return
+
+    #region NOTE: User-defined function call filter
+    if not func_call_filter.is_valid():
+        TheatreDebug.log_err(
+            "invalid 'func_call_filter'", 1
+        )
+    else:
+        var func_call_allowed : Variant = func_call_filter.call(f)
+        var func_call_filter_return : int = typeof(func_call_allowed)
+
+        if func_call_filter_return != TYPE_BOOL:
+            TheatreDebug.log_err(
+                "'func_call_filter' callable returns '%s', instead of 'bool" % type_string(func_call_filter_return), 1
+            )
+        else:
+            if not func_call_allowed:
+                function_called.emit(f, false)
+                return
+    #endregion
 
     var func_scope : StringName = f[DialogueParser.Key.SCOPE]
     var func_path : NodePath = f[DialogueParser.Key.PROPERTY_PATH]
@@ -281,7 +313,7 @@ func _call_function(f : Dictionary) -> void:
 
     if f[DialogueParser.Key.STANDALONE]:
         scope_obj_path.callv(f[DialogueParser.Key.ARGS])
-        function_called.emit(f)
+        function_called.emit(f, true)
         return
 
     if func_vars.any(_func_args_inp_check_scope.bind(_scope_all.keys())):
@@ -306,7 +338,7 @@ func _call_function(f : Dictionary) -> void:
         return
 
     scope_obj_path.callv(expr_args)
-    function_called.emit(f)
+    function_called.emit(f, true)
 
 func _func_args_inp_get(arg_str : String) -> Object:
     if not _scope_all.has(arg_str):
@@ -357,7 +389,7 @@ signal cancelled_at(line : int, line_data : Dictionary)
 signal dialogue_switched(old_dialogue : Dialogue, new_dialogue : Dialogue)
 
 ## Emitted when a function is called.
-signal function_called(func_data : Dictionary)
+signal function_called(func_data : Dictionary, executed : bool)
 
 #signal locale_changed(lang : String)
 
