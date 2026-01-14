@@ -109,6 +109,8 @@ var _delay_queue : PackedInt64Array = []
 var _delay_count : int = 0
 var _speed_queue : PackedInt64Array = []
 var _speed_count : int = 0
+var _jump_queue : PackedInt64Array = []
+var _jump_count : int = 0
 var _func_queue : PackedInt64Array = []
 var _func_count : int = 0
 
@@ -132,6 +134,8 @@ func start_render() -> void:
     _delay_count = -_delay_queue.size()
     _speed_queue = _current_dialogue_set[DialogueParser.Key.TAGS][DialogueParser.Key.TAGS_SPEEDS].keys()
     _speed_count = -_speed_queue.size()
+    _jump_queue = _current_dialogue_set[DialogueParser.Key.TAGS][DialogueParser.Key.TAGS_JUMP].keys()
+    _jump_count = -_jump_queue.size()
     _func_queue = _current_dialogue_set[DialogueParser.Key.FUNC_POS].keys()
     _func_count = -_func_queue.size()
 
@@ -148,6 +152,8 @@ func clear_render() -> void:
     _delay_count = 0
     _speed_queue.clear()
     _speed_count = 0
+    _jump_queue.clear()
+    _jump_count = 0
     _func_queue.clear()
     _func_count = 0
 
@@ -197,6 +203,12 @@ func _characters_ticker_timeout() -> void:
                 _current_dialogue_set[DialogueParser.Key.TAGS][DialogueParser.Key.TAGS_SPEEDS][visible_characters]
             _characters_ticker.start()
             _speed_count += 1
+
+    # {jump} tag
+    if _jump_count < 0:
+        if _jump_queue[_jump_count] == visible_characters:
+            visible_characters = _current_dialogue_set[DialogueParser.Key.TAGS][DialogueParser.Key.TAGS_JUMP][visible_characters]
+            _jump_count += 1
     #endregion
 
     visible_characters += 1

@@ -12,7 +12,7 @@ var _source_path : String
 # Match Dialogue tags: {delay=1.0} {d = 1.0} {foo} {bar} {foo.bar}
 # But not: \{foo\} \{foo} {foo\}
 const REGEX_DLG_TAGS :=\
-    r"(?<!\\)(?:\\\\)*\{\s*(?<tag>\w+)\s*(?<sym>\=)?\s*(?<val>(?:[^\\\{\}]|\\[\{\}])*?)\s*(?<!\\)\}";\
+    r"(?<!\\)(?:\\\\)*\{(?<cl>\/)?\s*(?<tag>\w+)\s*(?<sym>\=)?\s*(?<val>(?:[^\\\{\}]|\\[\{\}])*?)\s*(?<!\\)\}";\
     static var _regex_dlg_tags := RegEx.create_from_string(REGEX_DLG_TAGS)
 
 const REGEX_SCOPE_VAR_TAGS :=\
@@ -109,6 +109,7 @@ enum Key {
     TAGS,
     TAGS_DELAYS,
     TAGS_SPEEDS,
+    TAGS_JUMP,
     FUNC,
     FUNC_POS,
     FUNC_IDX,
@@ -155,6 +156,8 @@ const SETS_TEMPLATE := {
             #   Position:   Delay in second.
         Key.TAGS_SPEEDS: {},
             #   Position:   Speed scale (0, 1).
+        Key.TAGS_JUMP: {},
+            #   Start position:   End position.
     },
 
     # Function calls in order. Refer to FUNC_TEMPLATE.
@@ -206,11 +209,15 @@ const TAG_DELAY_ALIASES : PackedStringArray = [
 const TAG_SPEED_ALIASES : PackedStringArray = [
     "speed", "spd", "s"
 ]
+const TAG_JUMP_ALIASES : PackedStringArray = [
+    "jump", "j"
+]
 const VARS_BUILT_IN_KEYS : PackedStringArray = ["n", "spc", "eq"]
 
 const BUILT_IN_TAGS : PackedStringArray = (
     TAG_DELAY_ALIASES +
     TAG_SPEED_ALIASES +
+    TAG_JUMP_ALIASES +
     VARS_BUILT_IN_KEYS
 )
 
@@ -906,6 +913,13 @@ static func parse_tags(string : String) -> Dictionary:
     var tag_key : String
     var tag_value : String
     var tag_sym : String
+    
+    var is_closing := false
+
+    var is_currently_jump := false
+    var current_jump_pos : int = -1
+    var jump_ends : Array = []
+
     for b in _regex_dlg_tags.search_all(string):
         string_match = b.strings[0]
 
@@ -914,8 +928,44 @@ static func parse_tags(string : String) -> Dictionary:
         tag_value = b.get_string(__VAL)
         tag_sym = b.get_string(__SYM)
 
-        # Position-based function calls.
-        if tag_key.is_valid_int():
+        is_closing = false
+
+        #elif tag_sym == "=": # NOTE: conflicting with the {s} shorthand alias to reset the rendering speed.
+        #region NOTE: built in tags.
+        if TAG_JUMP_ALIASES.has(tag_key):
+            is_closing = b.get_string("cl") != EMPTY
+
+            if is_currently_jump:
+                if is_closing:
+                    tags[Key.TAGS_JUMP][current_jump_pos] = tag_pos
+
+            if not is_closing:
+                current_jump_pos = tag_pos
+
+            is_currently_jump = not is_closing
+            #if not is_currently_jump:
+                #current_jump_pos = -1
+
+            if is_closing:
+                print("closing ends: ", tags[Key.TAGS_JUMP].values())
+                jump_ends = tags[Key.TAGS_JUMP].values()
+
+        elif TAG_DELAY_ALIASES.has(tag_key):
+            if not is_currently_jump:
+
+                if jump_ends.has(tag_pos):
+                    tag_pos += 1
+
+                tags[Key.TAGS_DELAYS][tag_pos] = float(tag_value)
+
+        elif TAG_SPEED_ALIASES.has(tag_key):
+            if jump_ends.has(tag_pos):
+                tag_pos += 1
+            tags[Key.TAGS_SPEEDS][tag_pos] = 1.0 if tag_value.is_empty() else tag_value.to_float()
+        #endregion
+
+        #region NOTE: position-based function calls.
+        elif tag_key.is_valid_int():
             var idx : int = tag_key.to_int()
 
             if tag_pos == 0:
@@ -926,6 +976,12 @@ static func parse_tags(string : String) -> Dictionary:
             if tags[Key.TAGS_DELAYS].has(tag_pos):
                 tag_pos += 1
 
+            if is_currently_jump:
+                tag_pos = current_jump_pos
+
+            if jump_ends.has(tag_pos):
+                tag_pos += 1
+
             if func_pos.has(tag_pos):
                 func_pos[tag_pos].append(idx)
             else:
@@ -933,14 +989,6 @@ static func parse_tags(string : String) -> Dictionary:
 
             if !func_idx.has(idx):
                 func_idx.append(idx)
-
-        #elif tag_sym == "=": # NOTE: conflicting with the {s} shorthand alias to reset the rendering speed.
-        #region NOTE: built in tags.
-        elif TAG_DELAY_ALIASES.has(tag_key):
-            tags[Key.TAGS_DELAYS][tag_pos] = float(tag_value)
-
-        elif TAG_SPEED_ALIASES.has(tag_key):
-            tags[Key.TAGS_SPEEDS][tag_pos] = 1.0 if tag_value.is_empty() else tag_value.to_float()
         #endregion
 
         # User defined variables.
@@ -965,6 +1013,9 @@ static func parse_tags(string : String) -> Dictionary:
             string = string\
                 .erase(bb_pos_inv, 1 if data[Key.PLACEHOLDER] else 0)\
                 .insert(bb_pos_inv, data[Key.CONTENT])
+
+    if is_currently_jump:
+        tags[Key.TAGS_JUMP][current_jump_pos] = string.length()
 
     return {
         Key.TAGS: tags,
