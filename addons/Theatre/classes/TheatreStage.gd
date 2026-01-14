@@ -259,11 +259,7 @@ func _call_function(f : Dictionary) -> void:
         return
 
     #region NOTE: User-defined function call filter
-    if not func_call_filter.is_valid():
-        TheatreDebug.log_err(
-            "invalid 'func_call_filter'", 1
-        )
-    else:
+    if func_call_filter.is_valid():
         var func_call_allowed : Variant = func_call_filter.call(f)
         var func_call_filter_return : int = typeof(func_call_allowed)
 
