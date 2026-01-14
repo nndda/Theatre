@@ -48,8 +48,9 @@ const REGEX_BBCODE_ATTR :=\
 # Match variables assignments:
 #       Scope.name = value
 #       Scope.name += value
+#       $attr = value
 const REGEX_VARS_SET :=\
-    r"(?<scope>\w+)\.(?<path>[\w\.]+)\s*(?<op>[\+\-\*\/])?\=\s*(?<val>.+)$";\
+    r"((?<scope>\w+)\.|\$)(?<path>[\w\.]+)\s*(?<op>[\+\-\*\/])?\=\s*(?<val>.+)$";\
     static var _regex_vars_set := RegEx.create_from_string(REGEX_VARS_SET)
 
 # Match expressions-as-variable tag
@@ -126,6 +127,8 @@ enum Key {
     PLACEHOLDER,
 
     PROPERTY_PATH,
+    
+    ATTR,
 }
 #endregion
 
@@ -173,6 +176,9 @@ const SETS_TEMPLATE := {
     Key.VARS: [],
     Key.VARS_SCOPE: [],
     Key.VARS_EXPR: [],
+    
+    # Dialogue line attributes
+    Key.ATTR: {},
 }
 
 ## Function call Dictionary template.
@@ -231,6 +237,7 @@ const NEWLINE := "\n"
 const SPACE := " "
 const EMPTY := ""
 const UNDERSCORE := "_"
+const DOLLAR := "$"
 const COLON := ":"
 const HASH := "#"
 const DOT := "."
@@ -460,76 +467,112 @@ func _init(src : String = EMPTY, src_path : String = EMPTY):
                 output[body_pos][Key.CONTENT] += output[body_pos][Key.CONTENT_RAW]
             #endregion
 
-            #region NOTE: Variables setter
+            #region NOTE: Property manipulator OR dialogue attribute
             elif regex_vars_match != null:
-                var func_dict := FUNC_TEMPLATE.duplicate(true)
-                var var_scope := regex_vars_match.get_string(
-                    regex_vars_match.names[__SCOPE]
-                )
-                var var_path := regex_vars_match.get_string(
-                    regex_vars_match.names[__PATH]
-                ).replace(DOT, COLON)
+                var is_attr := regex_vars_match.get_string(1) == DOLLAR
 
-                func_dict[Key.SCOPE] = StringName(var_scope)
-                func_dict[Key.PROPERTY_PATH] = ^"set_indexed"
-                func_dict[Key.LINE_NUM] = ln_num
-
-                var prop_path := "NodePath(\"" + var_path + "\")"
-
-                # Operator assignment type if used
-                #       += -= *= /=
-                #       +  -  *  /
-                var operator := EMPTY
-                var operator_used := false
-
-                if regex_vars_match.names.has(__OP):
-                    operator = regex_vars_match.get_string(
-                        regex_vars_match.names[__OP]
+                if not is_attr:
+                    #region NOTE: Property manipulator
+                    var func_dict := FUNC_TEMPLATE.duplicate(true)
+                    var var_scope := regex_vars_match.get_string(
+                        regex_vars_match.names[__SCOPE]
                     )
-                    operator_used = true
+                    var var_path := regex_vars_match.get_string(
+                        regex_vars_match.names[__PATH]
+                    ).replace(DOT, COLON)
 
-                # Value
-                var val_raw := regex_vars_match.get_string(
-                    regex_vars_match.names[__VAL]
-                )
-                
-                # Parse value
-                var val := Expression.new()
-                var val_err := val.parse("[" + prop_path + ", (" + val_raw + ")]")
-                var val_obj_matches := _regex_func_vars.search_all(val_raw)
+                    func_dict[Key.SCOPE] = StringName(var_scope)
+                    func_dict[Key.PROPERTY_PATH] = ^"set_indexed"
+                    func_dict[Key.LINE_NUM] = ln_num
 
-                if val_obj_matches.is_empty() and\
-                    not operator_used:
+                    var prop_path := "NodePath(\"" + var_path + "\")"
 
-                    func_dict[Key.ARGS] = val.execute()
+                    # Operator assignment type if used
+                    #       += -= *= /=
+                    #       +  -  *  /
+                    var operator := EMPTY
+                    var operator_used := false
 
-                    if val.has_execute_failed():
+                    if regex_vars_match.names.has(__OP):
+                        operator = regex_vars_match.get_string(
+                            regex_vars_match.names[__OP]
+                        )
+                        operator_used = true
+
+                    # Value
+                    var val_raw := regex_vars_match.get_string(
+                        regex_vars_match.names[__VAL]
+                    )
+
+                    # Parse value
+                    var val := Expression.new()
+                    var val_err := val.parse("[" + prop_path + ", (" + val_raw + ")]")
+                    var val_obj_matches := _regex_func_vars.search_all(val_raw)
+
+                    if val_obj_matches.is_empty() and\
+                        not operator_used:
+
+                        func_dict[Key.ARGS] = val.execute()
+
+                        if val.has_execute_failed():
+                            TheatreDebug.log_err(
+                                "Failed parsing property setter value @%s:%d - %s" % [
+                                    _source_path, ln_num, val.get_error_text()
+                                ],
+                                -1
+                            )
+
+                    else:
+                        func_dict[Key.STANDALONE] = not operator_used
+                        func_dict[Key.ARGS] = "[" + prop_path + ", (" + (
+                            # 'Scope.name'   ' + - * / ' 
+                            var_scope + ".get_indexed(NodePath(\"" + var_path + "\"))" + operator if operator_used
+                            else EMPTY
+                        ) + val_raw + ")]"
+
+                        if operator_used:
+                            func_dict[Key.VARS].append(var_scope)
+                        
+                        for var_match in val_obj_matches:
+                            func_dict[Key.VARS].append(var_match.get_string(1))
+
+                    func_dict.make_read_only()
+                    output[body_pos][Key.FUNC].append(func_dict)
+
+                    output[body_pos][Key.CONTENT_RAW] += "{%d}" % (output[body_pos][Key.FUNC].size() - 1)
+                    output[body_pos][Key.CONTENT] += output[body_pos][Key.CONTENT_RAW]
+                    #endregion
+                else:
+                    #region NOTE: Dialogue attribute
+                    var attr_key := regex_vars_match.get_string(
+                        regex_vars_match.names[__PATH]
+                    )
+                    var val_raw := regex_vars_match.get_string(
+                        regex_vars_match.names[__VAL]
+                    )
+                    var val := Expression.new()
+                    var val_err := val.parse(val_raw)
+
+                    if val_err != OK:
                         TheatreDebug.log_err(
-                            "Failed parsing property setter value @%s:%d - %s" % [
+                            "Failed parsing dialogue line attribute '%s', with the value '%s' @%s:%d - %s" % [
+                                attr_key, val_raw,
                                 _source_path, ln_num, val.get_error_text()
                             ],
                             -1
                         )
+                    else:
+                        output[body_pos][Key.ATTR][attr_key] = val.execute()
 
-                else:
-                    func_dict[Key.STANDALONE] = not operator_used
-                    func_dict[Key.ARGS] = "[" + prop_path + ", (" + (
-                        # 'Scope.name'   ' + - * / ' 
-                        var_scope + ".get_indexed(NodePath(\"" + var_path + "\"))" + operator if operator_used
-                        else EMPTY
-                    ) + val_raw + ")]"
-
-                    if operator_used:
-                        func_dict[Key.VARS].append(var_scope)
-                    
-                    for var_match in val_obj_matches:
-                        func_dict[Key.VARS].append(var_match.get_string(1))
-
-                func_dict.make_read_only()
-                output[body_pos][Key.FUNC].append(func_dict)
-
-                output[body_pos][Key.CONTENT_RAW] += "{%d}" % (output[body_pos][Key.FUNC].size() - 1)
-                output[body_pos][Key.CONTENT] += output[body_pos][Key.CONTENT_RAW]
+                        if val.has_execute_failed():
+                            TheatreDebug.log_err(
+                                "Failed parsing dialogue line attribute '%s', with the value '%s' @%s:%d - %s" % [
+                                    attr_key, val_raw,
+                                    _source_path, ln_num, val.get_error_text()
+                                ],
+                                -1
+                            )
+                    #endregion
             #endregion
 
             #region NOTE: [img] tag sugar ----------------------------------------------------------

@@ -26,6 +26,8 @@ const ACTOR := DialogueParser.Key.ACTOR
 const CONTENT := DialogueParser.Key.CONTENT
 const CONTENT_RAW := DialogueParser.Key.CONTENT_RAW
 
+const ATTR := DialogueParser.Key.ATTR
+
 const LINE_NUM := DialogueParser.Key.LINE_NUM
 
 const TAG_VARS := DialogueParser.Key.VARS
