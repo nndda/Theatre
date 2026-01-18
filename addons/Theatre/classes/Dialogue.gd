@@ -133,8 +133,9 @@ func get_word_count(variables : Dictionary[String, Variant] = {}) -> int:
         true, true
     )).size()
 
-func get_character_count(variables : Dictionary[String, Variant] = {}) -> int:
-    return humanize(false, variables).length()
+# TODO:
+#func get_character_count(variables : Dictionary[String, Variant] = {}) -> int:
+    #return humanize(false, variables).length()
 
 func get_function_calls() -> Dictionary:
     return _used_function_calls
@@ -165,11 +166,6 @@ func _update_used_variables() -> void:
             if not m in _used_variables:
                 _used_variables.append(m)
 
-## Returns the human-readable string of the compiled [Dialogue]. This will return the [Dialogue]
-## without the Dialogue tags and/or BBCode tags. Optionally, insert the variables used by passing it to [param variables].
-func humanize(with_actor : bool = true, variables : Dictionary[String, Variant] = {}) -> String:
-    return _strip(variables, !with_actor)
-
 func _strip(
     variables : Dictionary[String, Variant] = {},
     exclude_actors : bool = false,
@@ -190,16 +186,4 @@ func _strip(
     output = DialogueParser._regex_bbcode_tags.sub(output, DialogueParser.EMPTY, true)
 
     return output.format(variables)
-
-## Save the compiled [Dialogue] data as a JSON file to the specified [param path]. Returns [member OK] if successful.
-func to_json(path : String) -> Error:
-    var file := FileAccess.open(path, FileAccess.WRITE)
-    if FileAccess.get_open_error() == OK:
-        file.store_string(
-            JSON.stringify(_sets, DialogueParser.INDENT_2, true, true)
-        )
-    else:
-        return FileAccess.get_open_error()
-    file.close()
-    return file.get_error()
 #endregion
