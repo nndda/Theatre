@@ -9,7 +9,6 @@ const TRANSPARENT := Color(0, 0, 0, 0)
 
 const COLON := DialogueParser.COLON
 const HASH := DialogueParser.HASH
-const EQUALS := "="
 
 const __NAME := "name"
 const __PATH := "path"
