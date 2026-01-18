@@ -37,8 +37,12 @@ const REGEX_CURLY_BRACKETS_ESCAPED :=\
     r"\\(\{|\})";\
     static var _regex_curly_brackets_escaped := RegEx.create_from_string(REGEX_CURLY_BRACKETS_ESCAPED)
 
+const REGEX_ESCAPED_SQ_BRACKET :=\
+    r"(\\\[|\\\])";\
+    static var _regex_escaped_sq_bracket := RegEx.create_from_string(REGEX_ESCAPED_SQ_BRACKET)
+
 const REGEX_BBCODE_TAGS :=\
-    r"(?<!\\)\[(?<tag>\/?(?<tag_name>\w+))\s*(?<attr>[^\[\]]+?)?(?<!\\)\]";\
+    r"(?<!\\)\[(?<tag>\/?(?<name>\w+))\s*(?<attr>[^\[\]]+?)?(?<!\\)\]";\
     static var _regex_bbcode_tags := RegEx.create_from_string(REGEX_BBCODE_TAGS)
 
 const REGEX_BBCODE_ATTR :=\
@@ -89,11 +93,18 @@ const REGEX_SECTION :=\
 const __VAL := "val"
 const __SYM := "sym"
 
+const __TAG := "tag"
 const __SCOPE := "scope"
 const __NAME := "name"
+const __ATTR := "attr"
 const __PATH := "path"
 const __ARGS := "args"
 const __OP := "op"
+const __KEY := "key"
+const __CL := "cl"
+
+const __WIDTH := "width"
+const __HEIGHT := "height"
 #endregion
 
 #region Dictionary keys constants
@@ -224,7 +235,7 @@ const BUILT_IN_TAGS : PackedStringArray = (
 const VARS_BUILT_IN : Dictionary[String, String] = {
     "n": NEWLINE,
     "spc": EMPTY,
-    "eq": "=",
+    "eq": EQUAL,
 }
 
 const BB_ALIASES : Dictionary[String, String] = {
@@ -248,6 +259,10 @@ const DOLLAR := "$"
 const COLON := ":"
 const HASH := "#"
 const DOT := "."
+const EQUAL := "="
+
+const SBL := "["
+const SBR := "]"
 
 const INDENT_2 := "  "
 const INDENT_4 := "    "
@@ -274,6 +289,7 @@ static func _initialize_regex() -> void:
     _regex_scope_var_tags = RegEx.create_from_string(REGEX_SCOPE_VAR_TAGS)
     _regex_dlg_tags_newline = RegEx.create_from_string(REGEX_DLG_TAGS_NEWLINE)
     _regex_curly_brackets_escaped = RegEx.create_from_string(REGEX_CURLY_BRACKETS_ESCAPED)
+    _regex_escaped_sq_bracket = RegEx.create_from_string(REGEX_ESCAPED_SQ_BRACKET)
     _regex_bbcode_tags = RegEx.create_from_string(REGEX_BBCODE_TAGS)
     _regex_vars_set = RegEx.create_from_string(REGEX_VARS_SET)
     _regex_vars_expr = RegEx.create_from_string(REGEX_VARS_EXPR)
@@ -295,6 +311,7 @@ static func _initialize_regex() -> void:
         _regex_func_vars and
         _regex_indent and
         _regex_valid_dlg and
+        _regex_escaped_sq_bracket and
         _regex_section
     )
 #endregion
@@ -335,7 +352,7 @@ func _init(src : String = EMPTY, src_path : String = EMPTY):
         n_stripped = n.strip_edges()
         is_valid_line = !n.begins_with(HASH) and !n.is_empty()
 
-        current_processed_string = ""
+        current_processed_string = EMPTY
 
         if is_valid_line \
             and !is_indented(n) \
@@ -446,7 +463,7 @@ func _init(src : String = EMPTY, src_path : String = EMPTY):
 
                 # Parse parameter arguments
                 var args := Expression.new()
-                var args_err := args.parse("[" + args_raw + "]")
+                var args_err := args.parse(SBL + args_raw + SBR)
                 var var_matches := _regex_func_vars.search_all(args_raw)
 
                 if var_matches.is_empty():
@@ -462,7 +479,7 @@ func _init(src : String = EMPTY, src_path : String = EMPTY):
 
                 else:
                     func_dict[Key.STANDALONE] = false
-                    func_dict[Key.ARGS] = "[" + args_raw + "]"
+                    func_dict[Key.ARGS] = SBL + args_raw + SBR
 
                     for var_match in var_matches:
                         func_dict[Key.VARS].append(var_match.get_string(1))
@@ -513,7 +530,7 @@ func _init(src : String = EMPTY, src_path : String = EMPTY):
 
                     # Parse value
                     var val := Expression.new()
-                    var val_err := val.parse("[" + prop_path + ", (" + val_raw + ")]")
+                    var val_err := val.parse(SBL + prop_path + ", (" + val_raw + ")]")
                     var val_obj_matches := _regex_func_vars.search_all(val_raw)
 
                     if val_obj_matches.is_empty() and\
@@ -531,7 +548,7 @@ func _init(src : String = EMPTY, src_path : String = EMPTY):
 
                     else:
                         func_dict[Key.STANDALONE] = not operator_used
-                        func_dict[Key.ARGS] = "[" + prop_path + ", (" + (
+                        func_dict[Key.ARGS] = SBL + prop_path + ", (" + (
                             # 'Scope.name'   ' + - * / ' 
                             var_scope + ".get_indexed(NodePath(\"" + var_path + "\"))" + operator if operator_used
                             else EMPTY
@@ -656,17 +673,17 @@ func _init(src : String = EMPTY, src_path : String = EMPTY):
                 var start : int
 
                 for bb in match_bb:
-                    tag = bb.get_string("tag_name")
+                    tag = bb.get_string(__NAME)
 
                     if BB_ALIASES_TAGS.has(tag):
-                        start = bb.get_start("tag_name")
+                        start = bb.get_start(__NAME)
                         content_str = content_str \
                             .erase(start, tag.length()) \
                             .insert(start, BB_ALIASES[tag])
             #endregion
 
             #region NOTE: Escaped square brackets
-            match_bb = RegEx.create_from_string(r"(\\\[|\\\])").search_all(content_str)
+            match_bb = _regex_escaped_sq_bracket.search_all(content_str)
             if !match_bb.is_empty():
                 match_bb.reverse()
                 var bracket : String
@@ -726,34 +743,29 @@ static func escape_brackets(string : String) -> String:
         .replace(r"\}", "}")
 
 func parse_img_tag(img_tag_match : RegExMatch) -> String:
-#static func parse_img_tag(string : String) -> String:
-    #if _regex_dlg_tags_img == null:
-        #_regex_dlg_tags_img = RegEx.create_from_string(REGEX_DLG_TAGS_IMG)
-
-    #var img_tag_match := _regex_dlg_tags_img.search(string)
     var attrs : String = EMPTY
 
-    var n := img_tag_match.get_string("width")
+    var n := img_tag_match.get_string(__WIDTH)
     if not n.is_empty():
         attrs += " width=" + n
 
-    n = img_tag_match.get_string("height")
+    n = img_tag_match.get_string(__HEIGHT)
     if not n.is_empty():
         attrs += " height=" + n
         
-    n = img_tag_match.get_string("attr")
+    n = img_tag_match.get_string(__ATTR)
     if not n.is_empty():
         for attr in _regex_bbcode_attr.search_all(n):
-            var key := attr.get_string("key")
+            var key := attr.get_string(__ATTR)
 
-            if key == "w": key = "width"
-            elif key == "h": key = "height"
+            if key == "w": key = __WIDTH
+            elif key == "h": key = __HEIGHT
 
             attrs += \
-                " " + key + "=" +\
-                attr.get_string("val")
+                SPACE + key + EQUAL +\
+                attr.get_string(__VAL)
 
-    return "[img" + attrs + "]" + img_tag_match.get_string("path") + "[/img]"
+    return "[img" + attrs + SBL + img_tag_match.get_string(__PATH) + "[/img]"
 
 func parse_var_scope_tags(string : String, line_num : int = 0) -> Array[Array]:
     var output : Array[Array] = []
@@ -769,19 +781,20 @@ func parse_var_scope_tags(string : String, line_num : int = 0) -> Array[Array]:
         )
 
     return output
-    
+
 # Expression-as-variable tag
 # "{(1 + 2)}"
 # "{(Scope.uwu()[-1] + "owo")}"
 func parse_expr_tags(string : String, line_num : int = 0) -> Dictionary:
     var output : Dictionary = {}
+    var inputs : PackedStringArray = []
 
     for regex_vars_expr_match: RegExMatch in _regex_vars_expr.search_all(string):
         var tag_expr_start := regex_vars_expr_match.get_start()
         var tag_expr_full := regex_vars_expr_match.get_string()
         var tag_expr_args_str := regex_vars_expr_match.get_string(1)
 
-        var inputs : PackedStringArray = []
+        inputs.clear()
         for input_re: RegExMatch in _regex_func_vars.search_all(tag_expr_args_str):
             inputs.append(input_re.get_string(1))
 
@@ -839,13 +852,13 @@ static func parse_tags(string : String) -> Dictionary:
     bb_tags_matches.reverse()
 
     for bb in bb_tags_matches:
-        bb_tag = bb.get_string("tag")
+        bb_tag = bb.get_string(__TAG)
 
         if not bb_tag == "/img":
             bb_full_str = bb.strings[0]
             bb_full_str_len = bb_full_str.length()
 
-            bb_pos = bb.get_start()            
+            bb_pos = bb.get_start()
 
             is_sqr_bracket = bb_tag == "lb" or bb_tag == "rb"
             is_img = bb_tag == "img"
@@ -878,7 +891,7 @@ static func parse_tags(string : String) -> Dictionary:
             bb_data.append({
                 Key.POS: bb_pos_inv,
                 Key.CONTENT: (
-                    "[" + bb_tag + "]" if is_sqr_bracket
+                    SBL + bb_tag + SBR if is_sqr_bracket
                     else bb_full_str + "[/img]" if is_img
                     else bb_full_str
                 ),
@@ -924,16 +937,15 @@ static func parse_tags(string : String) -> Dictionary:
         string_match = b.strings[0]
 
         tag_pos = b.get_start() - tag_pos_offset
-        tag_key = b.get_string("tag")
+        tag_key = b.get_string(__TAG)
         tag_value = b.get_string(__VAL)
         tag_sym = b.get_string(__SYM)
 
         is_closing = false
 
-        #elif tag_sym == "=": # NOTE: conflicting with the {s} shorthand alias to reset the rendering speed.
         #region NOTE: built in tags.
         if TAG_JUMP_ALIASES.has(tag_key):
-            is_closing = b.get_string("cl") != EMPTY
+            is_closing = b.get_string(__CL) != EMPTY
 
             if is_currently_jump:
                 if is_closing:
@@ -943,11 +955,8 @@ static func parse_tags(string : String) -> Dictionary:
                 current_jump_pos = tag_pos
 
             is_currently_jump = not is_closing
-            #if not is_currently_jump:
-                #current_jump_pos = -1
 
             if is_closing:
-                print("closing ends: ", tags[Key.TAGS_JUMP].values())
                 jump_ends = tags[Key.TAGS_JUMP].values()
 
         elif TAG_DELAY_ALIASES.has(tag_key):
@@ -956,7 +965,7 @@ static func parse_tags(string : String) -> Dictionary:
                 if jump_ends.has(tag_pos):
                     tag_pos += 1
 
-                tags[Key.TAGS_DELAYS][tag_pos] = float(tag_value)
+                tags[Key.TAGS_DELAYS][tag_pos] = tag_value.to_float()
 
         elif TAG_SPEED_ALIASES.has(tag_key):
             if jump_ends.has(tag_pos):
@@ -1025,8 +1034,6 @@ static func parse_tags(string : String) -> Dictionary:
         Key.VARS: vars,
     }
 
-# Temporary solution when using variables and tags at the same time
-# Might not be performant when dealing with real-time variables
 ## Format Dialogue body at [param pos] position with [member TheatreStage.variables], and update the positions of the built-in tags.
 ## Return the formatted string.
 static func update_tags_position(dlg : Dialogue, pos : int, vars : Dictionary) -> void:
