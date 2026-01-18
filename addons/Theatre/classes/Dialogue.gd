@@ -176,11 +176,11 @@ func _strip(
 
     for n in _sets:
         if !exclude_actors:
-            output += n.actor + DialogueParser.COLON + newline
+            output += n[DialogueParser.Key.ACTOR] + DialogueParser.COLON + newline
 
         output += (
             DialogueParser.EMPTY if exclude_actors else DialogueParser.INDENT_4
-        ) + n.line + newline + newline
+        ) + n[DialogueParser.Key.CONTENT] + newline + newline
 
     # Strip BBCode tags
     output = DialogueParser._regex_bbcode_tags.sub(output, DialogueParser.EMPTY, true)
