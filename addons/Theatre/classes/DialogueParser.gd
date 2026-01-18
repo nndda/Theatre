@@ -33,13 +33,13 @@ const REGEX_DLG_TAGS_NEWLINE :=\
     r"^\s*(?<tag>\w+)\=((?<arg>.+))*$";\
     static var _regex_dlg_tags_newline := RegEx.create_from_string(REGEX_DLG_TAGS_NEWLINE)
 
-const REGEX_CURLY_BRACKETS_ESCAPED :=\
+const REGEX_ESCAPED_BRACKET_CURLY :=\
     r"\\(\{|\})";\
-    static var _regex_curly_brackets_escaped := RegEx.create_from_string(REGEX_CURLY_BRACKETS_ESCAPED)
+    static var _regex_escaped_bracket_curly := RegEx.create_from_string(REGEX_ESCAPED_BRACKET_CURLY)
 
-const REGEX_ESCAPED_SQ_BRACKET :=\
+const REGEX_ESCAPED_BRACKET_SQUARE :=\
     r"(\\\[|\\\])";\
-    static var _regex_escaped_sq_bracket := RegEx.create_from_string(REGEX_ESCAPED_SQ_BRACKET)
+    static var _regex_escaped_bracket_square := RegEx.create_from_string(REGEX_ESCAPED_BRACKET_SQUARE)
 
 const REGEX_BBCODE_TAGS :=\
     r"(?<!\\)\[(?<tag>\/?(?<name>\w+))\s*(?<attr>[^\[\]]+?)?(?<!\\)\]";\
@@ -288,8 +288,8 @@ static func _initialize_regex() -> void:
     _regex_dlg_tags = RegEx.create_from_string(REGEX_DLG_TAGS)
     _regex_scope_var_tags = RegEx.create_from_string(REGEX_SCOPE_VAR_TAGS)
     _regex_dlg_tags_newline = RegEx.create_from_string(REGEX_DLG_TAGS_NEWLINE)
-    _regex_curly_brackets_escaped = RegEx.create_from_string(REGEX_CURLY_BRACKETS_ESCAPED)
-    _regex_escaped_sq_bracket = RegEx.create_from_string(REGEX_ESCAPED_SQ_BRACKET)
+    _regex_escaped_bracket_curly = RegEx.create_from_string(REGEX_ESCAPED_BRACKET_CURLY)
+    _regex_escaped_bracket_square = RegEx.create_from_string(REGEX_ESCAPED_BRACKET_SQUARE)
     _regex_bbcode_tags = RegEx.create_from_string(REGEX_BBCODE_TAGS)
     _regex_vars_set = RegEx.create_from_string(REGEX_VARS_SET)
     _regex_vars_expr = RegEx.create_from_string(REGEX_VARS_EXPR)
@@ -303,7 +303,8 @@ static func _initialize_regex() -> void:
         _regex_dlg_tags and
         _regex_scope_var_tags and
         _regex_dlg_tags_newline and
-        _regex_curly_brackets_escaped and
+        _regex_escaped_bracket_curly and
+        _regex_escaped_bracket_square and
         _regex_bbcode_tags and
         _regex_vars_set and
         _regex_vars_expr and
@@ -311,7 +312,6 @@ static func _initialize_regex() -> void:
         _regex_func_vars and
         _regex_indent and
         _regex_valid_dlg and
-        _regex_escaped_sq_bracket and
         _regex_section
     )
 #endregion
@@ -683,7 +683,7 @@ func _init(src : String = EMPTY, src_path : String = EMPTY):
             #endregion
 
             #region NOTE: Escaped square brackets
-            match_bb = _regex_escaped_sq_bracket.search_all(content_str)
+            match_bb = _regex_escaped_bracket_square.search_all(content_str)
             if !match_bb.is_empty():
                 match_bb.reverse()
                 var bracket : String
@@ -910,13 +910,13 @@ static func parse_tags(string : String) -> Dictionary:
     # 💀💀💀💀💀💀💀💀💀💀💀
     var esc_curly_brackets : Dictionary = {}
 
-    for cb in _regex_curly_brackets_escaped.search_all(
+    for cb in _regex_escaped_bracket_curly.search_all(
         _regex_dlg_tags.sub(string, EMPTY, true)
         ):
         esc_curly_brackets[cb.get_start()] = cb.strings[0]
 
     if !esc_curly_brackets.is_empty():
-        string = _regex_curly_brackets_escaped.sub(string, HASH, true)
+        string = _regex_escaped_bracket_curly.sub(string, HASH, true)
 
     # Dialogue tags ========================================================
     var tag_pos_offset : int = 0
