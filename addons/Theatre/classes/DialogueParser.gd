@@ -756,11 +756,11 @@ func parse_img_tag(img_tag_match : RegExMatch) -> String:
     n = img_tag_match.get_string(__HEIGHT)
     if not n.is_empty():
         attrs += " height=" + n
-        
+
     n = img_tag_match.get_string(__ATTR)
     if not n.is_empty():
         for attr in _regex_bbcode_attr.search_all(n):
-            var key := attr.get_string(__ATTR)
+            var key := attr.get_string(__KEY)
 
             if key == "w": key = __WIDTH
             elif key == "h": key = __HEIGHT
@@ -769,7 +769,7 @@ func parse_img_tag(img_tag_match : RegExMatch) -> String:
                 SPACE + key + EQUAL +\
                 attr.get_string(__VAL)
 
-    return "[img" + attrs + SBL + img_tag_match.get_string(__PATH) + "[/img]"
+    return "[img" + attrs + SBR + img_tag_match.get_string(__PATH) + "[/img]"
 
 func parse_var_scope_tags(string : String, line_num : int = 0) -> Array[Array]:
     var output : Array[Array] = []
