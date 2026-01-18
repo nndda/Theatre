@@ -3,6 +3,20 @@ extends RefCounted
 func _parser_warmup() -> void:
     DialogueParser._initialize_regex_multi_threaded()
 
+func differ(
+    value : Variant,
+    humanize : bool = false,
+    rich : bool = false,
+) -> String:
+    var is_negative : bool = sign(value) < 0
+
+    # Heavens forgive me
+    return (("[color=%s]" % ("red" if is_negative else "green")) if rich else "") + (
+        "" if value == 0 else "-" if is_negative else "+"
+    ) + (
+        String.humanize_size(value) if humanize else str(value)
+    ) + ("[/color]" if rich else "")
+
 func _init(
     dialogue_paths : PackedStringArray,
     iterations: int,
@@ -10,8 +24,6 @@ func _init(
     _parser_warmup()
 
     var time_start_mark : int = Time.get_ticks_usec()
-    
-    var sign := ""
 
     var dlg_data : Dictionary[String, Dictionary] = {}
 
@@ -105,33 +117,31 @@ func _init(
 
     print("\n", PERF_TEMPLATE % ["", "pre", "post", "diff"])
 
-    sign = "-" if signf(perf_static_memory_peak - perf_static_memory_peak_post) < 0 else "+"
-    print(PERF_TEMPLATE % [
+    print_rich(PERF_TEMPLATE % [
         "Static memory peak",
         String.humanize_size(perf_static_memory_peak),
         String.humanize_size(perf_static_memory_peak_post),
-        sign + String.humanize_size(perf_static_memory_peak_post - perf_static_memory_peak),
+        differ(perf_static_memory_peak_post - perf_static_memory_peak, true, true),
     ])
 
-    sign = "-" if signf(perf_static_memory_used_post - perf_static_memory_used) < 0 else "+"
-    print(PERF_TEMPLATE % [
+    print_rich(PERF_TEMPLATE % [
         "Static memory used",
         String.humanize_size(perf_static_memory_used),
         String.humanize_size(perf_static_memory_used_post),
-        sign + String.humanize_size(perf_static_memory_used_post - perf_static_memory_used),
+        differ(perf_static_memory_used_post - perf_static_memory_used, true, true),
     ])
 
-    print(PERF_TEMPLATE % [
+    print_rich(PERF_TEMPLATE % [
         "Object count",
         str(perf_object_count),
         str(perf_object_count_post),
-        str(perf_object_count - perf_object_count_post),
+        differ(perf_object_count_post - perf_object_count, false, true),
     ])
-    print(PERF_TEMPLATE % [
+    print_rich(PERF_TEMPLATE % [
         "Resource count",
         str(perf_resource_count),
         str(perf_resource_count_post),
-        str(perf_resource_count - perf_resource_count_post),
+        differ(perf_resource_count_post - perf_resource_count, false, true),
     ])
 
     print("")
