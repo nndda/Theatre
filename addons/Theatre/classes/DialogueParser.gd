@@ -611,6 +611,10 @@ func _init(src : String = EMPTY, src_path : String = EMPTY):
             elif is_regex_full_string(_regex_dlg_tags_newline.search(current_processed_string)):
                 output[body_pos][Key.CONTENT_RAW] += "{" + current_processed_string + "}"
                 output[body_pos][Key.CONTENT] += output[body_pos][Key.CONTENT_RAW]
+
+            elif is_regex_full_string(_regex_dlg_tags.search(current_processed_string)):
+                output[body_pos][Key.CONTENT_RAW] += current_processed_string
+                output[body_pos][Key.CONTENT] += current_processed_string
             #endregion
 
             #region NOTE: Newline BBCode tags ------------------------------------------------------
