@@ -9,13 +9,14 @@ func differ(
     rich : bool = false,
 ) -> String:
     var is_negative : bool = sign(value) < 0
+    var is_zero : bool = value == 0
 
     # Heavens forgive me
-    return (("[color=%s]" % ("red" if is_negative else "green")) if rich else "") + (
-        "" if value == 0 else "-" if is_negative else "+"
+    return (("" if is_zero else "[color=yellow]") if rich else "") + (
+        "" if is_zero else "-" if is_negative else "+"
     ) + (
         String.humanize_size(value) if humanize else str(value)
-    ) + ("[/color]" if rich else "")
+    ) + ("[/color]" if (rich and not is_zero) else "")
 
 func _init(
     dialogue_paths : PackedStringArray,
