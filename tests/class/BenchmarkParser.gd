@@ -10,6 +10,8 @@ func _init(
     _parser_warmup()
 
     var time_start_mark : int = Time.get_ticks_usec()
+    
+    var sign := ""
 
     var dlg_data : Dictionary[String, Dictionary] = {}
 
@@ -102,18 +104,23 @@ func _init(
     perf_resource_count_post = int(Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT))
 
     print("\n", PERF_TEMPLATE % ["", "pre", "post", "diff"])
+
+    sign = "-" if signf(perf_static_memory_peak - perf_static_memory_peak_post) < 0 else "+"
     print(PERF_TEMPLATE % [
         "Static memory peak",
         String.humanize_size(perf_static_memory_peak),
         String.humanize_size(perf_static_memory_peak_post),
-        String.humanize_size(perf_static_memory_peak - perf_static_memory_peak_post),
+        sign + String.humanize_size(perf_static_memory_peak_post - perf_static_memory_peak),
     ])
+
+    sign = "-" if signf(perf_static_memory_used_post - perf_static_memory_used) < 0 else "+"
     print(PERF_TEMPLATE % [
         "Static memory used",
         String.humanize_size(perf_static_memory_used),
         String.humanize_size(perf_static_memory_used_post),
-        String.humanize_size(perf_static_memory_used - perf_static_memory_used_post),
+        sign + String.humanize_size(perf_static_memory_used_post - perf_static_memory_used),
     ])
+
     print(PERF_TEMPLATE % [
         "Object count",
         str(perf_object_count),
