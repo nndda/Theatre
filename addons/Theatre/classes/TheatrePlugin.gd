@@ -136,9 +136,10 @@ func _ready() -> void:
 
     if update_needed:
         ProjectSettings.set_setting(THEATRE_VER_LOG, ver)
-        ProjectSettings.set_as_internal(THEATRE_VER_LOG, true)
 
         TheatreConfig.update()
+
+    ProjectSettings.set_as_internal(THEATRE_VER_LOG, true)
 
 func _exit_tree() -> void:
     if ProjectSettings.get_setting(TheatreConfig.GENERAL_PRINT_HEADER, true):
