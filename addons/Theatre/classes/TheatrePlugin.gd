@@ -6,13 +6,13 @@ class_name TheatrePlugin
 class TheatreConfig extends RefCounted:
     const GENERAL_PRINT_HEADER := "theatre/general/print_header"
     const GENERAL_AUTO_UPDATE := "theatre/general/updates/check_updates_automatically"
-    const GENERAL_PARSER_MULTI_THREADS := "theatre/general/parser/use_multiple_threads"
+    const PARSER_MULTI_THREADS := "theatre/parser/use_multiple_threads"
 
     static func init_configs() -> void:
         for config_item : Array in [
             [ GENERAL_PRINT_HEADER, TYPE_BOOL, true, PROPERTY_HINT_NONE, "", ],
             [ GENERAL_AUTO_UPDATE, TYPE_BOOL, true, PROPERTY_HINT_NONE, "", ],
-            [ GENERAL_PARSER_MULTI_THREADS, TYPE_BOOL, false, PROPERTY_HINT_NONE, "", ],
+            [ PARSER_MULTI_THREADS, TYPE_BOOL, false, PROPERTY_HINT_NONE, "", ],
         ]:
             if !ProjectSettings.has_setting(config_item[0]):
                 ProjectSettings.set_setting(config_item[0], config_item[2])
@@ -31,7 +31,7 @@ class TheatreConfig extends RefCounted:
         for config_item : String in [
             GENERAL_PRINT_HEADER,
             GENERAL_AUTO_UPDATE,
-            GENERAL_PARSER_MULTI_THREADS,
+            PARSER_MULTI_THREADS,
         ]:
             ProjectSettings.set_setting(config_item, null)
 
@@ -45,7 +45,7 @@ class TheatreConfig extends RefCounted:
     static func _project_settings_changed() -> void:
         DialogueSyntaxHighlighter.initialize_colors()
         DialogueParser._is_multi_threaded =\
-            ProjectSettings.get_setting(GENERAL_PARSER_MULTI_THREADS, false)
+            ProjectSettings.get_setting(PARSER_MULTI_THREADS, false)
 
 var http_update_req : HTTPRequest
 
