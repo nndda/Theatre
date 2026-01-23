@@ -248,7 +248,7 @@ var func_call_filter : Callable:
         var args_count : int = c.get_argument_count()
         if args_count != 1:
             TheatreDebug.log_err(
-                "'func_call_filter' callable argument != 1 (%d)" % args_count, 1
+                "'func_call_filter' callable argument != 1 (%d)" % args_count
             )
         else:
             func_call_filter = c
@@ -266,7 +266,7 @@ func _call_function(f : Dictionary) -> void:
 
         if func_call_filter_return != TYPE_BOOL:
             TheatreDebug.log_err(
-                "'func_call_filter' callable returns '%s', instead of 'bool" % type_string(func_call_filter_return), 1
+                "'func_call_filter' callable returns '%s', instead of 'bool" % type_string(func_call_filter_return)
             )
         else:
             if not func_call_allowed:
@@ -476,10 +476,7 @@ func start(dialogue : Dialogue = null, to_section : Variant = 0) -> void:
         current_dialogue = dialogue
 
     if current_dialogue == null:
-        TheatreDebug.log_err(
-            "Cannot start TheatreStage: `dialogue` is null.",
-            1
-        )
+        TheatreDebug.log_err("Cannot start TheatreStage: `dialogue` is null.")
         return
 
     #if current_dialogue._sets.size() == 0:

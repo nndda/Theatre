@@ -377,8 +377,7 @@ func _init(src : String = EMPTY, src_path : String = EMPTY):
                 TheatreDebug.log_err(
                     "@%s:%d - actor's name exists without a dialogue body" % [
                         _source_path, ln_num,
-                    ],
-                    -1
+                    ]
                 )
 
             var actor_str := n_stripped.trim_suffix(COLON)
@@ -392,8 +391,7 @@ func _init(src : String = EMPTY, src_path : String = EMPTY):
                     TheatreDebug.log_err(
                         "@%s:%d - missing initial actor's name" % [
                             _source_path, ln_num,
-                        ],
-                        -1
+                        ]
                     )
                 else:
                     # Use the previous dialouge line's actor data
@@ -481,8 +479,7 @@ func _init(src : String = EMPTY, src_path : String = EMPTY):
                         TheatreDebug.log_err(
                             "Failed parsing function call arguments @%s:%d - %s" % [
                                 _source_path, ln_num, args.get_error_text()
-                            ],
-                            -1
+                            ]
                         )
 
                 else:
@@ -550,8 +547,7 @@ func _init(src : String = EMPTY, src_path : String = EMPTY):
                             TheatreDebug.log_err(
                                 "Failed parsing property setter value @%s:%d - %s" % [
                                     _source_path, ln_num, val.get_error_text()
-                                ],
-                                -1
+                                ]
                             )
 
                     else:
@@ -590,8 +586,7 @@ func _init(src : String = EMPTY, src_path : String = EMPTY):
                             "Failed parsing dialogue line attribute '%s', with the value '%s' @%s:%d - %s" % [
                                 attr_key, val_raw,
                                 _source_path, ln_num, val.get_error_text()
-                            ],
-                            -1
+                            ]
                         )
                     else:
                         output[body_pos][Key.ATTR][attr_key] = val.execute()
@@ -601,8 +596,7 @@ func _init(src : String = EMPTY, src_path : String = EMPTY):
                                 "Failed parsing dialogue line attribute '%s', with the value '%s' @%s:%d - %s" % [
                                     attr_key, val_raw,
                                     _source_path, ln_num, val.get_error_text()
-                                ],
-                                -1
+                                ]
                             )
                     #endregion
             #endregion
@@ -671,8 +665,7 @@ func _init(src : String = EMPTY, src_path : String = EMPTY):
             TheatreDebug.log_err(
                 "@%s:%d - empty dialogue body for actor '%s'" % [
                     _source_path, output[i][Key.LINE_NUM], output[i][Key.ACTOR]
-                ],
-                -1
+                ]
             )
 
         else:
