@@ -8,6 +8,8 @@ var sections : Dictionary[String, int] = {}
 # Source path from Dialouge._source_path for debugging purposes.
 var _source_path : String
 
+const TheatreConfig = preload("res://addons/Theatre/classes/TheatreConfig.gd")
+
 #region RegExes
 # Match Dialogue tags: {delay=1.0} {d = 1.0} {foo} {bar} {foo.bar}
 # But not: \{foo\} \{foo} {foo\}
@@ -249,6 +251,9 @@ const BB_ALIASES : Dictionary[String, String] = {
 const BB_ALIASES_TAGS : PackedStringArray = [
     "bg", "fg", "col", "c", "f",
 ]
+
+static var _tag_default_delay : float = .35
+static var _tag_default_speed : float = 1.
 #endregion
 
 const NEWLINE := "\n"
@@ -322,6 +327,9 @@ func _init(src : String = EMPTY, src_path : String = EMPTY):
     #if !_regex_initialized:
         #_initialize_regex()
         #_regex_initialized = true
+
+    if not TheatreConfig.config_initialized:
+        TheatreConfig._update_parser_config()
 
     if !src_path.is_empty():
         _source_path = src_path
@@ -969,12 +977,12 @@ static func parse_tags(string : String) -> Dictionary:
                 if jump_ends.has(tag_pos):
                     tag_pos += 1
 
-                tags[Key.TAGS_DELAYS][tag_pos] = tag_value.to_float()
+                tags[Key.TAGS_DELAYS][tag_pos] = _tag_default_delay if tag_value.is_empty() else tag_value.to_float()
 
         elif TAG_SPEED_ALIASES.has(tag_key):
             if jump_ends.has(tag_pos):
                 tag_pos += 1
-            tags[Key.TAGS_SPEEDS][tag_pos] = 1.0 if tag_value.is_empty() else tag_value.to_float()
+            tags[Key.TAGS_SPEEDS][tag_pos] = _tag_default_speed if tag_value.is_empty() else tag_value.to_float()
         #endregion
 
         #region NOTE: position-based function calls.

@@ -3,51 +3,10 @@
 extends EditorPlugin
 class_name TheatrePlugin
 
-class TheatreConfig extends RefCounted:
-    const GENERAL_PRINT_HEADER := "theatre/general/print_header"
-    const GENERAL_AUTO_UPDATE := "theatre/general/updates/check_updates_automatically"
-    const PARSER_MULTI_THREADS := "theatre/parser/use_multiple_threads"
-
-    static func init_configs() -> void:
-        for config_item : Array in [
-            [ GENERAL_PRINT_HEADER, TYPE_BOOL, true, PROPERTY_HINT_NONE, "", ],
-            [ GENERAL_AUTO_UPDATE, TYPE_BOOL, true, PROPERTY_HINT_NONE, "", ],
-            [ PARSER_MULTI_THREADS, TYPE_BOOL, false, PROPERTY_HINT_NONE, "", ],
-        ]:
-            if !ProjectSettings.has_setting(config_item[0]):
-                ProjectSettings.set_setting(config_item[0], config_item[2])
-                ProjectSettings.add_property_info({
-                    "name": config_item[0],
-                    "type": config_item[1],
-                    "hint": config_item[3],
-                    "hint_string": config_item[4],
-                })
-                ProjectSettings.set_initial_value(config_item[0], config_item[2])
-                ProjectSettings.set_as_basic(config_item[0], true)
-
-        update()
-
-    static func remove_configs() -> void:
-        for config_item : String in [
-            GENERAL_PRINT_HEADER,
-            GENERAL_AUTO_UPDATE,
-            PARSER_MULTI_THREADS,
-        ]:
-            ProjectSettings.set_setting(config_item, null)
-
-        update()
-
-    static func update() -> void:
-        var err := ProjectSettings.save()
-        if err != OK:
-            push_error("Error saving Theatre config: ", err)
-
-    static func _project_settings_changed() -> void:
-        DialogueSyntaxHighlighter.initialize_colors()
-        DialogueParser._is_multi_threaded =\
-            ProjectSettings.get_setting(PARSER_MULTI_THREADS, false)
-
 var http_update_req : HTTPRequest
+
+const TheatreConfig = preload("res://addons/Theatre/classes/TheatreConfig.gd")
+var theatre_config : TheatreConfig
 
 const DialogueImporter = preload("res://addons/Theatre/classes/DialogueImporter.gd")
 var dialogue_importer : DialogueImporter
@@ -69,13 +28,15 @@ func _enter_tree() -> void:
     dialogue_syntax_highlighter = DialogueSyntaxHighlighter.new()
 
     # Initialize Theatre config
+    theatre_config = TheatreConfig.new([
+        DialogueSyntaxHighlighter.initialize_colors
+    ])
+
     if ProjectSettings.get_setting(TheatreConfig.GENERAL_PRINT_HEADER, true):
         print("🎭 Theatre v%s by nnda" % get_plugin_version())
 
     # Initialize project settings
-    TheatreConfig.init_configs()
-    ProjectSettings.settings_changed.connect(TheatreConfig._project_settings_changed)
-    TheatreConfig._project_settings_changed()
+    theatre_config._project_settings_changed()
 
     # Compile DialogueParser RegExes
     DialogueParser._initialize_regex_multi_threaded()
@@ -137,16 +98,13 @@ func _ready() -> void:
     if update_needed:
         ProjectSettings.set_setting(THEATRE_VER_LOG, ver)
 
-        TheatreConfig.update()
+        theatre_config.update()
 
     ProjectSettings.set_as_internal(THEATRE_VER_LOG, true)
 
 func _exit_tree() -> void:
     if ProjectSettings.get_setting(TheatreConfig.GENERAL_PRINT_HEADER, true):
         print("🎭 Disabling Theatre...")
-
-    # Disconnect project settings signal
-    ProjectSettings.settings_changed.disconnect(TheatreConfig._project_settings_changed)
 
     # Clear update check
     if http_update_req != null:
@@ -168,7 +126,7 @@ func _exit_tree() -> void:
 
 func _disable_plugin() -> void:
     # Clear project settings
-    TheatreConfig.remove_configs()
+    theatre_config.remove_configs()
 
     # Remove `dlg` from search in file extensions
     var text_files_find_ext : PackedStringArray =\
