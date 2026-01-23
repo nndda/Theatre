@@ -17,16 +17,16 @@ _sets = Array[Dictionary]([{
 24: 0.5,
 34: 0.4
 },
-9: {}
+9: {},
+10: {}
 },
-10: [],
-11: {},
-12: PackedInt64Array(),
-13: {},
-14: false,
-15: PackedStringArray(),
-16: [],
-17: []
+11: [],
+12: {},
+13: PackedInt64Array(),
+16: PackedStringArray(),
+17: [],
+18: [],
+26: {}
 }, {
 0: &"Dia",
 1: [],
@@ -41,16 +41,16 @@ _sets = Array[Dictionary]([{
 71: 0.7,
 87: 0.7
 },
-9: {}
+9: {},
+10: {}
 },
-10: [],
-11: {},
-12: PackedInt64Array(),
-13: {},
-14: false,
-15: PackedStringArray(),
-16: [],
-17: []
+11: [],
+12: {},
+13: PackedInt64Array(),
+16: PackedStringArray(),
+17: [],
+18: [],
+26: {}
 }, {
 0: &"Dia",
 1: [],
@@ -71,16 +71,16 @@ _sets = Array[Dictionary]([{
 9: {
 73: 0.035,
 76: 1.0
-}
 },
-10: [],
-11: {},
-12: PackedInt64Array(),
-13: {},
-14: false,
-15: PackedStringArray(),
-16: [],
-17: []
+10: {}
+},
+11: [],
+12: {},
+13: PackedInt64Array(),
+16: PackedStringArray(),
+17: [],
+18: [],
+26: {}
 }, {
 0: &"Dia",
 1: [],
@@ -97,16 +97,16 @@ _sets = Array[Dictionary]([{
 10: 1.0,
 20: 0.035,
 23: 1.0
-}
 },
-10: [],
-11: {},
-12: PackedInt64Array(),
-13: {},
-14: false,
-15: PackedStringArray(),
-16: [],
-17: []
+10: {}
+},
+11: [],
+12: {},
+13: PackedInt64Array(),
+16: PackedStringArray(),
+17: [],
+18: [],
+26: {}
 }, {
 0: &"Dia",
 1: [],
@@ -119,16 +119,16 @@ _sets = Array[Dictionary]([{
 8: {
 30: 0.2
 },
-9: {}
+9: {},
+10: {}
 },
-10: [],
-11: {},
-12: PackedInt64Array(),
-13: {},
-14: false,
-15: PackedStringArray(),
-16: [],
-17: []
+11: [],
+12: {},
+13: PackedInt64Array(),
+16: PackedStringArray(),
+17: [],
+18: [],
+26: {}
 }, {
 0: &"Dia",
 1: [],
@@ -142,16 +142,16 @@ _sets = Array[Dictionary]([{
 54: 0.7,
 66: 0.7
 },
-9: {}
+9: {},
+10: {}
 },
-10: [],
-11: {},
-12: PackedInt64Array(),
-13: {},
-14: false,
-15: PackedStringArray(),
-16: [],
-17: []
+11: [],
+12: {},
+13: PackedInt64Array(),
+16: PackedStringArray(),
+17: [],
+18: [],
+26: {}
 }, {
 0: &"Dia",
 1: [],
@@ -162,16 +162,16 @@ _sets = Array[Dictionary]([{
 6: 32,
 7: {
 8: {},
-9: {}
+9: {},
+10: {}
 },
-10: [],
-11: {},
-12: PackedInt64Array(),
-13: {},
-14: false,
-15: PackedStringArray(),
-16: [],
-17: []
+11: [],
+12: {},
+13: PackedInt64Array(),
+16: PackedStringArray(),
+17: [],
+18: [],
+26: {}
 }, {
 0: &"Dia",
 1: [],
@@ -182,16 +182,16 @@ _sets = Array[Dictionary]([{
 6: 35,
 7: {
 8: {},
-9: {}
+9: {},
+10: {}
 },
-10: [],
-11: {},
-12: PackedInt64Array(),
-13: {},
-14: false,
-15: PackedStringArray(),
-16: [],
-17: []
+11: [],
+12: {},
+13: PackedInt64Array(),
+16: PackedStringArray(),
+17: [],
+18: [],
+26: {}
 }])
 _source_path = "res://dialogues/demo_dialogue.dlg"
 _used_variables = PackedStringArray()

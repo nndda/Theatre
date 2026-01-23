@@ -20,6 +20,34 @@ extends Resource
 ## @tutorial(Dialogue Syntax): https://nndda.github.io/Theatre/class/dialogue/syntax/
 ## @tutorial(Theatre's tutorial page): https://nndda.github.io/Theatre/tutorials/
 
+#region NOTE: dialogue data keys -------------------------------------------------------------------
+const ACTOR := DialogueParser.Key.ACTOR
+
+const CONTENT := DialogueParser.Key.CONTENT
+const CONTENT_RAW := DialogueParser.Key.CONTENT_RAW
+
+const ATTR := DialogueParser.Key.ATTR
+
+const LINE_NUM := DialogueParser.Key.LINE_NUM
+
+const TAG_VARS := DialogueParser.Key.VARS
+const TAG_SCOPED_VARS := DialogueParser.Key.VARS_SCOPE
+const TAG_EXPRESSIONS := DialogueParser.Key.VARS_EXPR
+
+const FUNCS := DialogueParser.Key.FUNC
+
+const TAGS := DialogueParser.Key.TAGS
+const TAG_SPEED := DialogueParser.Key.TAGS_SPEEDS
+const TAG_DELAY := DialogueParser.Key.TAGS_DELAYS
+
+# FUNC_TEMPLATE
+const FUNC_SCOPE := DialogueParser.Key.SCOPE
+const FUNC_NAME := DialogueParser.Key.NAME
+const FUNC_ARGS := DialogueParser.Key.ARGS
+const FUNC_ARGS_SCOPE := DialogueParser.Key.VARS
+const FUNC_STANDALONE := DialogueParser.Key.STANDALONE
+#endregion
+
 #region NOTE: Stored variables ---------------------------------------------------------------------
 @export_storage var _sets : Array[Dictionary] = []
 @export_storage var _source_path : String
@@ -105,8 +133,9 @@ func get_word_count(variables : Dictionary[String, Variant] = {}) -> int:
         true, true
     )).size()
 
-func get_character_count(variables : Dictionary[String, Variant] = {}) -> int:
-    return humanize(false, variables).length()
+# TODO:
+#func get_character_count(variables : Dictionary[String, Variant] = {}) -> int:
+    #return humanize(false, variables).length()
 
 func get_function_calls() -> Dictionary:
     return _used_function_calls
@@ -137,11 +166,6 @@ func _update_used_variables() -> void:
             if not m in _used_variables:
                 _used_variables.append(m)
 
-## Returns the human-readable string of the compiled [Dialogue]. This will return the [Dialogue]
-## without the Dialogue tags and/or BBCode tags. Optionally, insert the variables used by passing it to [param variables].
-func humanize(with_actor : bool = true, variables : Dictionary[String, Variant] = {}) -> String:
-    return _strip(variables, !with_actor)
-
 func _strip(
     variables : Dictionary[String, Variant] = {},
     exclude_actors : bool = false,
@@ -152,26 +176,14 @@ func _strip(
 
     for n in _sets:
         if !exclude_actors:
-            output += n.actor + DialogueParser.COLON + newline
+            output += n[DialogueParser.Key.ACTOR] + DialogueParser.COLON + newline
 
         output += (
             DialogueParser.EMPTY if exclude_actors else DialogueParser.INDENT_4
-        ) + n.line + newline + newline
+        ) + n[DialogueParser.Key.CONTENT] + newline + newline
 
     # Strip BBCode tags
     output = DialogueParser._regex_bbcode_tags.sub(output, DialogueParser.EMPTY, true)
 
     return output.format(variables)
-
-## Save the compiled [Dialogue] data as a JSON file to the specified [param path]. Returns [member OK] if successful.
-func to_json(path : String) -> Error:
-    var file := FileAccess.open(path, FileAccess.WRITE)
-    if FileAccess.get_open_error() == OK:
-        file.store_string(
-            JSON.stringify(_sets, DialogueParser.INDENT_2, true, true)
-        )
-    else:
-        return FileAccess.get_open_error()
-    file.close()
-    return file.get_error()
 #endregion

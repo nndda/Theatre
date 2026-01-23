@@ -41,19 +41,19 @@ Yet another <sub>(linear)</sub> dialogue system<b>/</b>addon<b>/</b>plugin for G
 
 ```gdscript
 # Load your epic dialogue!
-var epic_dialogue := Dialogue.load('res://epic_dialogue.dlg')
+var dialogue: Dialogue = load('res://dialogue.dlg')
 # Set up the stage
-@export var my_stage: TheatreStage
+@export var stage: TheatreStage
 
 func _ready():
     # Start your dialogue
-    my_stage.start(epic_dialogue)
+    stage.start(dialogue)
 
 func _input(event):
     # When the space/enter key is pressed,
     if event.is_action_pressed('ui_accept'):
         # Progress your dialogue
-        my_stage.progress()
+        stage.progress()
 ```
 
 <br>
@@ -82,6 +82,10 @@ Dia:
     "Let's meet {player}. Don't keep {player_pronoun} waiting."
 ```
 ...or dynamic variables.
+```yaml
+Dia:
+    "Good {Game.day_state}, {Game.player.name}."
+```
 
 Execute, evaluate, and insert any valid GDScript expressions to the dialogue.
 ```yaml
@@ -103,7 +107,7 @@ Godette:
 ```
 ```yaml
 Ritsu:
-    "{speed = 1.5} AAAAAAAAAAAAAAAAA!!!!"
+    "{speed = 1.5}AAAAAAAAAAAAAAAAA!!!!"
 ```
 
 ## Manipulate Properties
@@ -111,7 +115,7 @@ Ritsu:
 Manipulate in-game object properties &amp; variables.
 ```yaml
 Ritsu:
-    UI.portrait = "ritsu_smile.png"
+    UI.portrait.current = "ritsu_smile.png"
     "Cheers!"
 ```
 ```yaml
@@ -141,6 +145,30 @@ Dia:
     there we go."
 ```
 
+## Extensible API
+Here's some signals, here's some dialogue data, do whatever you want.
+
+```gdscript
+func _progressed_on(dialogue_data):
+    var speaker = dialogue_data[Dialogue.ACTOR]
+    var text = dialogue_data[Dialogue.CONTENT]
+
+    if speaker == "Dia":
+        portrait.change("dia.png")
+        dialogue_label.text_color = Color.LIGHT_BLUE
+    elif speaker == "Ritsu":
+        portrait.change("ritsu.png")
+        dialogue_label.text_color = Color.PINK
+    else:
+        portrait.change("blank.png")
+        dialogue_label.text_color = Color.WHITE
+
+    history_log.push({
+        "speaker": speaker,
+        "text": text
+    })
+```
+
 <p align="center">
 <a href="https://nndda.github.io/Theatre/class/dialogue/syntax/">📚 More comprehensive Dialogue features documented here.</a>
 </p>
@@ -150,10 +178,12 @@ Dia:
 Write your epic Dialogue!
 ```gdscript
 # Write it in a *.dlg file, and load it.
-var epic_dialogue := Dialogue.load("res://epic_dialogue.dlg")
+var dialogue: Dialogue = load('res://dialogue.dlg')
+# or
+var dialogue := Dialogue.load('res://dialogue.dlg')
 
 # Write it directly with triple quotation marks.
-var epic_dialogue := Dialogue.new("""
+var dialogue := Dialogue.new("""
 
 Dia:
     "Loading the Dialogue written in a *.dlg file
@@ -210,12 +240,12 @@ via the inspector. Alternatively, you can also set them in script:
 <td>
 
 ```gdscript
-@onready var my_stage: TheatreStage = $TheatreStage
+@onready var stage: TheatreStage = $TheatreStage
 
 func _ready():
-    my_stage.actor_label =\
+    stage.actor_label =\
         $PanelContainer/VBoxContainer/Label
-    my_stage.dialogue_label =\
+    stage.dialogue_label =\
         $PanelContainer/VBoxContainer/DialogueLabel
 
 ```
@@ -232,16 +262,16 @@ node in the script, and set up a way to progress your Dialogue with `TheatreStag
 ```gdscript
 func _input(event):
     if event.is_action_pressed('ui_accept'):
-        my_stage.progress()
+        stage.progress()
 ```
 
 And finally, start the
 <code><img src="addons/Theatre/assets/icons/classes/ticket.svg" height="13"> TheatreStage</code>
-with your `epic_dialogue`.
+with your `dialogue`.
 
 ```gdscript
 func _ready():
-    my_stage.start(epic_dialogue)
+    stage.start(dialogue)
 ```
 
 <p align="center">

@@ -195,9 +195,6 @@ func _update_scope() -> void:
 ## Return user-defined scopes that will be used in the written [Dialogue].
 func get_scopes() -> Dictionary:
     return _scope
-## @deprecated: Use [method get_scopes] instead.
-func get_callers() -> Dictionary:
-    return get_scopes()
 
 ## Add function scope used in the written [Dialogue].
 ## If [param object] is a [Node], it will be removed automatically when its freed.
@@ -205,15 +202,12 @@ func get_callers() -> Dictionary:
 ## See also [method remove_scope], and [method clear_scope].
 func add_scope(id : String, object : Object) -> void:
     _scope[id] = weakref(object)
-    if object is Node:
-        var cb : Callable = remove_scope.bind(id)
-        if not object.tree_exited.is_connected(cb):
-            object.tree_exited.connect(cb)
+    # NOTE: Whenever this got fired, the scope were always already freed :/
+    #if object is Node:
+        #var cb : Callable = remove_scope.bind(id)
+        #if not object.tree_exited.is_connected(cb):
+            #object.tree_exited.connect(cb)
     _update_scope()
-## @deprecated: Use [method add_scope] instead.
-func add_caller(id : String, object : Object) -> void:
-    add_scope(id, object)
-
 
 ## Remove function scope used in the written [Dialogue].
 ## [br][br]
@@ -226,9 +220,6 @@ func remove_scope(id : String) -> void:
     else:
         _scope.erase(id)
     _update_scope()
-## @deprecated: Use [method remove_scope] instead.
-func remove_caller(id: String) -> void:
-    remove_scope(id)
 
 ## Remove all function scopes.
 ## [br][br]
@@ -236,17 +227,42 @@ func remove_caller(id: String) -> void:
 func clear_scopes() -> void:
     _scope.clear()
     _update_scope()
-## @deprecated: Use [method clear_scopes] instead.
-func clear_callers() -> void:
-    clear_scopes()
+
+
+## Custom [Callable] that have the called function data as the parameter. Return[code]true[/code] to execute the function, and [code]false[/code] to skip the function call..
+var func_call_filter : Callable:
+    set(c):
+        var args_count : int = c.get_argument_count()
+        if args_count != 1:
+            TheatreDebug.log_err(
+                "'func_call_filter' callable argument != 1 (%d)" % args_count
+            )
+        else:
+            func_call_filter = c
+
 
 var _expression_args := Expression.new()
 func _call_function(f : Dictionary) -> void:
     if !allow_func:
         return
 
+    #region NOTE: User-defined function call filter
+    if func_call_filter.is_valid():
+        var func_call_allowed : Variant = func_call_filter.call(f)
+        var func_call_filter_return : int = typeof(func_call_allowed)
+
+        if func_call_filter_return != TYPE_BOOL:
+            TheatreDebug.log_err(
+                "'func_call_filter' callable returns '%s', instead of 'bool" % type_string(func_call_filter_return)
+            )
+        else:
+            if not func_call_allowed:
+                function_called.emit(f, false)
+                return
+    #endregion
+
     var func_scope : StringName = f[DialogueParser.Key.SCOPE]
-    var func_name : StringName = f[DialogueParser.Key.NAME]
+    var func_path : NodePath = f[DialogueParser.Key.PROPERTY_PATH]
     var func_vars : Array = f[DialogueParser.Key.VARS]
 
     #region general error checks
@@ -268,17 +284,20 @@ func _call_function(f : Dictionary) -> void:
         )
         return
 
-    if !scope_obj.has_method(func_name):
+    var scope_obj_path := scope_obj.get_indexed(func_path)
+
+    if scope_obj_path == null:
         printerr(
             "Cannot call dialogue function: function '%s.%s()' doesn't exists.\n  dialogue: %s:%d" % [
-                func_scope, func_name, current_dialogue._source_path, f[DialogueParser.Key.LINE_NUM],
+                func_scope, str(func_path).replace(DialogueParser.COLON, DialogueParser.DOT), current_dialogue._source_path, f[DialogueParser.Key.LINE_NUM],
             ],
         )
         return
     #endregion
 
     if f[DialogueParser.Key.STANDALONE]:
-        scope_obj.callv(func_name, f[DialogueParser.Key.ARGS])
+        scope_obj_path.callv(f[DialogueParser.Key.ARGS])
+        function_called.emit(f, true)
         return
 
     if func_vars.any(_func_args_inp_check_scope.bind(_scope_all.keys())):
@@ -302,7 +321,8 @@ func _call_function(f : Dictionary) -> void:
         )
         return
 
-    scope_obj.callv(func_name, expr_args)
+    scope_obj_path.callv(expr_args)
+    function_called.emit(f, true)
 
 func _func_args_inp_get(arg_str : String) -> Object:
     if not _scope_all.has(arg_str):
@@ -351,6 +371,9 @@ signal cancelled_at(line : int, line_data : Dictionary)
 
 ## Emitted when the [Dialogue] is switched using [method switch].
 signal dialogue_switched(old_dialogue : Dialogue, new_dialogue : Dialogue)
+
+## Emitted when a function is called.
+signal function_called(func_data : Dictionary, executed : bool)
 
 #signal locale_changed(lang : String)
 
@@ -440,10 +463,7 @@ func start(dialogue : Dialogue = null, to_section : Variant = 0) -> void:
         current_dialogue = dialogue
 
     if current_dialogue == null:
-        TheatreDebug.log_err(
-            "Cannot start TheatreStage: `dialogue` is null.",
-            1
-        )
+        TheatreDebug.log_err("Cannot start TheatreStage: `dialogue` is null.")
         return
 
     #if current_dialogue._sets.size() == 0:
@@ -606,8 +626,8 @@ func _dyn_var_get(
         if _scope_all.has(scoped_vars[1]):
             var scope_obj : Object = _scope_all[scoped_vars[1]].get_ref()
 
-            if scoped_vars[2] in scope_obj:
-                dyn_vars_defs[scoped_vars[0]] = scope_obj.get(scoped_vars[2])
+            if scope_obj.get_indexed(scoped_vars[2]) != null:
+                dyn_vars_defs[scoped_vars[0]] = scope_obj.get_indexed(scoped_vars[2])
 
     for expr_vars : Dictionary in vars_expr:
         var expr_err := _expression_args.parse(expr_vars[DialogueParser.Key.CONTENT], expr_vars[DialogueParser.Key.ARGS])
@@ -732,25 +752,6 @@ func _update_display() -> void:
         dialogue_label.text = DialogueParser.escape_brackets(
             _dialogue_full_string.format(variables)
         )
-    # TODO
-    #if _current_dialogue_set[DialogueParser.Key.HAS_VARS]:
-        #if actor_label != null:
-            #actor_label.text = DialogueParser.escape_brackets(
-                #_current_dialogue_set[DialogueParser.Key.ACTOR].format(variables)
-            #)
-        #if dialogue_label != null:
-            #dialogue_label.text = DialogueParser.escape_brackets(
-                #_dialogue_full_string.format(variables)
-            #)
-    #else:
-        #if actor_label != null:
-            #actor_label.text = DialogueParser.escape_brackets(
-                #_current_dialogue_set[DialogueParser.Key.ACTOR]
-            #)
-        #if dialogue_label != null:
-            #dialogue_label.text = DialogueParser.escape_brackets(
-                #_dialogue_full_string
-            #)
 
 # TODO:
 #func switch_dialogue(dialogue : Dialogue, current_line : bool = true) -> void:

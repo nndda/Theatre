@@ -1,4 +1,4 @@
-extends Node
+extends RefCounted
 class_name DialogueTest
 
 const DLG_FILES: PackedStringArray = [

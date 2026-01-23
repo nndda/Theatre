@@ -70,13 +70,22 @@ jobs:
           curl -L -o ${{ env.GODOT_BINARY }}.zip https://github.com/godotengine/godot/releases/download/${{ env.GODOT_VERSION }}/${{ env.GODOT_BINARY }}.zip
           unzip -o ./${{ env.GODOT_BINARY }}.zip
 
-      - name: Run test
+      - name: Import project assets
         run: |
           ./${{ env.GODOT_BINARY }} \
             --headless \
-            --import \
-              && \
+            --import
+
+      - name: Run parser test
+        run: |
           ./${{ env.GODOT_BINARY }} \
             --no-header \
             --headless \
             --script ./tests/dialogue_test_ci.gd
+
+      - name: Run parser benchmark test
+        run: |
+          ./${{ env.GODOT_BINARY }} \
+            --no-header \
+            --headless \
+            --script ./tests/benchmark_ci.gd
