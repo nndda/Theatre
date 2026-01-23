@@ -205,10 +205,11 @@ func get_callers() -> Dictionary:
 ## See also [method remove_scope], and [method clear_scope].
 func add_scope(id : String, object : Object) -> void:
     _scope[id] = weakref(object)
-    if object is Node:
-        var cb : Callable = remove_scope.bind(id)
-        if not object.tree_exited.is_connected(cb):
-            object.tree_exited.connect(cb)
+    # NOTE: Whenever this got fired, the scope were always already freed :/
+    #if object is Node:
+        #var cb : Callable = remove_scope.bind(id)
+        #if not object.tree_exited.is_connected(cb):
+            #object.tree_exited.connect(cb)
     _update_scope()
 ## @deprecated: Use [method add_scope] instead.
 func add_caller(id : String, object : Object) -> void:
