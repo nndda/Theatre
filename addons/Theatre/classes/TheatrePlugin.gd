@@ -72,16 +72,8 @@ func _enter_tree() -> void:
 
 func _ready() -> void:
     if DisplayServer.get_name() != "headless":
-        # Initialize update check
-        var init_req : Callable = _init_update_req()
-
         if ProjectSettings.get_setting(TheatreConfig.GENERAL_AUTO_UPDATE, true):
-            http_update_req.ready.connect(
-                init_req,
-                Object.CONNECT_ONE_SHOT | Object.CONNECT_DEFERRED,
-            )
-
-        call_deferred(&"add_child", http_update_req)
+            update_check()
 
     const THEATRE_VER_LOG : String = "theatre/version"
     var ver : String = get_plugin_version()
@@ -171,29 +163,27 @@ func reimport_dialogues() -> void:
         if !editor_resource_filesystem.is_scanning():
             editor_resource_filesystem.scan()
 
-func _init_update_req() -> Callable:
-    http_update_req = HTTPRequest.new()
-    http_update_req.request_completed.connect(_update_response)
-    http_update_req.ready.connect(http_update_req.set.bind(&"timeout", 3.), Object.CONNECT_ONE_SHOT)
-
-    return http_update_req.request.bind("https://api.github.com/repos/nndda/Theatre/releases/latest")
-
 func update_check() -> void:
     print("Theatre: checking for updates...")
+    
+    const API_URL := "https://api.github.com/repos/nndda/Theatre/releases/latest"
 
-    if http_update_req == null:
-        var init_req : Callable = _init_update_req()
-
+    if http_update_req != null:
+        http_update_req.request(API_URL)
+    else:
+        http_update_req = HTTPRequest.new()
+        http_update_req.request_completed.connect(_update_response)
         http_update_req.ready.connect(
-            init_req,
+            http_update_req.set.bind(&"timeout", 3.),
             Object.CONNECT_ONE_SHOT,
         )
 
-        call_deferred(&"add_child", http_update_req)
-    else:
-        http_update_req.request(
-            "https://api.github.com/repos/nndda/Theatre/releases/latest"
+        http_update_req.ready.connect(
+            http_update_req.request.bind(API_URL),
+            Object.CONNECT_ONE_SHOT | Object.CONNECT_DEFERRED,
         )
+
+        add_child.call_deferred(http_update_req)
 
 func _update_response(
     result : int,
@@ -213,8 +203,7 @@ func _update_response(
             var data : Dictionary = json.get_data() as Dictionary
             var current_ver := get_plugin_version()
             if data["tag_name"] == current_ver:
-                if ProjectSettings.get_setting(TheatreConfig.GENERAL_PRINT_HEADER, true):
-                    print("Theatre: using the latest version: %s" % current_ver)
+                print("Theatre: using the latest version: %s" % current_ver)
             else:
                 print_rich("Theatre: [color=cyan]New updates available: %s -> %s[/color]" % [current_ver,
                     "[url=%s]%s[/url]" % [
