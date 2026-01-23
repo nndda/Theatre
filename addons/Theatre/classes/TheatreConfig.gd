@@ -51,7 +51,7 @@ func remove_configs() -> void:
 func update() -> void:
     var err := ProjectSettings.save()
     if err != OK:
-        push_error("Error saving Theatre config: ", err)
+        push_error("Theatre: error saving Theatre config: ", err)
 
 func _project_settings_changed() -> void:
     for cb : Callable in update_cb:

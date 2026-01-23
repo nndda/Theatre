@@ -22,6 +22,9 @@ var plugin_submenu : PopupMenu = preload(
 ).instantiate()
 
 func _enter_tree() -> void:
+    if ProjectSettings.get_setting(TheatreConfig.GENERAL_PRINT_HEADER, true):
+        print("🎭 Theatre v%s by nnda\nTheatre: initializing plugin..." % get_plugin_version())
+
     plugin_submenu.visible = false
 
     dialogue_importer = DialogueImporter.new()
@@ -31,9 +34,6 @@ func _enter_tree() -> void:
     theatre_config = TheatreConfig.new([
         DialogueSyntaxHighlighter.initialize_colors
     ])
-
-    if ProjectSettings.get_setting(TheatreConfig.GENERAL_PRINT_HEADER, true):
-        print("🎭 Theatre v%s by nnda" % get_plugin_version())
 
     # Initialize project settings
     theatre_config._project_settings_changed()
@@ -92,7 +92,7 @@ func _ready() -> void:
         update_needed = ver_prev != ver
 
         if update_needed:
-            print("  Theatre version change detected: %s -> %s, reimporting dialogues" % [ver_prev, ver])            
+            print("Theatre: version change detected: %s -> %s, reimporting dialogues" % [ver_prev, ver])            
             reimport_dialogues()
 
     if update_needed:
@@ -102,9 +102,13 @@ func _ready() -> void:
 
     ProjectSettings.set_as_internal(THEATRE_VER_LOG, true)
 
-func _exit_tree() -> void:
     if ProjectSettings.get_setting(TheatreConfig.GENERAL_PRINT_HEADER, true):
-        print("🎭 Disabling Theatre...")
+        print("Theatre: plugin ready")
+
+func _exit_tree() -> void:
+    var allow_header : bool = ProjectSettings.get_setting(TheatreConfig.GENERAL_PRINT_HEADER, true)
+    if allow_header:
+        print("🎭 Theatre: disabling plugin...")
 
     # Clear update check
     if http_update_req != null:
@@ -123,6 +127,9 @@ func _exit_tree() -> void:
     dialogue_syntax_highlighter = null
 
     editor_resource_filesystem = null
+
+    if allow_header:
+        print("🎭 Theatre: plugin disabled")
 
 func _disable_plugin() -> void:
     # Clear project settings
@@ -172,7 +179,7 @@ func _init_update_req() -> Callable:
     return http_update_req.request.bind("https://api.github.com/repos/nndda/Theatre/releases/latest")
 
 func update_check() -> void:
-    print("  Checking for updates...")
+    print("Theatre: checking for updates...")
 
     if http_update_req == null:
         var init_req : Callable = _init_update_req()
@@ -195,20 +202,21 @@ func _update_response(
     body : PackedByteArray,
     ) -> void:
     if response_code != 200:
-        print_rich("  [color=red]Error getting updates: %d[/color]" % response_code)
+        print_rich("Theatre: [color=red]Error getting updates: %d[/color]" % response_code)
     else:
         var json := JSON.new()
         var err := json.parse(body.get_string_from_utf8())
 
         if err != OK:
-            print_rich("  [color=red]Error getting updates data: %s[/color]" % error_string(err))
+            print_rich("Theatre: [color=red]Error getting updates data: %s[/color]" % error_string(err))
         else:
             var data : Dictionary = json.get_data() as Dictionary
             var current_ver := get_plugin_version()
             if data["tag_name"] == current_ver:
-                print("  Using the latest version: %s" % current_ver)
+                if ProjectSettings.get_setting(TheatreConfig.GENERAL_PRINT_HEADER, true):
+                    print("Theatre: using the latest version: %s" % current_ver)
             else:
-                print_rich("  [color=cyan]New updates available: %s -> %s[/color]" % [current_ver,
+                print_rich("Theatre: [color=cyan]New updates available: %s -> %s[/color]" % [current_ver,
                     "[url=%s]%s[/url]" % [
                         data["html_url"],
                         data["tag_name"],
