@@ -79,7 +79,7 @@ func _input(event: InputEvent) -> void:
             stage.start(dlg)
 
 func _dialogue_label_character_drawn() -> void:
-    progress_bar.value += 1.0
+    progress_bar.value = stage.dialogue_label.visible_characters 
 
 func _dialogue_label_text_rendered() -> void:
     progress_label.scale = Vector2.ONE
@@ -92,7 +92,7 @@ func _dialogue_label_text_rendered() -> void:
 
 func _stage_progressed_at(_line : int, line_data : Dictionary) -> void:
     progress_bar.value = 0
-    
+
     progress_bar.max_value = bbcode_regex.sub(
         bbcode_img_tag.sub(
             line_data[DialogueParser.Key.CONTENT],

@@ -43,3 +43,7 @@ locale/locale_filter_mode=0
 [rendering]
 
 renderer/rendering_method="mobile"
+
+[theatre]
+
+version="0.12.2"

@@ -3,49 +3,10 @@
 extends EditorPlugin
 class_name TheatrePlugin
 
-class TheatreConfig extends RefCounted:
-    const GENERAL_AUTO_UPDATE := "theatre/general/updates/check_updates_automatically"
-    const GENERAL_PARSER_MULTI_THREADS := "theatre/general/parser/use_multiple_threads"
-
-    static func init_configs() -> void:
-        print("  Initializing configs...")
-        for config_item : Array in [
-            [ GENERAL_AUTO_UPDATE, TYPE_BOOL, true, PROPERTY_HINT_NONE, "", ],
-            [ GENERAL_PARSER_MULTI_THREADS, TYPE_BOOL, false, PROPERTY_HINT_NONE, "", ],
-        ]:
-            if !ProjectSettings.has_setting(config_item[0]):
-                ProjectSettings.set_setting(config_item[0], config_item[2])
-                ProjectSettings.add_property_info({
-                    "name": config_item[0],
-                    "type": config_item[1],
-                    "hint": config_item[3],
-                    "hint_string": config_item[4],
-                })
-                ProjectSettings.set_initial_value(config_item[0], config_item[2])
-                ProjectSettings.set_as_basic(config_item[0], true)
-
-        update()
-
-    static func remove_configs() -> void:
-        for config_item : String in [
-            GENERAL_AUTO_UPDATE,
-            GENERAL_PARSER_MULTI_THREADS,
-        ]:
-            ProjectSettings.set_setting(config_item, null)
-
-        update()
-
-    static func update() -> void:
-        var err := ProjectSettings.save()
-        if err != OK:
-            push_error("Error saving Theatre config: ", err)
-
-    static func _project_settings_changed() -> void:
-        DialogueSyntaxHighlighter.initialize_colors()
-        DialogueParser._is_multi_threaded =\
-            ProjectSettings.get_setting(GENERAL_PARSER_MULTI_THREADS, false)
-
 var http_update_req : HTTPRequest
+
+const TheatreConfig = preload("res://addons/Theatre/classes/TheatreConfig.gd")
+var theatre_config : TheatreConfig
 
 const DialogueImporter = preload("res://addons/Theatre/classes/DialogueImporter.gd")
 var dialogue_importer : DialogueImporter
@@ -56,25 +17,26 @@ var dialogue_syntax_highlighter : DialogueSyntaxHighlighter
 static var editor_settings := EditorInterface.get_editor_settings()
 var editor_resource_filesystem := EditorInterface.get_resource_filesystem()
 
-const REGEX_IMPORTED_DLG := r"^.+\.dlg-[A-Fa-f0-9]+\."
-
 var plugin_submenu : PopupMenu = preload(
     "res://addons/Theatre/components/tool_submenu.tscn"
 ).instantiate()
 
 func _enter_tree() -> void:
-    plugin_submenu.hide()
+    if ProjectSettings.get_setting(TheatreConfig.GENERAL_PRINT_HEADER, true):
+        print("🎭 Theatre v%s by nnda\nTheatre: initializing plugin..." % get_plugin_version())
+
+    plugin_submenu.visible = false
 
     dialogue_importer = DialogueImporter.new()
     dialogue_syntax_highlighter = DialogueSyntaxHighlighter.new()
 
     # Initialize Theatre config
-    print("🎭 Theatre v%s by nnda" % get_plugin_version())
+    theatre_config = TheatreConfig.new([
+        DialogueSyntaxHighlighter.initialize_colors
+    ])
 
     # Initialize project settings
-    TheatreConfig.init_configs()
-    ProjectSettings.settings_changed.connect(TheatreConfig._project_settings_changed)
-    TheatreConfig._project_settings_changed()
+    theatre_config._project_settings_changed()
 
     # Compile DialogueParser RegExes
     DialogueParser._initialize_regex_multi_threaded()
@@ -110,36 +72,35 @@ func _enter_tree() -> void:
 
 func _ready() -> void:
     if DisplayServer.get_name() != "headless":
-        # Initialize update check
-        http_update_req = HTTPRequest.new()
-        http_update_req.timeout = 3.0
-        http_update_req.request_completed.connect(_update_response)
-        add_child(http_update_req)
-
         if ProjectSettings.get_setting(TheatreConfig.GENERAL_AUTO_UPDATE, true):
-            await get_tree().create_timer(2.5).timeout
             update_check()
 
-        var theatre_record := FileAccess.open("res://.godot/.theatre", FileAccess.READ_WRITE)
+    const THEATRE_VER_LOG : String = "theatre/version"
+    var ver : String = get_plugin_version()
+    var update_needed: bool = true
 
-        if theatre_record == null:
-            push_error("Error opening .theatre file: ", error_string(FileAccess.get_open_error()))
-        else:
-            var ver := get_plugin_version().strip_edges()
-            var ver_prev := theatre_record.get_as_text().strip_edges()
-            if ver_prev != ver:
-                if !ver_prev.is_empty():
-                    print("  Theatre version change detected: %s -> %s, reimporting dialogues" % [ver_prev, ver])
-                reimport_dialogues()
-                theatre_record.store_string(ver)
+    if ProjectSettings.has_setting(THEATRE_VER_LOG):
+        var ver_prev : String = ProjectSettings.get_setting(THEATRE_VER_LOG)
+        update_needed = ver_prev != ver
 
-            theatre_record.close()
+        if update_needed:
+            print("Theatre: version change detected: %s -> %s, reimporting dialogues" % [ver_prev, ver])            
+            reimport_dialogues()
+
+    if update_needed:
+        ProjectSettings.set_setting(THEATRE_VER_LOG, ver)
+
+        theatre_config.update()
+
+    ProjectSettings.set_as_internal(THEATRE_VER_LOG, true)
+
+    if ProjectSettings.get_setting(TheatreConfig.GENERAL_PRINT_HEADER, true):
+        print("Theatre: plugin ready")
 
 func _exit_tree() -> void:
-    print("🎭 Disabling Theatre...")
-
-    # Disconnect project settings signal
-    ProjectSettings.settings_changed.disconnect(TheatreConfig._project_settings_changed)
+    var allow_header : bool = ProjectSettings.get_setting(TheatreConfig.GENERAL_PRINT_HEADER, true)
+    if allow_header:
+        print("🎭 Theatre: disabling plugin...")
 
     # Clear update check
     if http_update_req != null:
@@ -159,9 +120,12 @@ func _exit_tree() -> void:
 
     editor_resource_filesystem = null
 
+    if allow_header:
+        print("🎭 Theatre: plugin disabled")
+
 func _disable_plugin() -> void:
     # Clear project settings
-    TheatreConfig.remove_configs()
+    theatre_config.remove_configs()
 
     # Remove `dlg` from search in file extensions
     var text_files_find_ext : PackedStringArray =\
@@ -176,7 +140,7 @@ func _disable_plugin() -> void:
         )
 
 func _save_external_data() -> void:
-    editor_resource_filesystem.scan_sources()
+    editor_resource_filesystem.scan()
 
 func _handles(object: Object) -> bool:
     return object is Dialogue
@@ -190,19 +154,36 @@ func tool_submenu_id_pressed(id : int) -> void:
 
 func reimport_dialogues() -> void:
     const IMPORTED_PATH := "res://.godot/imported/"
-    var import_file_regex : RegEx = RegEx.create_from_string(REGEX_IMPORTED_DLG)
+    var import_file_regex : RegEx = RegEx.create_from_string(r"^.+\.dlg-[A-Fa-f0-9]+\.")
     if DirAccess.dir_exists_absolute(IMPORTED_PATH):
         for file in DirAccess.get_files_at(IMPORTED_PATH):
             if import_file_regex.search(file) != null:
                 DirAccess.remove_absolute(IMPORTED_PATH + file)
 
-        editor_resource_filesystem.scan_sources()
+        if !editor_resource_filesystem.is_scanning():
+            editor_resource_filesystem.scan()
 
 func update_check() -> void:
-    print("  Checking for updates...")
-    http_update_req.request(
-        "https://api.github.com/repos/nndda/Theatre/releases/latest"
-    )
+    print("Theatre: checking for updates...")
+    
+    const API_URL := "https://api.github.com/repos/nndda/Theatre/releases/latest"
+
+    if http_update_req != null:
+        http_update_req.request(API_URL)
+    else:
+        http_update_req = HTTPRequest.new()
+        http_update_req.request_completed.connect(_update_response)
+        http_update_req.ready.connect(
+            http_update_req.set.bind(&"timeout", 3.),
+            Object.CONNECT_ONE_SHOT,
+        )
+
+        http_update_req.ready.connect(
+            http_update_req.request.bind(API_URL),
+            Object.CONNECT_ONE_SHOT | Object.CONNECT_DEFERRED,
+        )
+
+        add_child.call_deferred(http_update_req)
 
 func _update_response(
     result : int,
@@ -211,20 +192,20 @@ func _update_response(
     body : PackedByteArray,
     ) -> void:
     if response_code != 200:
-        print_rich("  [color=red]Error getting updates: %d[/color]" % response_code)
+        print_rich("Theatre: [color=red]Error getting updates: %d[/color]" % response_code)
     else:
         var json := JSON.new()
         var err := json.parse(body.get_string_from_utf8())
 
         if err != OK:
-            print_rich("  [color=red]Error getting updates data: %s[/color]" % error_string(err))
+            print_rich("Theatre: [color=red]Error getting updates data: %s[/color]" % error_string(err))
         else:
             var data : Dictionary = json.get_data() as Dictionary
             var current_ver := get_plugin_version()
             if data["tag_name"] == current_ver:
-                print("  Using the latest version: %s" % current_ver)
+                print("Theatre: using the latest version: %s" % current_ver)
             else:
-                print_rich("  [color=cyan]New updates available: %s -> %s[/color]" % [current_ver,
+                print_rich("Theatre: [color=cyan]New updates available: %s -> %s[/color]" % [current_ver,
                     "[url=%s]%s[/url]" % [
                         data["html_url"],
                         data["tag_name"],

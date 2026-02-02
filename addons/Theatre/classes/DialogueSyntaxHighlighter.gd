@@ -9,9 +9,9 @@ const TRANSPARENT := Color(0, 0, 0, 0)
 
 const COLON := DialogueParser.COLON
 const HASH := DialogueParser.HASH
-const EQUALS := "="
 
 const __NAME := "name"
+const __PATH := "path"
 const __TAG := "tag"
 const __ARG := "arg"
 const __SCOPE := "scope"
@@ -128,10 +128,10 @@ func _get_line_syntax_highlighting(line : int) -> Dictionary:
 
         if match_func != null:
             dict[match_func.get_start(__SCOPE)] = COL_scope
-            dict[match_func.get_start(__NAME)] = COL_func_name
-            dict[match_func.get_start(__NAME) - 1] = COL_symbol
-            dict[match_func.get_end(__NAME)] = COL_symbol
-            dict[match_func.get_end(__NAME) + 1] = COL_func_args
+            dict[match_func.get_start(__PATH)] = COL_func_name
+            dict[match_func.get_start(__PATH) - 1] = COL_symbol
+            dict[match_func.get_end(__PATH)] = COL_symbol
+            dict[match_func.get_end(__PATH) + 1] = COL_func_args
             dict[match_func.get_end() - 1] = COL_symbol
             dict[match_func.get_end()] = COL_base_content
         else:
@@ -142,10 +142,16 @@ func _get_line_syntax_highlighting(line : int) -> Dictionary:
             match_vars = DialogueParser._regex_vars_set.search(string)
 
         if match_vars != null:
-            dict[match_vars.get_start(__SCOPE)] = COL_scope
-            dict[match_vars.get_start(__NAME)] = COL_func_name
-            dict[match_vars.get_start(__NAME) - 1] = COL_symbol
-            dict[match_vars.get_end(__NAME)] = COL_symbol
+            if match_vars.get_string(1) == DialogueParser.DOLLAR:
+                dict[match_vars.get_start(1)] = COL_symbol
+                dict[match_vars.get_start(__PATH)] = COL_scope
+            else:
+                dict[match_vars.get_start(__SCOPE)] = COL_scope
+                dict[match_vars.get_start(__PATH) - 1] = COL_symbol
+
+                dict[match_vars.get_start(__PATH)] = COL_func_name
+
+            dict[match_vars.get_end(__PATH)] = COL_symbol
             dict[match_vars.get_start(__VAL)] = COL_func_args
             dict[match_vars.get_end()] = COL_base_content
         else:
