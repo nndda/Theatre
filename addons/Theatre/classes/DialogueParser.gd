@@ -1048,6 +1048,7 @@ static func update_tags_position(dlg : Dialogue, pos : int, vars : Dictionary) -
         ),
         true
     )
+    dlg._sets[pos][Key.CONTENT] = escape_brackets(dlg._sets[pos][Key.CONTENT])
 
 static func is_regex_full_string(regex_match : RegExMatch) -> bool:
     if regex_match == null:

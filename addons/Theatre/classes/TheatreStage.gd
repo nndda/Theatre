@@ -3,19 +3,19 @@
 class_name TheatreStage
 extends Node
 
-var is_editor : bool = Engine.is_editor_hint()
 
-## Run, control, and configure [Dialogue], and reference UIs and Nodes that will be used to display the [Dialogue].
-##
-## @tutorial(Theatre's tutorial page): https://nndda.github.io/Theatre/tutorials/
+## Run, control, and configure [Dialogue]. Set up and reference UIs and Nodes that will be used to display the [Dialogue].
 ##
 ## [TheatreStage] connects your [Dialogue] and the [DialogueLabel]. This is where you configure and control
 ## your [Dialogue], manage variables, and set up function calls from your written [Dialogue].
+##
+## @tutorial(Configuring TheatreStage): https://theatre.nnda.dev/class/theatrestage/configuration/
 
+var is_editor : bool = Engine.is_editor_hint()
 
 #region NOTE: Configurations & stored variables ----------------------------------------------------
 
-## Optional [Label] node that displays actors of the current line of [member current_dialogue].
+## Optional [Label] node that displays the actor/speaker's name of the current line of [member current_dialogue].
 @export var actor_label : Label = null:
     set = set_actor_label,
     get = get_actor_label
@@ -30,7 +30,7 @@ func set_actor_label(node : Label) -> void:
 func get_actor_label() -> Label:
     return actor_label
 
-## [DialogueLabel] node that displays the [Dialogue] line body. This is [b]required[/b] to be set before playing or running [Dialogue].
+## The [DialogueLabel] node that will be used to displays the [member current_dialogue]. This is [b]required[/b] to be set before running a dialogue.
 @export var dialogue_label : DialogueLabel = null:
     set = set_dialogue_label,
     get = get_dialogue_label
@@ -52,11 +52,16 @@ func get_dialogue_label() -> DialogueLabel:
 ## Allow skipping [Dialogue] or the [member dialogue_label] text rendering. See [method progress].
 @export var allow_skip := true
 
-## Allow cancelling/stopping [Dialogue] with [method cancel] or [method reset].
+## Allow cancelling/stopping [Dialogue] using [method cancel] or [method reset].
 @export var allow_cancel := true
 
 ## Allow calling functions defined in the written [Dialogue].
-@export var allow_func := true
+@export var allow_func := true:
+    set(v):
+        allow_func = v
+
+        if scope_handler != null:
+            scope_handler.allow_func = v
 
 #@export var auto := false
 
@@ -87,14 +92,14 @@ static var speed_scale_global : float = 1.0
 @export_storage var current_dialogue : Dialogue:
     set(new_dlg):
         current_dialogue = new_dlg
+        scope_handler.current_dialogue = new_dlg
+
         if !is_playing() and !is_editor:
             if new_dlg != null:
                 for n in current_dialogue._sets.size():
                     DialogueParser.update_tags_position(
                         current_dialogue, n, variables
                     )
-
-@export_storage var _scope : Dictionary[String, WeakRef] = {}
 
 #endregion
 
@@ -118,10 +123,10 @@ func _set_variables(new_var : Dictionary[String, Variant]) -> void:
 
 func _update_variables_dialogue() -> void:
     if current_dialogue != null:
-        var stepn := clampi(_step, 0, current_dialogue._sets.size())
-        # NOTE, BUG: NOT COMPATIBLE WHEN CHANGING VARIABLE REAL-TIME
         DialogueParser.update_tags_position(
-            current_dialogue, stepn, variables
+            current_dialogue,
+            clampi(_step, 0, current_dialogue._sets.size()),
+            variables,
         )
 
         if is_playing():
@@ -182,170 +187,39 @@ func clear_variables() -> void:
 #endregion
 
 #region NOTE: Function calls related ---------------------------------------------------------------
+const ScopeHandler := preload("res://addons/Theatre/classes/ScopeHandler.gd")
+var scope_handler : ScopeHandler
+
 ## Node-based scopes that are in the scene tree.
 @export var scope_nodes : Dictionary[String, Node] = {}
 
-static var _scope_built_in : Dictionary[String, WeakRef] = {}
-static var _scope_built_in_initialized := false
-var _scope_all : Dictionary[String, WeakRef] = {}
-
-func _update_scope() -> void:
-    _scope_all = _scope.merged(_scope_built_in, true)
-
 ## Return user-defined scopes that will be used in the written [Dialogue].
 func get_scopes() -> Dictionary:
-    return _scope
+    return scope_handler.get_scopes()
 
-## Add function scope used in the written [Dialogue].
+## Add a scope used in the written dialogue.
 ## If [param object] is a [Node], it will be removed automatically when its freed.
 ## [br][br]
 ## See also [method remove_scope], and [method clear_scope].
 func add_scope(id : String, object : Object) -> void:
-    _scope[id] = weakref(object)
-    # NOTE: Whenever this got fired, the scope were always already freed :/
-    #if object is Node:
-        #var cb : Callable = remove_scope.bind(id)
-        #if not object.tree_exited.is_connected(cb):
-            #object.tree_exited.connect(cb)
-    _update_scope()
+    scope_handler.add_scope(id, object)
 
 ## Remove function scope used in the written [Dialogue].
 ## [br][br]
 ## See also [method add_scope], and [method clear_scope].
 func remove_scope(id : String) -> void:
-    if !_scope.has(id):
-        TheatreDebug.log_err(
-            "Cannot remove scope: scope '%s' doesn't exists" % id
-        )
-    else:
-        _scope.erase(id)
-    _update_scope()
+    scope_handler.remove_scope(id)
 
 ## Remove all function scopes.
 ## [br][br]
 ## See also [method add_scope], and [method remove_scope].
 func clear_scopes() -> void:
-    _scope.clear()
-    _update_scope()
-
+    scope_handler.clear_scopes()
 
 ## Custom [Callable] that have the called function data as the parameter. Return[code]true[/code] to execute the function, and [code]false[/code] to skip the function call..
 var func_call_filter : Callable:
     set(c):
-        var args_count : int = c.get_argument_count()
-        if args_count != 1:
-            TheatreDebug.log_err(
-                "'func_call_filter' callable argument != 1 (%d)" % args_count
-            )
-        else:
-            func_call_filter = c
-
-
-var _expression_args := Expression.new()
-func _call_function(f : Dictionary) -> void:
-    if !allow_func:
-        return
-
-    #region NOTE: User-defined function call filter
-    if func_call_filter.is_valid():
-        var func_call_allowed : Variant = func_call_filter.call(f)
-        var func_call_filter_return : int = typeof(func_call_allowed)
-
-        if func_call_filter_return != TYPE_BOOL:
-            TheatreDebug.log_err(
-                "'func_call_filter' callable returns '%s', instead of 'bool" % type_string(func_call_filter_return)
-            )
-        else:
-            if not func_call_allowed:
-                function_called.emit(f, false)
-                return
-    #endregion
-
-    var func_scope : StringName = f[DialogueParser.Key.SCOPE]
-    var func_path : NodePath = f[DialogueParser.Key.PROPERTY_PATH]
-    var func_vars : Array = f[DialogueParser.Key.VARS]
-
-    #region general error checks
-    if !_scope_all.has(func_scope):
-        printerr(
-            "Cannot call dialogue function: scope '%s' doesn't exists.\n  dialogue: %s:%d" % [
-                func_scope, current_dialogue._source_path, f[DialogueParser.Key.LINE_NUM],
-            ],
-        )
-        return
-
-    var scope_obj : Object = _scope_all[func_scope].get_ref()
-
-    if scope_obj == null:
-        printerr(
-            "Cannot call dialogue function: object of the scope '%s' is null.\n  dialogue: %s:%d" % [
-                func_scope, current_dialogue._source_path, f[DialogueParser.Key.LINE_NUM],
-            ],
-        )
-        return
-
-    var scope_obj_path := scope_obj.get_indexed(func_path)
-
-    if scope_obj_path == null:
-        printerr(
-            "Cannot call dialogue function: function '%s.%s()' doesn't exists.\n  dialogue: %s:%d" % [
-                func_scope, str(func_path).replace(DialogueParser.COLON, DialogueParser.DOT), current_dialogue._source_path, f[DialogueParser.Key.LINE_NUM],
-            ],
-        )
-        return
-    #endregion
-
-    if f[DialogueParser.Key.STANDALONE]:
-        scope_obj_path.callv(f[DialogueParser.Key.ARGS])
-        function_called.emit(f, true)
-        return
-
-    if func_vars.any(_func_args_inp_check_scope.bind(_scope_all.keys())):
-        printerr(
-            "Cannot call dialogue function: argument scope(s) used: %s doesn't exists.\n  dialogue: %s:%d" % [
-                func_vars, current_dialogue._source_path, f[DialogueParser.Key.LINE_NUM],
-            ],
-        )
-        return
-
-    var expr_err := _expression_args.parse(f[DialogueParser.Key.ARGS], func_vars as PackedStringArray)
-    var expr_args = _expression_args.execute(
-        (func_vars as Array[String]).map(_func_args_inp_get),
-    scope_obj)
-
-    if _expression_args.has_execute_failed() or expr_err != OK:
-        printerr(
-            "Cannot call dialogue function: Failed parsing function call arguments: %s.\n  dialogue: %s:%d" % [
-                _expression_args.get_error_text(), current_dialogue._source_path, f[DialogueParser.Key.LINE_NUM],
-            ],
-        )
-        return
-
-    scope_obj_path.callv(expr_args)
-    function_called.emit(f, true)
-
-func _func_args_inp_get(arg_str : String) -> Object:
-    if not _scope_all.has(arg_str):
-        TheatreDebug.log_err(
-            "Error @%s:%d - scope '%s' doesn't exists" % [
-                current_dialogue._source_path, _current_dialogue_set[DialogueParser.Key.LINE_NUM],
-                arg_str,
-            ]
-        )
-        return null
-    return _scope_all[arg_str].get_ref()
-
-func _func_args_inp_check_scope(arg_str : String, arg_arr : Array) -> bool:
-    return !arg_arr.has(arg_str)
-
-func _execute_functions() -> void:
-    if allow_func:
-        for n in _current_dialogue_set[DialogueParser.Key.FUNC].size():
-            # do not call positional functions
-            if not n in _current_dialogue_set[DialogueParser.Key.FUNC_IDX]:
-                _call_function(_current_dialogue_set[DialogueParser.Key.FUNC][n])
-
-#endregion
+        scope_handler.func_call_filter = c
 
 #region NOTE: Signals ------------------------------------------------------------------------------
 ## Emitted when the [Dialogue] started.
@@ -384,14 +258,14 @@ signal function_called(func_data : Dictionary, executed : bool)
 func get_line() -> int:
     return _step
 
-## Return the current [Dialogue] line data. Will return empty [Dictionary], if [member current_dialogue] is
-## [code]null[/code], or if [TheatreStage] is not currently running/playing any [Dialogue].
+## Return the current [Dialogue] line data. Returns empty [Dictionary], if [member current_dialogue] is
+## [code]null[/code], or if [TheatreStage] is not currently running any [Dialogue].
 func get_current_line() -> Dictionary:
     if current_dialogue != null and _step >= 0:
         return current_dialogue._sets[_step]
     return {}
 
-## Returns [code]true[/code] if [TheatreStage] is currently playing/running a [Dialogue].
+## Returns [code]true[/code] if [TheatreStage] is currently running a [Dialogue].
 func is_playing() -> bool:
     return _step >= 0
 
@@ -416,7 +290,7 @@ func get_invalid_functions() -> Dictionary:
 
     var output : Dictionary[String, Variant] = {}
     var used_funcs := current_dialogue.get_function_calls()
-    var curr_scope := _scope.keys()
+    var curr_scope := scope_handler._scope.keys()
 
     for n in used_funcs:
         if not n in curr_scope:
@@ -427,6 +301,8 @@ func get_invalid_functions() -> Dictionary:
 
         else:
             for m in used_funcs[n]:
+                var _scope : Dictionary = scope_handler._scope
+
                 if _scope[n] != null and _scope[n] is WeakRef:
                     if _scope[n].get_ref() != null:
                         if !(_scope[n].get_ref() as Object).has_method(used_funcs[n][m][DialogueParser.Key.NAME]):
@@ -443,7 +319,10 @@ func get_invalid_functions() -> Dictionary:
 
 #region NOTE: Core & Dialogue controls -------------------------------------------------------------
 var _current_dialogue_length : int
-var _current_dialogue_set : Dictionary
+var _current_dialogue_set : Dictionary:
+    set(v):
+        _current_dialogue_set = v
+        scope_handler._current_dialogue_set = v
 var _dialogue_full_string : String = ""
 
 # Current progress of the Dialogue.
@@ -470,6 +349,9 @@ func start(dialogue : Dialogue = null, to_section : Variant = 0) -> void:
         #printerr("%s - Possible syntax error, please review the written dialogue." % current_dialogue._source_path)
         #return
 
+    # TODO: maybe have a 'verbose' flag in the project setting,
+    # and then print this conditionally based on that flag?
+    # So that these won't flood the user's console.
     print("Starting Dialogue: %s..." % current_dialogue.get_source_path())
     _current_dialogue_length = current_dialogue._sets.size()
 
@@ -595,7 +477,7 @@ func _progress_forward() -> void:
     _step += 1
     _current_dialogue_set = current_dialogue._sets[_step]
 
-    var dyn_vars_defs : Dictionary[String, Variant] = _dyn_var_get(
+    var dyn_vars_defs : Dictionary[String, String] = scope_handler._dyn_var_get(
         _current_dialogue_set[DialogueParser.Key.VARS_SCOPE],
         _current_dialogue_set[DialogueParser.Key.VARS_EXPR],
     )
@@ -609,46 +491,13 @@ func _progress_forward() -> void:
 
     _dialogue_full_string = _current_dialogue_set[DialogueParser.Key.CONTENT]
 
-    _execute_functions()
+    scope_handler._execute_functions()
     _update_display()
 
     dialogue_label.start_render()
     progressed.emit()
     progressed_at.emit(_step, _current_dialogue_set)
  
-func _dyn_var_get(
-    vars_scoped: Array,
-    vars_expr: Array,
-) -> Dictionary[String, Variant]:
-    var dyn_vars_defs : Dictionary[String, Variant] = {}
-
-    for scoped_vars : Array in vars_scoped:
-        if _scope_all.has(scoped_vars[1]):
-            var scope_obj : Object = _scope_all[scoped_vars[1]].get_ref()
-
-            if scope_obj.get_indexed(scoped_vars[2]) != null:
-                dyn_vars_defs[scoped_vars[0]] = scope_obj.get_indexed(scoped_vars[2])
-
-    for expr_vars : Dictionary in vars_expr:
-        var expr_err := _expression_args.parse(expr_vars[DialogueParser.Key.CONTENT], expr_vars[DialogueParser.Key.ARGS])
-        var expr_res = _expression_args.execute(
-            (expr_vars[DialogueParser.Key.ARGS] as Array[String]).map(_func_args_inp_get),
-            null,
-            false,
-        )
-
-        if _expression_args.has_execute_failed() or expr_err != OK:
-            TheatreDebug.log_err(
-                "Failed executing dynamic value @%s:%d - %s" % [
-                    current_dialogue._source_path, _current_dialogue_set[DialogueParser.Key.LINE_NUM],
-                    _expression_args.get_error_text(),
-                ]
-            )
-
-        dyn_vars_defs[expr_vars[DialogueParser.Key.NAME]] = "" if expr_res == null else expr_res
-
-    return dyn_vars_defs
-
 ## Jump and progress to a specific [Dialogue] line.
 ## Return error if [param line] is greater than [Dialogue] length.
 ## Will wrap if [param line] is negative.
@@ -741,7 +590,7 @@ func _update_display() -> void:
         actor_label.text = DialogueParser.escape_brackets(
             _current_dialogue_set[DialogueParser.Key.ACTOR].format(
                 variables.merged(
-                    _dyn_var_get(
+                    scope_handler._dyn_var_get(
                         _current_dialogue_set[DialogueParser.Key.ACTOR_DYN_VAR],
                         _current_dialogue_set[DialogueParser.Key.ACTOR_DYN_EXPR],
                     )
@@ -749,9 +598,7 @@ func _update_display() -> void:
             )
         )
     if dialogue_label != null:
-        dialogue_label.text = DialogueParser.escape_brackets(
-            _dialogue_full_string.format(variables)
-        )
+        dialogue_label.text = _dialogue_full_string
 
 # TODO:
 #func switch_dialogue(dialogue : Dialogue, current_line : bool = true) -> void:
@@ -761,29 +608,12 @@ func _update_display() -> void:
 
 func _enter_tree() -> void:
     if !is_editor:
-        if !_scope_built_in_initialized:
-            var tree := get_tree()
-
-            for singleton in Engine.get_singleton_list():
-                _scope_built_in[singleton] = weakref(Engine.get_singleton(singleton))
-
-            for autoload: Node in tree.root.get_children():
-                if autoload != tree.current_scene:
-                    _scope_built_in[String(autoload.name)] = weakref(autoload)
-
-        _update_scope()
-        #add_scope("TheatreStage", self)
+        scope_handler = ScopeHandler.new(self)
 
         if dialogue_label != null:
             dialogue_label._current_stage = self
 
         _update_variables_dialogue()
-
-        if !scope_nodes.is_empty():
-            await get_tree().current_scene.ready
-            for id: String in scope_nodes.keys():
-                if scope_nodes[id] != null:
-                    add_scope(id, scope_nodes[id])
 
 func _exit_tree() -> void:
     if !is_editor:
@@ -797,7 +627,7 @@ func _exit_tree() -> void:
 
         scope_nodes.clear()
         clear_variables()
-        clear_scopes()
+        scope_handler.clear_scopes()
 
 func _get_configuration_warnings() -> PackedStringArray:
     var warnings : PackedStringArray = []
