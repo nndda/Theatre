@@ -27,3 +27,5 @@ jobs:
           | jq -r .content \
           | base64 -d \
           | bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
