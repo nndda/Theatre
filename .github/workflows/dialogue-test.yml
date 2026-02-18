@@ -33,6 +33,7 @@ defaults:
 jobs:
   test:
     strategy:
+      fail-fast: false
       matrix:
         os:
           - ubuntu-latest
@@ -40,6 +41,7 @@ jobs:
         godot-version: 
           - 4.4
           - 4.5
+          - 4.6
 
     runs-on: ${{ matrix.os }}
 
@@ -47,45 +49,47 @@ jobs:
       GODOT_VERSION: ${{ matrix.godot-version }}-stable
 
     steps:
-      - uses: actions/checkout@v6
-
-      - name: Set Godot binary for Linux
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: echo "GODOT_BINARY=Godot_v${{ matrix.godot-version }}-stable_linux.x86_64" >> $GITHUB_ENV
-
-      - name: Set Godot binary for Windows
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: echo "GODOT_BINARY=Godot_v${{ matrix.godot-version }}-stable_win64.exe" >> $GITHUB_ENV
-
       - name: Cache Godot binary
         id: godotbin-cache
         uses: actions/cache@v5
         with:
-          path: ./${{ env.GODOT_BINARY }}
-          key: ${{ env.GODOT_BINARY }}
+          path: ${{ runner.temp }}/godot/
+          key: godot-${{ matrix.os }}-${{ matrix.godot-version }}
+
+      - name: Set up Godot path
+        run: |
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            echo "GODOT=$RUNNER_TEMP/godot/godot.exe" >> $GITHUB_ENV
+          else
+            echo "GODOT=$RUNNER_TEMP/godot/godot" >> $GITHUB_ENV
+          fi
 
       - name: Download Godot if not cached
         if: steps.godotbin-cache.outputs.cache-hit != 'true'
         run: |
-          curl -L -o ${{ env.GODOT_BINARY }}.zip https://github.com/godotengine/godot/releases/download/${{ env.GODOT_VERSION }}/${{ env.GODOT_BINARY }}.zip
-          unzip -o ./${{ env.GODOT_BINARY }}.zip
+          GODOT_BINARY=Godot_v${{ matrix.godot-version }}-stable_${{
+            matrix.os == 'ubuntu-latest' && 'linux.x86_64' || 'win64.exe'
+          }}
+
+          curl -sL -o godot.zip \
+            https://github.com/godotengine/godot/releases/download/$GODOT_VERSION/$GODOT_BINARY.zip
+          unzip -o ./godot.zip
+
+          mkdir -p "$RUNNER_TEMP/godot/"
+
+          mv "$GODOT_BINARY" "$GODOT"
+
+      - name: Checkout the repository
+        uses: actions/checkout@v6
 
       - name: Import project assets
         run: |
-          ./${{ env.GODOT_BINARY }} \
-            --headless \
-            --import
+          $GODOT --headless --import
 
       - name: Run parser test
         run: |
-          ./${{ env.GODOT_BINARY }} \
-            --no-header \
-            --headless \
-            --script ./tests/dialogue_test_ci.gd
+          $GODOT --no-header --headless --script ./tests/dialogue_test_ci.gd
 
       - name: Run parser benchmark test
         run: |
-          ./${{ env.GODOT_BINARY }} \
-            --no-header \
-            --headless \
-            --script ./tests/benchmark_ci.gd
+          $GODOT --no-header --headless --script ./tests/benchmark_ci.gd
