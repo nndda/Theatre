@@ -8,7 +8,7 @@ on:
 jobs:
   clean:
     env:
-      WORKFLOW_AGE: 0 # (0 days) in seconds
+      WORKFLOW_AGE: 604800 # (7 days) in seconds
       REPO: ${{ github.repository }}
 
     runs-on: ubuntu-latest
