@@ -11,7 +11,7 @@ permissions:
 jobs:
   clean:
     env:
-      WORKFLOW_AGE: 604800 # (7 days) in seconds
+      WORKFLOW_AGE: 0 # (0 days) in seconds
 
     runs-on: ubuntu-latest
 
@@ -24,5 +24,5 @@ jobs:
             -H "X-GitHub-Api-Version: 2022-11-28" \
             "https://api.github.com/repos/nndda/ci/contents/sh/gh/purge-workflow.sh?ref=main" \
           | jq -r .content \
-          | base64 -d
+          | base64 -d \
           | bash
