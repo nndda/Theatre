@@ -9,6 +9,7 @@ jobs:
   clean:
     env:
       WORKFLOW_AGE: 0 # (0 days) in seconds
+      REPO: ${{ github.repository }}
 
     runs-on: ubuntu-latest
 
@@ -26,5 +27,3 @@ jobs:
           | jq -r .content \
           | base64 -d \
           | bash
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
