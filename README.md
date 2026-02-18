@@ -64,7 +64,7 @@ func _input(event):
 <br>
 
 # Installation
-Run the command below in your Godot project directory. Or [download and install](https://theatre.nnda.dev/installation/) it manually.
+Run the command below in your Godot project directory. Or download and install it via [Godot Asset Library](https://theatre.nnda.dev/installation/#via-godot-asset-library).
 ```sh
 curl -L 'https://nnda.dev/theatre/latest' | tar zxv --strip-components=1
 ```
