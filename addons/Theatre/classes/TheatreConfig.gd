@@ -3,6 +3,12 @@ extends RefCounted
 const GENERAL_PRINT_HEADER := "theatre/general/print_header"
 const GENERAL_AUTO_UPDATE := "theatre/general/updates/check_updates_automatically"
 const PARSER_MULTI_THREADS := "theatre/parser/use_multiple_threads"
+
+const PARSER_TAGSBB_ALIASES := "theatre/parser/bbcode_tags/aliases"
+const PARSER_TAGSBB_ALIASES_DEFAULT : Dictionary = {
+    "bi": ["b", "i"],
+}
+
 const PARSER_TAGS_DEFAULT_DELAY := "theatre/parser/dialogue_tags/delay_default"
 const PARSER_TAGS_DEFAULT_SPEED := "theatre/parser/dialogue_tags/speed_default"
 
@@ -16,6 +22,8 @@ func _init(update_cb_arg : Array[Callable]) -> void:
         [ GENERAL_AUTO_UPDATE, TYPE_BOOL, true, PROPERTY_HINT_NONE, "", ],
 
         [ PARSER_MULTI_THREADS, TYPE_BOOL, false, PROPERTY_HINT_NONE, "", ],
+
+        [ PARSER_TAGSBB_ALIASES, TYPE_DICTIONARY, PARSER_TAGSBB_ALIASES_DEFAULT, PROPERTY_HINT_DICTIONARY_TYPE, "String;PackedStringArray", ],
 
         [ PARSER_TAGS_DEFAULT_DELAY, TYPE_FLOAT, .35, PROPERTY_HINT_NONE, "", ],
         [ PARSER_TAGS_DEFAULT_SPEED, TYPE_FLOAT, 1., PROPERTY_HINT_NONE, "", ],
@@ -41,6 +49,7 @@ func remove_configs() -> void:
         GENERAL_PRINT_HEADER,
         GENERAL_AUTO_UPDATE,
         PARSER_MULTI_THREADS,
+        PARSER_TAGSBB_ALIASES,
         PARSER_TAGS_DEFAULT_DELAY,
         PARSER_TAGS_DEFAULT_SPEED,
     ]:
@@ -64,6 +73,13 @@ func _project_settings_changed() -> void:
 static func _update_parser_config() -> void:
     DialogueParser._is_multi_threaded =\
         ProjectSettings.get_setting(PARSER_MULTI_THREADS, false)
+
+    DialogueParser._tagbb_aliases_compile(
+        PARSER_TAGSBB_ALIASES_DEFAULT.merged(
+            ProjectSettings.get_setting(PARSER_TAGSBB_ALIASES, { }),
+            true,
+        )
+    )
 
     DialogueParser._tag_default_delay =\
         ProjectSettings.get_setting(PARSER_TAGS_DEFAULT_DELAY, .35)

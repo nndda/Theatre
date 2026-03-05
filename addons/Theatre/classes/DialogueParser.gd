@@ -254,6 +254,36 @@ const BB_ALIASES_TAGS : PackedStringArray = [
 
 static var _tag_default_delay : float = .35
 static var _tag_default_speed : float = 1.
+
+static var _tagbb_aliases_compiled : Dictionary[String, String] = { }
+static func _tagbb_aliases_compile(aliases_dict: Dictionary) -> void:
+    var re : RegEx = RegEx.create_from_string(r"(\w+)(=|\s)*")
+    _tagbb_aliases_compiled.clear()
+
+    for tag_alias in aliases_dict:
+        if tag_alias.is_empty():
+            continue
+        elif aliases_dict[tag_alias].is_empty():
+            continue
+
+        var tags_arr: PackedStringArray = []
+        for n in aliases_dict[tag_alias]:
+            if n is String:
+                if not n.is_empty():
+                    tags_arr.append(n)
+
+        # Opening tag
+        _tagbb_aliases_compiled[SBL + tag_alias + SBR] = SBL + (SBR + SBL).join(tags_arr) + SBR
+
+        # Closing tag
+        var tags_cl : String = EMPTY
+        tags_arr.reverse()
+
+        for tag: String in tags_arr:
+            #                                                 ???????????????????
+            tags_cl += SBL + BSL + re.search(tag).get_string().trim_suffix(EQUAL) + SBR
+
+        _tagbb_aliases_compiled[SBL + BSL + tag_alias + SBR] = tags_cl
 #endregion
 
 const NEWLINE := "\n"
@@ -268,6 +298,7 @@ const EQUAL := "="
 
 const SBL := "["
 const SBR := "]"
+const BSL := "/"
 
 const INDENT_2 := "  "
 const INDENT_4 := "    "
@@ -344,6 +375,7 @@ func _init(src : String = EMPTY, src_path : String = EMPTY):
     var regex_func_match : RegExMatch
     var regex_vars_match : RegExMatch
     var regex_img_match : RegExMatch
+    var regex_bb_matches : Array[RegExMatch] = []
 
     var ln_num : int
     var n : String
@@ -443,11 +475,14 @@ func _init(src : String = EMPTY, src_path : String = EMPTY):
             regex_func_match = _regex_func_call.search(current_processed_string)
             regex_vars_match = null
             regex_img_match = null
+            regex_bb_matches.clear()
 
             if regex_func_match == null:
                 regex_vars_match = _regex_vars_set.search(current_processed_string)
             if regex_vars_match == null:
                 regex_img_match = _regex_dlg_tags_img.search(current_processed_string)
+            if regex_img_match == null:
+                regex_bb_matches = _regex_bbcode_tags.search_all(current_processed_string)
 
             #region NOTE: Function calls -----------------------------------------------------------
             if regex_func_match != null:
@@ -620,15 +655,27 @@ func _init(src : String = EMPTY, src_path : String = EMPTY):
             #endregion
 
             #region NOTE: Newline BBCode tags ------------------------------------------------------
-            elif is_regex_full_string(_regex_bbcode_tags.search(current_processed_string)):
-                output[body_pos][Key.CONTENT_RAW] += current_processed_string
-                output[body_pos][Key.CONTENT] += current_processed_string
+            elif not regex_bb_matches.is_empty() and is_regex_full_string(regex_bb_matches[0]):
+                    var bb_tag : String = SBL + regex_bb_matches[0].get_string(__TAG) + SBR
+                    if _tagbb_aliases_compiled.has(bb_tag):
+                        current_processed_string = current_processed_string.replace(bb_tag, _tagbb_aliases_compiled[bb_tag])
+
+                        #regex_img_match = _regex_dlg_tags_img.search(current_processed_string)
+                        #if regex_img_match != null: parse_img_tag(regex_img_match)
+
+                    output[body_pos][Key.CONTENT_RAW] += current_processed_string
+                    output[body_pos][Key.CONTENT] += current_processed_string
             #endregion
 
             # Dialogue text body
             else:
                 # Bake built-in variables
                 current_processed_string = current_processed_string.format(VARS_BUILT_IN)
+
+                for bb_re : RegExMatch in regex_bb_matches:
+                    var bb_tag : String = SBL + bb_re.get_string(__TAG) + SBR
+                    if _tagbb_aliases_compiled.has(bb_tag):
+                        current_processed_string = current_processed_string.replace(bb_re.get_string(0), _tagbb_aliases_compiled[bb_tag])
 
                 var parsed_expr_tags := parse_expr_tags(current_processed_string, ln_num)
                 if not parsed_expr_tags.is_empty():
