@@ -47,7 +47,6 @@ renderer/rendering_method="mobile"
 [theatre]
 
 version="0.12.2"
-parser/bbcode_tags/aliases=Dictionary[String, PackedStringArray]({
-"bi": ["b", "i"],
+parser/bbcode/aliases=Dictionary[String, PackedStringArray]({
 "title": PackedStringArray("f=res://fonts/gabriela.tres", "wavy", "u")
 })
