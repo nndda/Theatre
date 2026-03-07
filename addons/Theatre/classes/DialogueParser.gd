@@ -256,7 +256,7 @@ static var _tag_default_delay : float = .35
 static var _tag_default_speed : float = 1.
 
 static var _tagbb_aliases_compiled : Dictionary[String, String] = { }
-static func _tagbb_aliases_compile(aliases_dict: Dictionary) -> void:
+static func _tagbb_aliases_compile(aliases_dict: Dictionary[String, PackedStringArray]) -> void:
     var re : RegEx = RegEx.create_from_string(r"(\w+)(=|\s)*")
     _tagbb_aliases_compiled.clear()
 

@@ -4,9 +4,9 @@ const GENERAL_PRINT_HEADER := "theatre/general/print_header"
 const GENERAL_AUTO_UPDATE := "theatre/general/updates/check_updates_automatically"
 const PARSER_MULTI_THREADS := "theatre/parser/use_multiple_threads"
 
-const PARSER_TAGSBB_ALIASES := "theatre/parser/bbcode_tags/aliases"
-const PARSER_TAGSBB_ALIASES_DEFAULT : Dictionary = {
-    "bi": ["b", "i"],
+const PARSER_TAGSBB_ALIASES := "theatre/parser/bbcode/aliases"
+const PARSER_TAGSBB_ALIASES_DEFAULT : Dictionary[String, PackedStringArray] = {
+    #"bi": ["b", "i"], # BUG: typing issue with Array <-> PackedStringArray
 }
 
 const PARSER_TAGS_DEFAULT_DELAY := "theatre/parser/dialogue_tags/delay_default"
@@ -23,7 +23,7 @@ func _init(update_cb_arg : Array[Callable]) -> void:
 
         [ PARSER_MULTI_THREADS, TYPE_BOOL, false, PROPERTY_HINT_NONE, "", ],
 
-        [ PARSER_TAGSBB_ALIASES, TYPE_DICTIONARY, PARSER_TAGSBB_ALIASES_DEFAULT, PROPERTY_HINT_DICTIONARY_TYPE, "String;PackedStringArray", ],
+        [ PARSER_TAGSBB_ALIASES, TYPE_DICTIONARY, PARSER_TAGSBB_ALIASES_DEFAULT, PROPERTY_HINT_DICTIONARY_TYPE, "%d:;%d:" % [TYPE_STRING, TYPE_PACKED_STRING_ARRAY], ],
 
         [ PARSER_TAGS_DEFAULT_DELAY, TYPE_FLOAT, .35, PROPERTY_HINT_NONE, "", ],
         [ PARSER_TAGS_DEFAULT_SPEED, TYPE_FLOAT, 1., PROPERTY_HINT_NONE, "", ],
@@ -76,7 +76,7 @@ static func _update_parser_config() -> void:
 
     DialogueParser._tagbb_aliases_compile(
         PARSER_TAGSBB_ALIASES_DEFAULT.merged(
-            ProjectSettings.get_setting(PARSER_TAGSBB_ALIASES, { }),
+            ProjectSettings.get_setting(PARSER_TAGSBB_ALIASES, { } as Dictionary[String, PackedStringArray]),
             true,
         )
     )
