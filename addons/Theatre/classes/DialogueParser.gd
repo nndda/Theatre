@@ -8,7 +8,7 @@ var sections : Dictionary[String, int] = {}
 # Source path from Dialouge._source_path for debugging purposes.
 var _source_path : String
 
-const TheatreConfig = preload("res://addons/Theatre/classes/TheatreConfig.gd")
+const TheatrePluginConfig = preload("res://addons/Theatre/classes/TheatrePluginConfig.gd")
 
 #region RegExes
 # Match Dialogue tags: {delay=1.0} {d = 1.0} {foo} {bar} {foo.bar}
@@ -359,8 +359,8 @@ func _init(src : String = EMPTY, src_path : String = EMPTY):
         #_initialize_regex()
         #_regex_initialized = true
 
-    if not TheatreConfig.config_initialized:
-        TheatreConfig._update_parser_config()
+    if not TheatrePluginConfig.config_initialized:
+        TheatrePluginConfig._update_parser_config()
 
     if !src_path.is_empty():
         _source_path = src_path

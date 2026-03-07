@@ -5,8 +5,8 @@ class_name TheatrePlugin
 
 var http_update_req : HTTPRequest
 
-const TheatreConfig = preload("res://addons/Theatre/classes/TheatreConfig.gd")
-var theatre_config : TheatreConfig
+const TheatrePluginConfig = preload("res://addons/Theatre/classes/TheatrePluginConfig.gd")
+var theatre_config : TheatrePluginConfig
 
 const DialogueImporter = preload("res://addons/Theatre/classes/DialogueImporter.gd")
 var dialogue_importer : DialogueImporter
@@ -22,7 +22,7 @@ var plugin_submenu : PopupMenu = preload(
 ).instantiate()
 
 func _enter_tree() -> void:
-    if ProjectSettings.get_setting(TheatreConfig.GENERAL_PRINT_HEADER, true):
+    if ProjectSettings.get_setting(TheatrePluginConfig.GENERAL_PRINT_HEADER, true):
         print("🎭 Theatre v%s by nnda\nTheatre: initializing plugin..." % get_plugin_version())
 
     plugin_submenu.visible = false
@@ -31,7 +31,7 @@ func _enter_tree() -> void:
     dialogue_syntax_highlighter = DialogueSyntaxHighlighter.new()
 
     # Initialize Theatre config
-    theatre_config = TheatreConfig.new([
+    theatre_config = TheatrePluginConfig.new([
         DialogueSyntaxHighlighter.initialize_colors
     ])
 
@@ -72,7 +72,7 @@ func _enter_tree() -> void:
 
 func _ready() -> void:
     if DisplayServer.get_name() != "headless":
-        if ProjectSettings.get_setting(TheatreConfig.GENERAL_AUTO_UPDATE, true):
+        if ProjectSettings.get_setting(TheatrePluginConfig.GENERAL_AUTO_UPDATE, true):
             update_check()
 
     const THEATRE_VER_LOG : String = "theatre/version"
@@ -94,11 +94,11 @@ func _ready() -> void:
 
     ProjectSettings.set_as_internal(THEATRE_VER_LOG, true)
 
-    if ProjectSettings.get_setting(TheatreConfig.GENERAL_PRINT_HEADER, true):
+    if ProjectSettings.get_setting(TheatrePluginConfig.GENERAL_PRINT_HEADER, true):
         print("Theatre: plugin ready")
 
 func _exit_tree() -> void:
-    var allow_header : bool = ProjectSettings.get_setting(TheatreConfig.GENERAL_PRINT_HEADER, true)
+    var allow_header : bool = ProjectSettings.get_setting(TheatrePluginConfig.GENERAL_PRINT_HEADER, true)
     if allow_header:
         print("🎭 Theatre: disabling plugin...")
 
