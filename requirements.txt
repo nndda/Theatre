@@ -24,7 +24,7 @@ platformdirs==4.9.4
 Pygments==2.19.2
 pymdown-extensions==10.21
 python-dateutil==2.9.0.post0
-pytz==2025.2
+pytz==2026.1.post1
 PyYAML==6.0.3
 pyyaml_env_tag==1.1
 regex==2026.3.32
