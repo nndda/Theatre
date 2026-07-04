@@ -503,11 +503,12 @@ func _init(src : String = EMPTY, src_path : String = EMPTY):
                 func_dict[Key.LINE_NUM] = ln_num
 
                 # Parse parameter arguments
-                var args := Expression.new()
-                var args_err := args.parse(SBL + args_raw + SBR)
                 var var_matches := _regex_func_vars.search_all(args_raw)
 
                 if var_matches.is_empty():
+                    var args := Expression.new()
+                    var args_err := args.parse(SBL + args_raw + SBR)
+
                     func_dict[Key.ARGS] = args.execute()
 
                     if args.has_execute_failed():
