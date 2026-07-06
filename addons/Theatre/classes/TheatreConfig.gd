@@ -23,7 +23,7 @@ var _dict: Dictionary
 func rec_dict(cfg: Dictionary) -> void:
     for n in cfg:
         if cfg[n] is Dictionary:
-            if n == bbcode_aliases:
+            if n is String and n == bbcode_aliases:
                 var bb_dict: Dictionary[String, PackedStringArray] = {}
                 for bb in cfg[n]:
                     bb_dict[bb] = PackedStringArray(cfg[n][bb])
