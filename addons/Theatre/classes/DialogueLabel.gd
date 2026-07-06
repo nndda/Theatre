@@ -372,6 +372,9 @@ func _characters_ticker_timeout() -> void: #NOTE: HOT PATH
     # Positional function tag
     if _func_count < 0:
         if _func_queue[_func_count] == visible_characters:
+            # TODO, NOTE: allow_func is already handled in _scope_handler._call_function.
+            # But, I'm kinda split in-between having it handled there (_call_function), or here :/
+            # At least with this flag here, it'll also avoid this for-loop below, indexing cost, and the function call cost
             if _scope_handler.allow_func:
                 for i : int in _current_dialogue_set\
                     [DialogueParser.Key.FUNC_POS]\

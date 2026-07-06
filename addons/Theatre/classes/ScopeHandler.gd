@@ -83,7 +83,7 @@ func _initialize_builtin_scopes() -> void:
         _update_scope()
 
 func _update_scope() -> void:
-    _scope_all = _scope.merged(_scope_built_in, true)
+    #_scope_all = _scope.merged(_scope_built_in, true)
     # TODO, NOTE: this seems... not very performant... how about maybe something like:
     _scope_all.clear()
     _scope_all.merge(_scope, true)

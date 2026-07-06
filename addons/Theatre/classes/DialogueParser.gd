@@ -260,7 +260,7 @@ const BB_ALIASES_TAGS : PackedStringArray = [
 static var _tag_default_delay : float = .35
 static var _tag_default_speed : float = 1.
 
-static var _tagbb_aliases_compiled : Dictionary[String, String] = { }
+static var _tagbb_aliases_compiled: Dictionary[String, String] = {}
 static func _tagbb_aliases_compile(aliases_dict: Dictionary[String, PackedStringArray]) -> void:
     var re : RegEx = RegEx.create_from_string(r"(\w+)(=|\s)*")
     _tagbb_aliases_compiled.clear()
@@ -324,6 +324,10 @@ static func _initialize_regex_multi_threaded() -> void:
         _regex_mutex.unlock()
     else:
         _initialize_regex()
+
+# TODO:
+static func _regex_or_err(str : String) -> void:
+    pass
 
 static func _initialize_regex() -> void:
     _regex_dlg_tags = RegEx.create_from_string(REGEX_DLG_TAGS)

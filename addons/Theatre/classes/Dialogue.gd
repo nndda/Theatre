@@ -131,6 +131,7 @@ func get_source_path() -> String:
 
 ## Returns word count in the compiled [Dialogue]. Optionally pass [param variables] to insert
 ## variables used by the [Dialogue], otherwise it will count any variable placeholder as 1 word.
+# TODO: use better algorithm
 func get_word_count(variables : Dictionary[String, Variant] = {}) -> int:
     return RegEx \
     .create_from_string(r"\w+") \
