@@ -7,14 +7,14 @@ func mkdir(path: String) -> void:
 
 func _enter_tree() -> void:
     # Copy assets to a more shorter path, so that dialogue sample will be simpler :p
-    mkdir("res://fonts/")
+    #mkdir("res://fonts/")
     mkdir("res://icons/")
 
     for src_target: PackedStringArray in [
-        [
-            "res://demo/assets/fonts/gabriela.tres",
-            "res://fonts/gabriela.tres",
-        ],
+        #[
+            #"res://demo/assets/fonts/gabriela.tres",
+            #"res://fonts/gabriela.tres",
+        #],
         [
             "res://addons/Theatre/assets/icons/classes/feather-pointed.svg",
             "res://icons/dialogue.svg",
