@@ -151,7 +151,7 @@ func set_variable(var_name : String, value : Variant) -> void:
 
 ## Return user-defined [member variables] used.
 func get_variables() -> Dictionary:
-    return variables
+    return variables.duplicate()
 
 ## Set multiple variables in a [Dictionary] used in the written [Dialogue]. Will overwrite
 ## same variable name with the new one.
@@ -262,7 +262,7 @@ func get_line() -> int:
 ## [code]null[/code], or if [TheatreStage] is not currently running any [Dialogue].
 func get_current_line() -> Dictionary:
     if current_dialogue != null and _step >= 0:
-        return current_dialogue._sets[_step]
+        return current_dialogue._sets[_step].duplicate_deep()
     return {}
 
 ## Returns [code]true[/code] if [TheatreStage] is currently running a [Dialogue].

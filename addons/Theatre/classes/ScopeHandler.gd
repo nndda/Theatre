@@ -90,7 +90,7 @@ func _update_scope() -> void:
     _scope_all.merge(_scope_built_in, true)
 
 func get_scopes() -> Dictionary:
-    return _scope
+    return _scope.duplicate()
 
 func add_scope(id : String, object : Object) -> void:
     _scope[id] = weakref(object)

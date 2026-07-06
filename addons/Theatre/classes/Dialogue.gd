@@ -106,6 +106,9 @@ static func load(path : String) -> Dialogue:
 #endregion
 
 #region NOTE: Utilities ----------------------------------------------------------------------------
+func get_data(line : int) -> Dictionary:
+    return _sets[line].duplicate_deep()
+
 ## Return all actors present in the compiled [Dialogue]. Optionally pass [param variables] to
 ## insert variables used in the actor's name, otherwise it will return it as is (e.g. [code]{player_name}[/code])
 func get_actors(variables : Dictionary[String, Variant] = {}) -> PackedStringArray:
@@ -141,12 +144,12 @@ func get_word_count(variables : Dictionary[String, Variant] = {}) -> int:
     #return humanize(false, variables).length()
 
 func get_function_calls() -> Dictionary:
-    return _used_function_calls
+    return _used_function_calls.duplicate_deep()
 
 ## Returns the defined sections in the written [Dialogue], as a key-value pair,
 ## with the key being the section ID, the value being the [Dialogue] line it represent.
 func get_sections() -> Dictionary:
-    return _sections
+    return _sections.duplicate()
 
 #func _update_used_function_calls() -> void:
     #for n : Dictionary[DialogueParser.Key, Variant] in _sets:
@@ -161,7 +164,7 @@ func get_sections() -> Dictionary:
 
 ## Gets all variables used in the written [Dialogue].
 func get_variables() -> PackedStringArray:
-    return _used_variables
+    return _used_variables.duplicate()
 
 func _update_used_variables() -> void:
     for n : Dictionary in _sets:
