@@ -34,7 +34,11 @@ func _on_resource_saved(res: Resource) -> void:
                 )
 
 func _enter_tree() -> void:
-    if ProjectSettings.get_setting(TheatrePluginConfig.GENERAL_PRINT_HEADER, true):
+    TheatrePluginConfig.update_ext_cfg(
+        TheatrePluginConfig.load_ext_cfg()
+    )
+
+    if TheatrePluginConfig.get_setting(TheatrePluginConfig.GENERAL_PRINT_HEADER, true):
         print("🎭 Theatre v%s by nnda\nTheatre: initializing plugin..." % get_plugin_version())
 
     plugin_submenu.visible = false
@@ -86,7 +90,7 @@ func _enter_tree() -> void:
 
 func _ready() -> void:
     if DisplayServer.get_name() != "headless":
-        if ProjectSettings.get_setting(TheatrePluginConfig.GENERAL_AUTO_UPDATE, true):
+        if TheatrePluginConfig.get_setting(TheatrePluginConfig.GENERAL_AUTO_UPDATE, true):
             update_check()
 
     const THEATRE_VER_LOG : String = "theatre/version"
@@ -108,11 +112,11 @@ func _ready() -> void:
 
     ProjectSettings.set_as_internal(THEATRE_VER_LOG, true)
 
-    if ProjectSettings.get_setting(TheatrePluginConfig.GENERAL_PRINT_HEADER, true):
+    if TheatrePluginConfig.get_setting(TheatrePluginConfig.GENERAL_PRINT_HEADER, true):
         print("Theatre: plugin ready")
 
 func _exit_tree() -> void:
-    var allow_header : bool = ProjectSettings.get_setting(TheatrePluginConfig.GENERAL_PRINT_HEADER, true)
+    var allow_header : bool = TheatrePluginConfig.get_setting(TheatrePluginConfig.GENERAL_PRINT_HEADER, true)
     if allow_header:
         print("🎭 Theatre: disabling plugin...")
 
