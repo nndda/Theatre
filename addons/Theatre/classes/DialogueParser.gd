@@ -1002,7 +1002,7 @@ static func parse_tags(string : String) -> Dictionary:
 
             if is_currently_jump:
                 if is_closing:
-                    tags[Key.TAGS_JUMP][current_jump_pos] = tag_pos
+                    tags[Key.TAGS_JUMP][current_jump_pos] = tag_pos - 1
 
             if not is_closing:
                 current_jump_pos = tag_pos
