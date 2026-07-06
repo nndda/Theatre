@@ -10,12 +10,13 @@ static func log_err(
         #push_warning(msg)
     #else:
         #push_error(msg)
+    push_error(DialogueParser.NEWLINE + msg)
 
-    printerr(
-        "Theatre: " + msg + "\n" + format_stack(
-            stack if not stack.is_empty() else get_stack()
-        )
-    )
+    #printerr(
+        #"Theatre: " + msg + "\n" + format_stack(
+            #stack if not stack.is_empty() else get_stack()
+        #)
+    #)
 
 static func format_stack(stack_arr : Array[Dictionary]) -> String:
     var output : String = "Stack trace:\n"
