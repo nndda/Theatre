@@ -5,6 +5,8 @@ class_name DialogueParser
 var output : Array[Dictionary] = []
 var sections : Dictionary[String, int] = {}
 
+var direct_call_funcs : Dictionary[int, Dictionary] = {}
+
 # Source path from Dialouge._source_path for debugging purposes.
 var _source_path : String
 
@@ -68,7 +70,7 @@ const REGEX_VARS_EXPR :=\
 # Match function calls:
 #       Scope.name(args)
 const REGEX_FUNC_CALL :=\
-    r"(?<scope>\w+)\.(?<path>[\w\.]+)\((?<args>.*)\)$";\
+    r"^(?:\s*)(?:(?<scope>[^\.\s]|.+)\.)?(?<path>[^\.\s]|.+)\((?<args>.*)\)$";\
     static var _regex_func_call := RegEx.create_from_string(REGEX_FUNC_CALL)
 
 # Match object/property access in function arguments or variables expressions:
@@ -143,6 +145,9 @@ enum Key {
     PROPERTY_PATH,
     
     ATTR,
+
+    HASH,
+    DIRECT_CALL,
 }
 #endregion
 
@@ -353,14 +358,20 @@ static func _initialize_regex() -> void:
 #endregion
 
 func _init(src : String = EMPTY, src_path : String = EMPTY):
+    if (
+        not TheatrePluginConfig.config_initialized
+    ) or (
+        # NOTE: If parser is initialized on runtime
+        # e.g. runtime dialogue parsing, like Dialogue.new()
+        not Engine.is_editor_hint()
+    ):
+        TheatrePluginConfig._update_parser_config()
+
     # WHY???
     _initialize_regex_multi_threaded()
     #if !_regex_initialized:
         #_initialize_regex()
         #_regex_initialized = true
-
-    if not TheatrePluginConfig.config_initialized:
-        TheatrePluginConfig._update_parser_config()
 
     if !src_path.is_empty():
         _source_path = src_path
@@ -487,13 +498,27 @@ func _init(src : String = EMPTY, src_path : String = EMPTY):
             #region NOTE: Function calls -----------------------------------------------------------
             if regex_func_match != null:
                 var func_dict := FUNC_TEMPLATE.duplicate(true)
+                # NOTE: direct function call doesn't have scope
+                var is_direct_call := not __SCOPE in regex_func_match.names
 
-                func_dict[Key.SCOPE] = StringName(regex_func_match.get_string(
-                    regex_func_match.names[__SCOPE]
-                ))
-                func_dict[Key.PROPERTY_PATH] = NodePath(regex_func_match.get_string(
-                    regex_func_match.names[__PATH]
-                ).replace(DOT, COLON))
+                if not is_direct_call:
+                    func_dict[Key.SCOPE] = StringName(regex_func_match.get_string(
+                        regex_func_match.names[__SCOPE]
+                    ))
+
+                func_dict[Key.PROPERTY_PATH] = \
+
+                    # Direct function calls
+                    StringName(regex_func_match.get_string(
+                        regex_func_match.names[__PATH]
+                    )) \
+
+                        if is_direct_call else \
+
+                    # General/scoped function calls
+                    NodePath(regex_func_match.get_string(
+                        regex_func_match.names[__PATH]
+                    ).replace(DOT, COLON))
 
                 # Function arguments
                 var args_raw := regex_func_match.get_string(
@@ -525,8 +550,21 @@ func _init(src : String = EMPTY, src_path : String = EMPTY):
                     for var_match in var_matches:
                         func_dict[Key.VARS].append(var_match.get_string(1))
 
-                func_dict.make_read_only()
-                output[body_pos][Key.FUNC].append(func_dict)
+                if is_direct_call:
+                    if not func_dict[Key.STANDALONE]:
+                        TheatreDebug.log_err(
+                            "Direct function call '%s' must be standalone @%s:%d" % [
+                                func_dict[Key.PROPERTY_PATH], _source_path, ln_num,
+                            ],
+                        )
+                    else:
+                        func_dict[Key.HASH] = func_dict.hash()
+                        func_dict.make_read_only()
+                        direct_call_funcs[func_dict[Key.HASH]] = func_dict
+                        output[body_pos][Key.FUNC].append(func_dict[Key.HASH])
+                else:
+                    func_dict.make_read_only()
+                    output[body_pos][Key.FUNC].append(func_dict)
 
                 output[body_pos][Key.CONTENT_RAW] += "{%d}" % (output[body_pos][Key.FUNC].size() - 1)
                 output[body_pos][Key.CONTENT] += output[body_pos][Key.CONTENT_RAW]

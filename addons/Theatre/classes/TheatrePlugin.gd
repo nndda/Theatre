@@ -21,6 +21,18 @@ var plugin_submenu : PopupMenu = preload(
     "res://addons/Theatre/components/tool_submenu.tscn"
 ).instantiate()
 
+func _on_resource_saved(res: Resource) -> void:
+    if res is GDScript:
+        var base_script = res.get_base_script()
+
+        if base_script is GDScript:
+            if base_script.get_global_name() == &"TheatreConfig":
+                # TODO: this doesn't seems right, with the load_ext_cfg() and such :/
+                # Maybe add/decouple something to verify if a [Resource] is indeed the external config file or not.
+                TheatrePluginConfig.update_ext_cfg(
+                    TheatrePluginConfig.load_ext_cfg()
+                )
+
 func _enter_tree() -> void:
     if ProjectSettings.get_setting(TheatrePluginConfig.GENERAL_PRINT_HEADER, true):
         print("🎭 Theatre v%s by nnda\nTheatre: initializing plugin..." % get_plugin_version())
@@ -43,6 +55,8 @@ func _enter_tree() -> void:
 
     # Initialize syntax highlighter
     DialogueSyntaxHighlighter.initialize_colors()
+
+    resource_saved.connect(_on_resource_saved)
 
     # Add `.dlg` text file extension
     var text_files_ext : String = editor_settings\

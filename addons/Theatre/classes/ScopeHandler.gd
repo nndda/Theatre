@@ -10,6 +10,26 @@ var current_dialogue : Dialogue:
         current_dialogue = dlg
         if dlg != null:
             _dialogue_source_path = dlg._source_path
+            
+            # Populate & predefine direct function calls
+            for fn_id: int in dlg._direct_call_funcs:
+                var fn: Dictionary = dlg._direct_call_funcs[fn_id]
+
+                # Check if user defines/registers the Callable
+                # NOTE, TODO?: more error checks... maybe...??
+                if not fn[DialogueParser.Key.PROPERTY_PATH] in direct_call_callables:
+                    TheatreDebug.log_err(
+                        "Direct function call '%s()' is written in %s at line %d, but is not defined on the TheatreStage" % [
+                            fn[DialogueParser.Key.PROPERTY_PATH], dlg._source_path, fn[DialogueParser.Key.LINE_NUM]
+                        ],
+                    )
+                else:
+                    _direct_call_callables_pre[fn_id] = direct_call_callables[
+                        fn[DialogueParser.Key.PROPERTY_PATH]
+                    ].bindv(
+                        fn[DialogueParser.Key.VARS]
+                    )
+
 var _current_dialogue_set : Dictionary
 # Source path is handled separately because of NOTE#1
 var _dialogue_source_path : String = ""
@@ -17,6 +37,12 @@ var _dialogue_source_path : String = ""
 var allow_func : bool = true
 
 var _handler : Node # TheatreStage or DialogueLabel
+
+# Direct function calls Callables
+# User-defined callables
+var direct_call_callables : Dictionary[StringName, Callable] = {}
+# The processed, cooked direct callables, ready to be called
+var _direct_call_callables_pre : Dictionary[int, Callable] = {}
 
 # TODO: maybe use StringName as the scope id instead?
 @export_storage var _scope : Dictionary[String, WeakRef] = {}
@@ -102,8 +128,16 @@ var func_call_filter : Callable:
             func_call_filter = cb
 
 var _expression_args := Expression.new()
-func _call_function(f : Dictionary) -> void:
+# f: Dictionary | int
+# Dictionary - Scoped function calls
+# int - Direct function calls
+func _call_function(f: Variant) -> void:
     if not allow_func:
+        return
+
+    if typeof(f) == TYPE_INT:
+        if f in _direct_call_callables_pre:
+            _direct_call_callables_pre[f].call()
         return
 
     #region NOTE: User-defined function call filter

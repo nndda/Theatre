@@ -56,6 +56,8 @@ const FUNC_STANDALONE := DialogueParser.Key.STANDALONE
 @export_storage var _used_function_calls : Dictionary[String, Variant] = {}
 
 @export_storage var _sections : Dictionary[String, int] = {}
+
+@export_storage var _direct_call_funcs : Dictionary[int, Dictionary] = {}
 #endregion
 
 #region NOTE: Loader/constructor -------------------------------------------------------------------
@@ -87,6 +89,7 @@ func _from_string(dlg_src : String = "") -> void:
         )
         _sections = parser.sections
         _sets = parser.output
+        _direct_call_funcs = parser.direct_call_funcs
         _update_used_variables()
         #_update_used_function_calls()
 

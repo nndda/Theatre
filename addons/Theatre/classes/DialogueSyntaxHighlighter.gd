@@ -127,7 +127,8 @@ func _get_line_syntax_highlighting(line : int) -> Dictionary:
         var match_bb_img : RegExMatch = null
 
         if match_func != null:
-            dict[match_func.get_start(__SCOPE)] = COL_scope
+            if match_func.get_start(__SCOPE) != -1:
+                dict[match_func.get_start(__SCOPE)] = COL_scope
             dict[match_func.get_start(__PATH)] = COL_func_name
             dict[match_func.get_start(__PATH) - 1] = COL_symbol
             dict[match_func.get_end(__PATH)] = COL_symbol
