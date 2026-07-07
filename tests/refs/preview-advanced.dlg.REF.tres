@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="Dialogue" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="Dialogue" format=3]
 
 [ext_resource type="Script" path="res://addons/Theatre/classes/Dialogue.gd" id="1_wv3q1"]
 
@@ -9,23 +9,30 @@ _sets = Array[Dictionary]([{
 1: [],
 2: [],
 3: false,
-4: "\"Welcome! to [img height=20]res://icons/theatre.png[/img] [font=res://fonts/gabriela.tres][wavy][u]Theatre[/u][/wavy]! [/font] yet another text-based dialogue addon,  developed for [img height=20]res://icons/godot.png[/img] Godot {#13361171432}.\" 
+4: "\"Welcome! to [img height=20]res://icons/theatre.png[/img] [b][u][wavy][font=res://demo/assets/fonts/gabriela.tres]Theatre[/font][/wavy][/u][/b]! a simple, extensible dialogue plugin developed for [img height=20]res://icons/godot.png[/img] [u][color=77dfdf]Godot {#13361171432}[/color][/u]\" 
 
 
 ＼(^ ▽ ^) ",
-5: "\"Welcome! {d=0.8}to {0}[img height=20]res://icons/theatre.png[/img] [font=res://fonts/gabriela.tres][wavy][u]Theatre[/u][/wavy]! [/font]{d=0.9} yet another text-based dialogue addon, {d=0.3} developed for [img height=20]res://icons/godot.png[/img] Godot {#13361171432}.\" 
+5: "{s=.15}\"Welcome!{d=.8} {s=.025}to{s} {0}{jump}[img height=20]res://icons/theatre.png[/img] [b][u][wavy][font=res://demo/assets/fonts/gabriela.tres]Theatre[/font][/wavy][/u][/b]! {/jump}{d=1.2}a simple,{d=0.5} extensible dialogue plugin {d=0.3}developed for [img height=20]res://icons/godot.png[/img] [u][color=77dfdf]Godot {#13361171432}[/color][/u]\" 
 
 
 ＼(^ ▽ ^) ",
 6: 3,
 7: {
 8: {
-10: 0.8,
-24: 0.9,
-64: 0.3
+9: 0.8,
+24: 1.2,
+33: 0.5,
+61: 0.3
 },
-9: {},
-10: {}
+9: {
+0: 0.15,
+10: 0.025,
+12: 1.0
+},
+10: {
+13: 23
+}
 },
 11: [{
 6: 5,
@@ -56,14 +63,14 @@ _sets = Array[Dictionary]([{
 
 
 (｡T ω T｡) ",
-5: "\"The written [img height=20]res://icons/dialogue.svg[/img] [color=77dfdf]Dialogue[/color] syntax {d=.25}is designed to be human-readable. {d=.76}Similar to other data format {d=.45}like [color=8ce35d]YAML[/color]. {d=.76}{s=.45}Although, {d=.5}it is far more simplified {d=.4}{s=.25}and limited.\" 
+5: "\"The written [img height=20]res://icons/dialogue.svg[/img] [color=77dfdf]Dialogue[/color] syntax {d=.3}is designed to be human-readable. {d=.76}Similar to other data format {d=.45}like [color=8ce35d]YAML[/color]. {d=.76}{s=.45}Although, {d=.5}it is far more simplified {d=.4}{s=.25}and limited.\" 
 
 
 (｡T ω T｡) ",
 6: 18,
 7: {
 8: {
-31: 0.25,
+31: 0.3,
 65: 0.76,
 94: 0.45,
 105: 0.76,
