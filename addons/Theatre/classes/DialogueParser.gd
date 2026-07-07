@@ -70,7 +70,7 @@ const REGEX_VARS_EXPR :=\
 # Match function calls:
 #       Scope.name(args)
 const REGEX_FUNC_CALL :=\
-    r"^(?:\s*)(?:(?<scope>[^\.\s]|.+)\.)?(?<path>[^\.\s]|.+)\((?<args>.*)\)$";\
+    r"^(?:\s*)(?:(?<scope>\w+)\.)?(?<path>\w+)\((?<args>.*)\)$";\
     static var _regex_func_call := RegEx.create_from_string(REGEX_FUNC_CALL)
 
 # Match object/property access in function arguments or variables expressions:
