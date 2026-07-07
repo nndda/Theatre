@@ -13,6 +13,10 @@ extends TheatreConfig; func config(): return {
             "wavy",
             "font=res://demo/assets/fonts/gabriela.tres"
         ],
+        "gd": [
+            "u",
+            "color=77dfdf",
+        ],
     },
 
 }
